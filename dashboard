@@ -1,0 +1,2399 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>Panel Administrativo · Visitas</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.30.0/dist/tabler-icons.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --brand:#185FA5;--brand-l:#eef4fc;--brand-d:#0C447C;--colmena:#EF9F27;--colmena-d:#b36d00;--colmena-l:#fef6e7;
+  --ok:#16a34a;--ok-bg:#f0fdf4;--err:#dc2626;--err-bg:#fef2f2;
+  --bg:#ffffff;--bg2:#f8fafc;--bg3:#f1f5f9;--bd:#e2e8f0;
+  --t1:#0f172a;--t2:#64748b;--t3:#94a3b8;
+  --r-md:8px;--r-lg:12px;--r-xl:16px;
+  --sh-md:0 4px 6px -1px rgb(0 0 0/.07),0 2px 4px -1px rgb(0 0 0/.04);
+  --sh-lg:0 10px 15px -3px rgb(0 0 0/.08),0 4px 6px -2px rgb(0 0 0/.04);
+  --sh-xl:0 20px 25px -5px rgb(0 0 0/.1),0 8px 10px -6px rgb(0 0 0/.05);
+  --grad-brand:linear-gradient(135deg,var(--brand),var(--brand-d));
+  --grad-colmena:linear-gradient(135deg,var(--colmena),var(--colmena-d));
+  --grad-ok:linear-gradient(135deg,var(--ok),#15803d);
+  --transition-theme:background .25s ease,color .25s ease,border-color .25s ease;
+  --sidebar-w:252px;
+  --sidebar-cw:68px;
+}
+body[data-theme="dark"]{
+  --brand:#4d9fe8;--brand-l:#123152;--brand-d:#7cb8ef;--colmena:#f5b854;--colmena-d:#f5b854;--colmena-l:#3a2c10;
+  --ok:#22c55e;--ok-bg:#0f2e1a;--err:#f87171;--err-bg:#3a1414;
+  --bg:#121826;--bg2:#0b101a;--bg3:#1c2434;--bd:#293246;
+  --t1:#f1f5f9;--t2:#94a3b8;--t3:#64748b;
+  --sh-md:0 4px 6px -1px rgb(0 0 0/.35),0 2px 4px -1px rgb(0 0 0/.2);
+  --sh-lg:0 10px 15px -3px rgb(0 0 0/.45),0 4px 6px -2px rgb(0 0 0/.3);
+  --sh-xl:0 20px 25px -5px rgb(0 0 0/.55),0 8px 10px -6px rgb(0 0 0/.35);
+}
+body{
+  font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  background:var(--bg2);min-height:100vh;color:var(--t1);font-size:14px;
+  transition:var(--transition-theme);
+  background-image:radial-gradient(circle at 10% 20%,rgba(24,95,165,.03) 0%,transparent 50%),
+                   radial-gradient(circle at 90% 80%,rgba(239,159,39,.03) 0%,transparent 50%);
+}
+body.no-animations *{animation:none!important;transition:none!important}
+body.login-active .sidebar,
+body.login-active .mobile-toggle,
+body.login-active .mobile-overlay{display:none!important}
+body.login-active .main{margin-left:0!important}
+.wrap{max-width:1400px;margin:0 auto;padding:28px 20px 60px}
+.hidden{display:none!important}
+.card{background:var(--bg);border:1px solid var(--bd);border-radius:var(--r-xl);box-shadow:var(--sh-lg);padding:28px 24px;animation:fadeInUp .4s ease;transition:var(--transition-theme)}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes slideIn{from{opacity:0;transform:translateX(-10px)}to{opacity:1;transform:translateX(0)}}
+@keyframes countUp{from{opacity:0;transform:scale(.8)}to{opacity:1;transform:scale(1)}}
+@keyframes shimmer{0%{background-position:-1000px 0}100%{background-position:1000px 0}}
+@keyframes shake{10%,90%{transform:translateX(-1px)}20%,80%{transform:translateX(2px)}30%,50%,70%{transform:translateX(-5px)}40%,60%{transform:translateX(5px)}}
+.sidebar{
+  position:fixed;top:0;left:0;width:var(--sidebar-w);height:100vh;
+  background:var(--bg);border-right:1px solid var(--bd);
+  display:flex;flex-direction:column;z-index:100;
+  transition:width .3s cubic-bezier(.4,0,.2,1),transform .3s ease,background .25s ease;
+  overflow:hidden;box-shadow:var(--sh-lg);
+}
+.sidebar.collapsed{width:var(--sidebar-cw)}
+.sidebar-brand{
+  padding:18px 16px;display:flex;align-items:center;gap:12px;
+  border-bottom:1px solid var(--bd);flex-shrink:0;min-height:70px;
+  background:linear-gradient(135deg,var(--brand-l),transparent);position:relative;
+}
+.sidebar-brand-icon{
+  width:38px;height:38px;border-radius:var(--r-md);
+  background:var(--grad-brand);color:#fff;
+  display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0;
+  box-shadow:0 4px 12px rgba(24,95,165,.3);
+}
+.sidebar-brand-text{min-width:0;overflow:hidden;white-space:nowrap}
+.sidebar-brand-text h2{font-size:13.5px;font-weight:800;letter-spacing:-.3px;color:var(--t1)}
+.sidebar-brand-text p{font-size:10px;color:var(--t2);margin-top:2px;font-weight:600}
+.sidebar-brand-text .sub{font-size:9.5px;color:var(--t3);font-weight:500}
+.sidebar.collapsed .sidebar-brand-text{display:none}
+.sidebar-body{flex:1;overflow-y:auto;overflow-x:hidden;padding:10px 0}
+.sidebar-body::-webkit-scrollbar{width:5px}
+.sidebar-body::-webkit-scrollbar-thumb{background:var(--bd);border-radius:10px}
+.sidebar-body::-webkit-scrollbar-thumb:hover{background:var(--t3)}
+.sidebar-section{padding:8px 14px 4px;margin-top:4px}
+.sidebar-section-title{
+  font-size:9.5px;font-weight:800;color:var(--t3);
+  text-transform:uppercase;letter-spacing:.8px;
+  white-space:nowrap;overflow:hidden;
+  display:flex;align-items:center;gap:6px;
+}
+.sidebar.collapsed .sidebar-section-title{opacity:0;height:0;margin:0;padding:0}
+.sidebar.collapsed .sidebar-section{padding:4px 0}
+.sidebar-item{
+  display:flex;align-items:center;gap:10px;
+  padding:8px 14px;margin:2px 8px;border-radius:var(--r-md);
+  cursor:pointer;transition:all .15s;
+  font-size:12.5px;font-weight:600;color:var(--t2);
+  white-space:nowrap;position:relative;
+}
+.sidebar-item:hover{background:var(--brand-l);color:var(--brand)}
+.sidebar-item.active{background:var(--grad-brand);color:#fff;box-shadow:0 4px 10px rgba(24,95,165,.25)}
+.sidebar-item i{font-size:17px;flex-shrink:0;width:20px;text-align:center}
+.sidebar-item .label{overflow:hidden;text-overflow:ellipsis}
+.sidebar.collapsed .sidebar-item{justify-content:center;padding:10px 0;margin:2px 6px}
+.sidebar.collapsed .sidebar-item .label{display:none}
+.sidebar.collapsed .sidebar-item[data-tooltip]:hover::after{
+  content:attr(data-tooltip);
+  position:absolute;left:calc(100% + 12px);top:50%;transform:translateY(-50%);
+  background:var(--t1);color:var(--bg);padding:5px 10px;border-radius:6px;
+  font-size:11px;white-space:nowrap;z-index:200;box-shadow:var(--sh-lg);
+}
+.sidebar-filters{padding:6px 14px}
+.sidebar.collapsed .sidebar-filters{display:none}
+.sf-group{margin-bottom:8px}
+.sf-group label{display:block;font-size:9.5px;font-weight:700;color:var(--t3);margin-bottom:3px;text-transform:uppercase;letter-spacing:.3px}
+.sf-group select,.sf-group input{
+  width:100%;padding:6px 8px;border:1px solid var(--bd);border-radius:6px;
+  font-size:11.5px;color:var(--t1);background:var(--bg);font-family:inherit;
+  transition:all .15s;
+}
+.sf-group select:focus,.sf-group input:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 2px var(--brand-l)}
+.sf-row{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.sf-reset{
+  width:100%;padding:6px;border:1px dashed var(--bd);border-radius:6px;
+  background:transparent;color:var(--t2);font-size:11px;font-weight:600;
+  cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:5px;
+  margin-top:4px;
+}
+.sf-reset:hover{border-color:var(--err);color:var(--err);background:var(--err-bg)}
+.sf-quick{display:flex;flex-wrap:wrap;gap:4px;padding:4px 14px 8px}
+.sidebar.collapsed .sf-quick{display:none}
+.sf-quick-btn{
+  padding:4px 8px;border-radius:12px;border:1px solid var(--bd);
+  background:var(--bg);font-size:10px;font-weight:700;color:var(--t2);
+  cursor:pointer;transition:all .15s;
+}
+.sf-quick-btn:hover{border-color:var(--brand);color:var(--brand)}
+.sf-quick-btn.activo{background:var(--grad-brand);color:#fff;border-color:transparent}
+.sidebar-collapse-wrap{
+  padding:6px 10px;border-top:1px solid var(--bd);flex-shrink:0;
+}
+.sidebar-toggle{
+  width:100%;padding:9px 14px;border:1px solid var(--bd);border-radius:var(--r-md);
+  background:var(--bg2);color:var(--t2);
+  display:flex;align-items:center;gap:10px;cursor:pointer;
+  font-size:12px;font-weight:600;transition:all .15s;font-family:inherit;
+}
+.sidebar-toggle:hover{background:var(--brand-l);color:var(--brand);border-color:var(--brand)}
+.sidebar-toggle i{font-size:16px;transition:transform .2s}
+.sidebar.collapsed .sidebar-toggle{justify-content:center;padding:10px 0}
+.sidebar.collapsed .sidebar-toggle .label{display:none}
+.sidebar.collapsed .sidebar-toggle i{transform:rotate(180deg)}
+.sidebar-footer{
+  border-top:1px solid var(--bd);padding:8px 10px;flex-shrink:0;
+  background:var(--bg2);
+}
+.sidebar.collapsed .sidebar-footer .shortcuts-text{display:none}
+.shortcuts-text{font-size:9px;color:var(--t3);text-align:center;line-height:1.5}
+.shortcuts-text kbd{
+  background:var(--bg);border:1px solid var(--bd);border-radius:3px;
+  padding:1px 4px;font-family:monospace;font-size:9px;font-weight:700;
+}
+.main{
+  margin-left:var(--sidebar-w);
+  transition:margin-left .3s cubic-bezier(.4,0,.2,1);
+  min-height:100vh;
+}
+.main.expanded{margin-left:var(--sidebar-cw)}
+.gate-wrap{max-width:440px;margin:100px auto}
+.card.shake{animation:shake .45s cubic-bezier(.36,.07,.19,.97)}
+.hd{display:flex;align-items:flex-start;gap:14px;margin-bottom:22px}
+.hd-icon{
+  width:48px;height:48px;border-radius:var(--r-md);
+  background:var(--grad-brand);color:#fff;
+  display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;
+  box-shadow:0 4px 12px rgba(24,95,165,.3);
+}
+.hd h1{font-size:20px;font-weight:800;letter-spacing:-.3px}
+.hd p{font-size:13px;color:var(--t2);margin-top:4px;line-height:1.4}
+label{display:block;font-size:12px;font-weight:700;color:var(--t2);margin-bottom:7px;letter-spacing:.2px}
+.req{color:var(--err)}
+.fg{margin-bottom:16px}
+.input-wrap{position:relative}
+input[type=text],input[type=password],input[type=search],select{
+  width:100%;padding:11px 13px;border:1.5px solid var(--bd);border-radius:var(--r-md);
+  font-size:14px;color:var(--t1);background:var(--bg);font-family:inherit;
+  transition:all .15s ease;
+}
+input[type=password]{padding-right:40px}
+input:focus,select:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-l)}
+.pass-eye{position:absolute;right:10px;top:50%;transform:translateY(-50%);cursor:pointer;color:var(--t3);font-size:16px;transition:color .15s}
+.pass-eye:hover{color:var(--brand)}
+.err-msg{font-size:11.5px;color:var(--err);margin-top:6px;display:none;background:var(--err-bg);padding:8px 12px;border-radius:var(--r-md)}
+.err-msg.show{display:flex;align-items:center;gap:6px}
+.btn{
+  padding:11px 18px;border:none;border-radius:var(--r-md);background:var(--grad-brand);color:#fff;
+  font-size:13.5px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  transition:all .2s ease;letter-spacing:.2px;position:relative;overflow:hidden;
+}
+.btn:hover{transform:translateY(-1px);box-shadow:0 6px 16px rgba(24,95,165,.25)}
+.btn:active{transform:translateY(0)}
+.btn.full{width:100%}
+.btn.ghost{background:var(--bg);color:var(--brand);border:1.5px solid var(--bd);box-shadow:none}
+.btn.ghost:hover{background:var(--brand-l);border-color:var(--brand);transform:translateY(-1px)}
+.btn.green{background:var(--grad-ok)}
+.btn.green:hover{box-shadow:0 6px 16px rgba(22,163,74,.25)}
+.btn.small{padding:7px 12px;font-size:12px}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none!important}
+.spinner{width:15px;height:15px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.dash-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:18px;flex-wrap:wrap}
+.dash-top h1{
+  font-size:19px;font-weight:800;letter-spacing:-.4px;
+  display:flex;align-items:center;gap:8px;
+  color:var(--brand-d);
+}
+.dash-top h1 i{color:var(--brand-d);font-size:20px}
+.dash-top p{font-size:12.5px;color:var(--t2);margin-top:4px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.dash-actions{display:flex;gap:8px;flex-wrap:wrap}
+.live-dot{width:7px;height:7px;border-radius:50%;background:var(--ok);display:inline-block;position:relative}
+.live-dot::after{content:'';position:absolute;inset:0;border-radius:50%;background:var(--ok);animation:pulseDot 1.8s ease-out infinite}
+@keyframes pulseDot{0%{transform:scale(1);opacity:.7}100%{transform:scale(2.6);opacity:0}}
+.active-filters{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;min-height:24px}
+.af-chip{
+  padding:4px 9px;background:var(--brand-l);color:var(--brand-d);border-radius:16px;
+  font-size:10.5px;font-weight:600;display:inline-flex;align-items:center;gap:5px;animation:slideIn .2s ease;
+}
+.af-chip button{background:none;border:none;color:var(--brand-d);cursor:pointer;padding:0;font-size:13px;display:flex;align-items:center;line-height:1}
+.af-chip button:hover{color:var(--err)}
+.af-clear{padding:4px 9px;background:var(--err-bg);color:var(--err);border-radius:16px;font-size:10.5px;font-weight:600;cursor:pointer;border:none;display:inline-flex;align-items:center;gap:4px}
+.af-clear:hover{background:#fee2e2}
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:20px}
+.kpi-card{
+  background:var(--bg);border:1px solid var(--bd);border-radius:var(--r-lg);padding:16px;
+  position:relative;overflow:hidden;transition:transform .2s ease,box-shadow .2s ease,var(--transition-theme);
+  animation:fadeIn .4s ease;
+}
+.kpi-card:hover{transform:translateY(-2px);box-shadow:var(--sh-lg);border-color:var(--brand)}
+.kpi-card .kl{font-size:10px;color:var(--t2);font-weight:700;text-transform:uppercase;letter-spacing:.3px;margin-bottom:6px}
+.kpi-card .kv{font-size:28px;font-weight:800;color:var(--t1);line-height:1.1;letter-spacing:-.5px}
+.kpi-card .ks{font-size:10px;color:var(--t3);margin-top:4px}
+.kpi-card.mapfre{border-left:4px solid var(--brand)}
+.kpi-card.colmena{border-left:4px solid var(--colmena)}
+.kpi-card.ok{border-left:4px solid var(--ok)}
+.tasas-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px}
+@media(max-width:820px){.tasas-grid{grid-template-columns:1fr}}
+.tasa-card{
+  background:var(--bg);border:1px solid var(--bd);border-radius:var(--r-lg);
+  overflow:hidden;box-shadow:var(--sh-md);transition:all .25s;
+}
+.tasa-card:hover{box-shadow:var(--sh-lg);transform:translateY(-2px)}
+.tasa-header{padding:14px 18px;color:#fff;font-weight:800;display:flex;align-items:center;gap:10px}
+.tasa-header.mapfre{background:var(--grad-brand)}
+.tasa-header.colmena{background:var(--grad-colmena)}
+.tasa-header h3{font-size:14px;letter-spacing:-.3px;font-weight:900}
+.tasa-header i{font-size:19px}
+.tasa-body{padding:18px}
+.tasa-big{font-size:38px;font-weight:900;color:var(--t1);line-height:1;letter-spacing:-1px;display:flex;align-items:baseline;gap:6px}
+.tasa-big .unit{font-size:13px;color:var(--t3);font-weight:700;letter-spacing:0}
+.tasa-sub{font-size:11px;color:var(--t2);margin-top:4px;font-weight:600}
+.tasa-mod{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+.tasa-mod-item{
+  background:var(--bg2);border-radius:var(--r-md);padding:12px;
+  display:flex;align-items:center;gap:10px;border:1px solid var(--bd);
+  transition:all .2s;
+}
+.tasa-mod-item:hover{border-color:var(--brand);transform:translateY(-1px)}
+.tasa-mod-icon{
+  width:36px;height:36px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  font-size:18px;color:#fff;
+}
+.tasa-mod-icon.presencial{background:linear-gradient(135deg,#16a34a,#15803d)}
+.tasa-mod-icon.virtual{background:linear-gradient(135deg,var(--brand),var(--brand-d))}
+.tasa-mod-val{font-size:19px;font-weight:800;color:var(--t1);line-height:1}
+.tasa-mod-label{font-size:10px;color:var(--t3);font-weight:600;text-transform:uppercase;letter-spacing:.3px}
+.tasa-mod-pct{font-size:10.5px;color:var(--brand);font-weight:700;margin-top:2px}
+.tasa-bar{height:6px;background:var(--bg3);border-radius:3px;margin-top:14px;overflow:hidden;display:flex}
+.tasa-bar .seg-pres{background:linear-gradient(90deg,#16a34a,#22c55e);height:100%;transition:width .6s}
+.tasa-bar .seg-virt{background:linear-gradient(90deg,var(--brand),#4d9fe8);height:100%;transition:width .6s}
+.tasa-years{display:flex;gap:10px;margin-top:14px;padding-top:14px;border-top:1px solid var(--bd);flex-wrap:wrap}
+.tasa-year{flex:1;min-width:70px;text-align:center}
+.tasa-year .yl{font-size:9.5px;color:var(--t3);font-weight:800;text-transform:uppercase;letter-spacing:.5px}
+.tasa-year .yv{font-size:13.5px;font-weight:800;color:var(--t1);margin-top:3px}
+.tasa-year .yv .split{color:var(--t3);font-size:11px;font-weight:600;margin:0 2px}
+.tasa-year .yv .p{color:var(--ok)}
+.tasa-year .yv .v{color:var(--brand)}
+.charts-grid{display:grid;grid-template-columns:1.4fr 1fr;gap:14px;margin-bottom:20px}
+.charts-grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px}
+.charts-grid,.charts-grid2{width:100%}
+.charts-grid>*,.charts-grid2>*{min-width:0}
+@media(max-width:820px){.charts-grid,.charts-grid2{grid-template-columns:1fr}}
+.chart-card{
+  background:var(--bg);border:1px solid var(--bd);border-radius:var(--r-lg);padding:20px;
+  box-shadow:var(--sh-md);transition:all .25s;min-width:0;overflow:hidden;
+}
+.chart-card:hover{box-shadow:var(--sh-lg)}
+.chart-card h3{font-size:13px;font-weight:700;color:var(--t1);margin-bottom:4px;display:flex;align-items:center;gap:8px}
+.chart-card h3 i{color:var(--brand);font-size:16px}
+.chart-card .sub{font-size:10.5px;color:var(--t3);margin-bottom:14px}
+.chart-wrap{position:relative;height:260px;width:100%;overflow:hidden}
+.chart-wrap.tall{height:320px}
+.chart-wrap canvas{max-width:100%!important}
+.resumen-exec{
+  background:var(--bg);border:1px solid var(--bd);border-radius:var(--r-lg);
+  overflow:hidden;box-shadow:var(--sh-md);margin-bottom:20px;
+}
+.resumen-exec-header{
+  padding:16px 20px;background:var(--grad-brand);color:#fff;
+}
+.resumen-exec-header h3{font-size:14px;font-weight:800;display:flex;align-items:center;gap:8px}
+.resumen-exec-header p{font-size:11px;opacity:.85;margin-top:2px}
+.resumen-exec-body{display:grid;grid-template-columns:1fr 1fr;gap:0}
+@media(max-width:820px){.resumen-exec-body{grid-template-columns:1fr}}
+.resumen-block{padding:18px 20px;border-right:1px solid var(--bd)}
+.resumen-block:last-child{border-right:none}
+.resumen-block h4{font-size:11px;font-weight:800;color:var(--t2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.resumen-block h4 i{color:var(--brand)}
+.resumen-item{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--bg3)}
+.resumen-item:last-child{border-bottom:none}
+.resumen-rank{
+  width:24px;height:24px;border-radius:50%;
+  background:var(--brand-l);color:var(--brand);
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:800;flex-shrink:0;
+}
+.resumen-item-name{flex:1;font-size:12.5px;font-weight:600;color:var(--t1)}
+.resumen-item-val{font-size:13px;font-weight:800;color:var(--brand)}
+.resumen-empty{text-align:center;padding:20px;color:var(--t3);font-size:12px}
+.tabla-card{background:var(--bg);border:1px solid var(--bd);border-radius:var(--r-lg);padding:20px;overflow:hidden;box-shadow:var(--sh-md);transition:var(--transition-theme);margin-bottom:20px}
+.tabla-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px;flex-wrap:wrap}
+.tabla-top h3{font-size:14px;font-weight:800;display:flex;align-items:center;gap:8px}
+.tabla-top h3 .count{background:var(--brand-l);color:var(--brand-d);padding:2px 10px;border-radius:12px;font-size:11px;font-weight:700}
+.tabla-search{max-width:280px}
+.tabla-scroll{overflow-x:auto;border-radius:var(--r-md);border:1px solid var(--bd)}
+table{width:100%;border-collapse:collapse;font-size:12.5px;min-width:1150px}
+th{
+  background:var(--bg2);color:var(--t2);font-weight:700;text-align:left;
+  padding:11px 12px;white-space:nowrap;border-bottom:2px solid var(--bd);
+  position:sticky;top:0;cursor:pointer;user-select:none;transition:background .15s,color .15s;
+  font-size:11.5px;text-transform:uppercase;letter-spacing:.3px;
+}
+th:hover{background:var(--brand-l);color:var(--brand)}
+th.no-sort{cursor:default}
+th.no-sort:hover{background:var(--bg2);color:var(--t2)}
+th .sort-icon{display:inline-block;margin-left:4px;opacity:.3;font-size:10px}
+th.sorted .sort-icon{opacity:1;color:var(--brand)}
+td{padding:10px 12px;border-bottom:1px solid var(--bg3);color:var(--t1);white-space:nowrap}
+tr{transition:background .1s}
+tbody tr:hover td{background:var(--brand-l)}
+.badge-aseg{font-weight:700;padding:3px 10px;border-radius:20px;font-size:11px;display:inline-block}
+.badge-aseg.mapfre{background:var(--brand-l);color:var(--brand-d)}
+.badge-aseg.colmena{background:var(--colmena-l);color:var(--colmena-d)}
+.badge-modal{font-size:10.5px;font-weight:700;padding:3px 9px;border-radius:10px;display:inline-flex;align-items:center;gap:4px}
+.badge-modal.presencial{background:var(--ok-bg);color:var(--ok)}
+.badge-modal.virtual{background:var(--brand-l);color:var(--brand)}
+.badge-obj{font-size:10.5px;font-weight:700;padding:3px 9px;border-radius:10px;background:var(--bg3);color:var(--t2)}
+.btn-ver{
+  width:28px;height:28px;border-radius:8px;border:1px solid var(--bd);background:var(--bg);color:var(--brand);
+  cursor:pointer;display:inline-flex;align-items:center;justify-content:center;font-size:14px;transition:all .15s;
+}
+.btn-ver:hover{background:var(--brand);color:#fff;border-color:var(--brand);transform:scale(1.08)}
+.paginacion{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:16px;font-size:12.5px;color:var(--t2);flex-wrap:wrap}
+.pg-btn{
+  min-width:32px;height:32px;border-radius:var(--r-md);border:1px solid var(--bd);background:var(--bg);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;color:var(--t2);transition:all .15s;padding:0 10px;font-size:12px;
+}
+.pg-btn:hover{background:var(--brand-l);color:var(--brand);border-color:var(--brand)}
+.pg-btn:disabled{opacity:.4;cursor:not-allowed}
+.pg-btn.active{background:var(--brand);color:#fff;border-color:var(--brand)}
+.status-line{text-align:center;font-size:12px;color:var(--t3);margin-top:18px;display:flex;align-items:center;justify-content:center;gap:8px}
+.empty-state{text-align:center;padding:60px 20px;color:var(--t3)}
+.empty-state i{font-size:48px;margin-bottom:14px;display:block;opacity:.4}
+.empty-state h4{font-size:15px;font-weight:700;color:var(--t1);margin-bottom:4px}
+.empty-state p{font-size:13px}
+.toast-stack{position:fixed;top:20px;right:20px;z-index:300;display:flex;flex-direction:column;gap:8px;align-items:flex-end;max-width:92vw}
+.toast{
+  background:var(--ok);color:#fff;padding:12px 18px;border-radius:var(--r-md);font-size:13px;font-weight:600;
+  box-shadow:var(--sh-xl);display:flex;align-items:center;gap:8px;opacity:0;transform:translateX(20px);
+  transition:all .3s cubic-bezier(.34,1.56,.64,1);
+}
+.toast.show{opacity:1;transform:translateX(0)}
+.toast.error{background:var(--err)}
+.toast.info{background:var(--brand)}
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(15,23,42,.6);display:flex;align-items:center;justify-content:center;
+  z-index:250;opacity:0;pointer-events:none;transition:opacity .25s;padding:16px;
+}
+.modal-overlay.show{opacity:1;pointer-events:auto}
+.modal-box{
+  background:var(--bg);border-radius:var(--r-xl);box-shadow:var(--sh-xl);max-width:440px;width:100%;
+  transform:scale(.92) translateY(10px);transition:transform .3s cubic-bezier(.34,1.56,.64,1);overflow:hidden;
+  max-height:88vh;display:flex;flex-direction:column;
+}
+.modal-overlay.show .modal-box{transform:scale(1) translateY(0)}
+.modal-header{
+  background:var(--grad-brand);color:#fff;padding:18px 20px;
+  display:flex;align-items:center;justify-content:space-between;gap:10px;flex-shrink:0;
+}
+.modal-header h4{font-size:15px;font-weight:700;display:flex;align-items:center;gap:8px}
+.modal-close{
+  width:30px;height:30px;border-radius:50%;border:none;background:rgba(255,255,255,.2);color:#fff;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;transition:background .15s;
+}
+.modal-close:hover{background:rgba(255,255,255,.35)}
+.modal-body{padding:20px;overflow-y:auto}
+.modal-row{display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:1px solid var(--bg3)}
+.modal-row:last-child{border-bottom:none}
+.modal-row i{color:var(--brand);font-size:16px;margin-top:1px;flex-shrink:0;width:18px;text-align:center}
+.modal-row .ml{font-size:10.5px;color:var(--t3);font-weight:700;text-transform:uppercase;letter-spacing:.3px}
+.modal-row .mv{font-size:13.5px;color:var(--t1);font-weight:600;margin-top:2px}
+.modal-stats{display:flex;gap:10px;margin-top:14px}
+.modal-stat{flex:1;background:var(--bg2);border-radius:10px;padding:12px;text-align:center}
+.modal-stat .msv{font-size:20px;font-weight:800;color:var(--brand)}
+.modal-stat .msl{font-size:10.5px;color:var(--t2);font-weight:600;margin-top:2px}
+.func-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.func-stat{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r-md);padding:10px;text-align:center}
+.func-stat .v{font-size:19px;font-weight:800;color:var(--brand-d)}
+.func-stat .l{font-size:10px;color:var(--t3);font-weight:700;text-transform:uppercase;margin-top:2px}
+.func-tabs{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap}
+.func-tab{
+  padding:7px 14px;border-radius:20px;border:1.5px solid var(--bd);background:var(--bg);
+  font-size:12px;font-weight:700;color:var(--t2);cursor:pointer;
+  display:inline-flex;align-items:center;gap:6px;transition:all .15s;
+}
+.func-tab .count{background:var(--bg3);color:var(--t2);padding:1px 8px;border-radius:10px;font-size:10.5px;font-weight:800}
+.func-tab:hover{border-color:var(--brand);color:var(--brand)}
+.func-tab.activo{background:var(--grad-brand);color:#fff;border-color:transparent;box-shadow:0 4px 10px rgba(24,95,165,.25)}
+.func-tab.activo .count{background:rgba(255,255,255,.25);color:#fff}
+.func-tab.mapfre.activo{background:var(--grad-brand)}
+.func-tab.colmena.activo{background:var(--grad-colmena)}
+.func-tab-add{
+  width:36px;height:36px;border-radius:50%;border:1.5px dashed var(--brand);
+  background:var(--brand-l);color:var(--brand);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;font-size:18px;
+  transition:all .2s;margin-left:auto;flex-shrink:0;
+}
+.func-tab-add:hover{background:var(--brand);color:#fff;transform:rotate(90deg) scale(1.05)}
+.func-list-item{
+  display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--bg3);
+  animation:fadeIn .25s ease;
+}
+.func-list-item:last-child{border-bottom:none}
+.func-avatar{
+  width:36px;height:36px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-weight:800;font-size:13px;color:#fff;flex-shrink:0;
+  background:var(--grad-brand);
+}
+.func-avatar.colmena{background:var(--grad-colmena)}
+.func-list-name{flex:1;font-weight:600;font-size:13px;min-width:0;overflow:hidden;text-overflow:ellipsis}
+.func-list-name.inactivo{opacity:.4;text-decoration:line-through}
+.func-list-aseg{font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px}
+.config-section{margin-bottom:18px;padding-bottom:18px;border-bottom:1px solid var(--bd)}
+.config-section:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
+.config-section h5{font-size:12px;font-weight:800;color:var(--brand-d);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.config-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 0}
+.config-row-label{flex:1;font-size:13px;font-weight:600;color:var(--t1)}
+.config-row-desc{font-size:11px;color:var(--t3);margin-top:2px;font-weight:500}
+.switch{position:relative;width:40px;height:22px;flex-shrink:0}
+.switch input{opacity:0;width:0;height:0}
+.switch-slider{position:absolute;inset:0;background:var(--bd);border-radius:22px;cursor:pointer;transition:.25s}
+.switch-slider:before{position:absolute;content:"";height:16px;width:16px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.25s}
+.switch input:checked + .switch-slider{background:var(--grad-brand)}
+.switch input:checked + .switch-slider:before{transform:translateX(18px)}
+.config-input{width:90px;padding:6px 10px;border:1px solid var(--bd);border-radius:6px;font-size:12px;background:var(--bg);color:var(--t1);font-family:inherit}
+.config-input:focus{outline:none;border-color:var(--brand)}
+.config-select{padding:6px 10px;border:1px solid var(--bd);border-radius:6px;font-size:12px;background:var(--bg);color:var(--t1);font-family:inherit}
+.config-danger{background:var(--err-bg);color:var(--err);border:1px solid transparent;padding:8px 14px;border-radius:var(--r-md);font-size:12px;font-weight:700;cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:6px}
+.config-danger:hover{background:var(--err);color:#fff}
+.mobile-toggle{
+  display:none;position:fixed;top:14px;left:14px;z-index:150;
+  width:42px;height:42px;border-radius:50%;border:1.5px solid var(--bd);background:var(--bg);
+  color:var(--t2);align-items:center;justify-content:center;cursor:pointer;
+  box-shadow:var(--sh-md);font-size:18px;
+}
+@media(max-width:900px){
+  .sidebar{transform:translateX(-100%);width:var(--sidebar-w)!important}
+  .sidebar.mobile-open{transform:translateX(0)}
+  .main{margin-left:0!important}
+  .mobile-toggle{display:flex}
+  .mobile-overlay{
+    position:fixed;inset:0;background:rgba(15,23,42,.5);z-index:99;
+    opacity:0;pointer-events:none;transition:opacity .3s;
+  }
+  .mobile-overlay.show{opacity:1;pointer-events:auto}
+}
+@media(max-width:640px){
+  .kpi-card .kv{font-size:22px}
+  .dash-top h1{font-size:17px}
+  .tasa-big{font-size:28px}
+  .func-stats{grid-template-columns:1fr 1fr}
+}
+.page{display:none;animation:fadeIn .3s ease}
+.page.active{display:block}
+</style>
+</head>
+<body class="login-active">
+<button class="mobile-toggle" onclick="toggleMobileSidebar()" title="Menú"><i class="ti ti-menu-2"></i></button>
+<div class="mobile-overlay" id="mobile-overlay" onclick="cerrarSidebarClick()"></div>
+<div class="toast-stack" id="toast-stack"></div>
+<div class="modal-overlay" id="modal-overlay" onclick="if(event.target===this) cerrarModal()">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h4><i class="ti ti-file-text"></i> Detalle de la visita</h4>
+      <button class="modal-close" onclick="cerrarModal()"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+  </div>
+</div>
+<div class="modal-overlay" id="modal-func-overlay" onclick="if(event.target===this) cerrarFuncionarios()">
+  <div class="modal-box" style="max-width:580px">
+    <div class="modal-header">
+      <h4><i class="ti ti-users"></i> Gestión de funcionarios</h4>
+      <button class="modal-close" onclick="cerrarFuncionarios()"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="func-stats" id="func-stats"></div>
+      <div class="func-tabs" id="func-tabs"></div>
+      <div id="lista-funcionarios"></div>
+    </div>
+  </div>
+</div>
+<div class="modal-overlay" id="modal-config-overlay" onclick="if(event.target===this) cerrarConfig()">
+  <div class="modal-box" style="max-width:480px">
+    <div class="modal-header">
+      <h4><i class="ti ti-settings"></i> Configuración</h4>
+      <button class="modal-close" onclick="cerrarConfig()"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="modal-body" id="config-body"></div>
+  </div>
+</div>
+<div class="modal-overlay" id="modal-add-func-overlay" onclick="if(event.target===this) cerrarAgregarFuncionario()">
+  <div class="modal-box" style="max-width:420px">
+    <div class="modal-header">
+      <h4><i class="ti ti-user-plus"></i> Agregar funcionario</h4>
+      <button class="modal-close" onclick="cerrarAgregarFuncionario()"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="fg">
+        <label>Nombre completo <span class="req">*</span></label>
+        <input type="text" id="nf-nombre" placeholder="Ej: JUAN PEREZ" autocomplete="off">
+      </div>
+      <div class="fg">
+        <label>Aseguradora <span class="req">*</span></label>
+        <select id="nf-aseg"></select>
+      </div>
+      <button class="btn full green" onclick="crearFuncionario()"><i class="ti ti-check"></i> Crear funcionario</button>
+    </div>
+  </div>
+</div>
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-brand">
+    <div class="sidebar-brand-icon"><i class="ti ti-chart-dots-3"></i></div>
+    <div class="sidebar-brand-text">
+      <h2>Panel de Visitas</h2>
+      <p>Data & Business Analytics</p>
+      <p class="sub">Executive Visits Dashboard</p>
+    </div>
+  </div>
+  <div class="sidebar-body">
+    <div class="sidebar-section">
+      <div class="sidebar-section-title"><i class="ti ti-filter"></i> Filtros</div>
+    </div>
+    <div class="sidebar-filters">
+      <div class="sf-group">
+        <label>Aseguradora</label>
+        <select id="fl-aseg" onchange="aplicarFiltros()">
+          <option value="">Todas</option>
+          <option value="Mapfre">Mapfre</option>
+          <option value="Colmena">Colmena</option>
+        </select>
+      </div>
+      <div class="sf-group">
+        <label>Funcionario</label>
+        <select id="fl-func" onchange="aplicarFiltros()"><option value="">Todos</option></select>
+      </div>
+      <div class="sf-group">
+        <label>Regional</label>
+        <select id="fl-regional" onchange="aplicarFiltros()"><option value="">Todas</option></select>
+      </div>
+      <div class="sf-group">
+        <label>Zonal</label>
+        <select id="fl-zonal" onchange="aplicarFiltros()"><option value="">Todas</option></select>
+      </div>
+      <div class="sf-group">
+        <label>Modalidad</label>
+        <select id="fl-modal" onchange="aplicarFiltros()">
+          <option value="">Todas</option>
+          <option value="Presencial">Presencial</option>
+          <option value="Virtual">Virtual</option>
+        </select>
+      </div>
+      <div class="sf-row">
+        <div class="sf-group">
+          <label>Desde</label>
+          <input type="text" id="fl-desde" placeholder="Inicial">
+        </div>
+        <div class="sf-group">
+          <label>Hasta</label>
+          <input type="text" id="fl-hasta" placeholder="Final">
+        </div>
+      </div>
+      <button class="sf-reset" onclick="limpiarFiltros()"><i class="ti ti-refresh"></i> Restablecer</button>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-title"><i class="ti ti-calendar"></i> Rango rápido</div>
+    </div>
+    <div class="sf-quick">
+      <button class="sf-quick-btn activo" data-qf="todos" onclick="quickFilter('todos')">Todo</button>
+      <button class="sf-quick-btn" data-qf="hoy" onclick="quickFilter('hoy')">Hoy</button>
+      <button class="sf-quick-btn" data-qf="ayer" onclick="quickFilter('ayer')">Ayer</button>
+      <button class="sf-quick-btn" data-qf="semana" onclick="quickFilter('semana')">Semana</button>
+      <button class="sf-quick-btn" data-qf="mes" onclick="quickFilter('mes')">Mes</button>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-title"><i class="ti ti-compass"></i> Navegación</div>
+    </div>
+    <div class="sidebar-item active" data-page="resumen" data-tooltip="Resumen Ejecutivo" onclick="cambiarPagina('resumen')">
+      <i class="ti ti-dashboard"></i><span class="label">Resumen Ejecutivo</span>
+    </div>
+    <div class="sidebar-item" data-page="operacion" data-tooltip="Operación" onclick="cambiarPagina('operacion')">
+      <i class="ti ti-world"></i><span class="label">Operación</span>
+    </div>
+    <div class="sidebar-item" data-page="visitas" data-tooltip="Visitas" onclick="cambiarPagina('visitas')">
+      <i class="ti ti-list-details"></i><span class="label">Visitas</span>
+    </div>
+    <div class="sidebar-item" data-page="funcionarios" data-tooltip="Funcionarios" onclick="cambiarPagina('funcionarios')">
+      <i class="ti ti-user-star"></i><span class="label">Funcionarios</span>
+    </div>
+    <div class="sidebar-item" data-page="regionales" data-tooltip="Regionales" onclick="cambiarPagina('regionales')">
+      <i class="ti ti-map"></i><span class="label">Regionales</span>
+    </div>
+    <div class="sidebar-item" data-page="tendencias" data-tooltip="Tendencias" onclick="cambiarPagina('tendencias')">
+      <i class="ti ti-trending-up"></i><span class="label">Tendencias</span>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-title"><i class="ti ti-bolt"></i> Acciones</div>
+    </div>
+    <div class="sidebar-item" data-tooltip="Mode Live" onclick="toggleLiveMode()" id="sb-live">
+      <i class="ti ti-broadcast"></i><span class="label">Mode Live</span>
+    </div>
+    <div class="sidebar-item" data-tooltip="Actualizar" onclick="cargarTodo()">
+      <i class="ti ti-refresh"></i><span class="label">Actualizar</span>
+    </div>
+    <div class="sidebar-item" data-tooltip="Gestionar funcionarios" onclick="abrirFuncionarios()">
+      <i class="ti ti-users"></i><span class="label">Gestionar funcionarios</span>
+    </div>
+    <div class="sidebar-item" data-tooltip="Exportar Excel" onclick="exportarExcel()">
+      <i class="ti ti-file-spreadsheet"></i><span class="label">Excel</span>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-title"><i class="ti ti-palette"></i> Apariencia</div>
+    </div>
+    <div class="sidebar-item" data-tooltip="Tema claro" onclick="setTheme('light')">
+      <i class="ti ti-sun"></i><span class="label">Claro</span>
+    </div>
+    <div class="sidebar-item" data-tooltip="Tema oscuro" onclick="setTheme('dark')">
+      <i class="ti ti-moon"></i><span class="label">Oscuro</span>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-title"><i class="ti ti-settings"></i> Sistema</div>
+    </div>
+    <div class="sidebar-item" data-tooltip="Configuración" onclick="abrirConfig()">
+      <i class="ti ti-settings"></i><span class="label">Configuración</span>
+    </div>
+    <div class="sidebar-item" data-tooltip="Salir" onclick="cerrarSesion()" style="color:var(--err)">
+      <i class="ti ti-logout"></i><span class="label">Salir</span>
+    </div>
+  </div>
+  <div class="sidebar-collapse-wrap">
+    <button class="sidebar-toggle" onclick="toggleSidebar()" title="Contraer/Expandir">
+      <i class="ti ti-chevrons-left"></i>
+      <span class="label">Contraer menú</span>
+    </button>
+  </div>
+  <div class="sidebar-footer">
+    <div class="shortcuts-text">
+      <kbd>R</kbd> Refrescar · <kbd>E</kbd> Excel · <kbd>L</kbd> Live<br>
+      <kbd>1-5</kbd> Quick filters
+    </div>
+  </div>
+</aside>
+<div class="main" id="main">
+  <div class="wrap gate-wrap" id="gate-wrap">
+    <div class="card" id="gate-card">
+      <div class="hd">
+        <div class="hd-icon"><i class="ti ti-lock"></i></div>
+        <div>
+          <h1>Acceso Administrativo</h1>
+          <p>Panel exclusivo para uso interno. Ingresa la clave de acceso.</p>
+        </div>
+      </div>
+      <div class="fg">
+        <label>Usuario <span class="req">*</span></label>
+        <input type="text" id="gate-user" placeholder="Ingresar" autocomplete="off">
+      </div>
+      <div class="fg">
+        <label>Clave de acceso <span class="req">*</span></label>
+        <div class="input-wrap">
+          <input type="password" id="gate-pass" placeholder="••••••••" autocomplete="off">
+          <i class="ti ti-eye pass-eye" id="pass-eye" onclick="togglePassword()"></i>
+        </div>
+      </div>
+      <div class="err-msg" id="err-gate"><i class="ti ti-alert-circle"></i> Clave incorrecta, intenta de nuevo</div>
+      <button class="btn full" id="btn-entrar" onclick="verificarClave()"><i class="ti ti-key"></i> Entrar al panel</button>
+    </div>
+  </div>
+  <div class="wrap hidden" id="dash-wrap">
+    <div class="page active" id="page-resumen">
+      <div class="dash-top">
+        <div>
+          <h1><i class="ti ti-dashboard"></i> Resumen Ejecutivo</h1>
+          <p><span class="live-dot"></span> <span id="resumen-linea">Cargando datos...</span></p>
+        </div>
+      </div>
+      <div class="active-filters" id="active-filters"></div>
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kl">Registros</div>
+          <div class="kv" id="kpi-total">0</div>
+        </div>
+        <div class="kpi-card mapfre">
+          <div class="kl">Mapfre</div>
+          <div class="kv" id="kpi-mapfre">0</div>
+        </div>
+        <div class="kpi-card colmena">
+          <div class="kl">Colmena</div>
+          <div class="kv" id="kpi-colmena">0</div>
+        </div>
+        <div class="kpi-card ok">
+          <div class="kl">Promedio diario</div>
+          <div class="kv" id="kpi-promedio">0</div>
+        </div>
+      </div>
+      <div class="tasas-grid">
+        <div class="tasa-card">
+          <div class="tasa-header mapfre"><i class="ti ti-shield"></i><h3>MAPFRE</h3></div>
+          <div class="tasa-body">
+            <div class="tasa-big" id="tasa-mapfre-total">0 <span class="unit">visitas</span></div>
+            <div class="tasa-bar" id="tasa-mapfre-bar"><div class="seg-pres"></div><div class="seg-virt"></div></div>
+            <div class="tasa-mod" id="tasa-mapfre-mod"></div>
+            <div class="tasa-years" id="tasa-mapfre-years"></div>
+          </div>
+        </div>
+        <div class="tasa-card">
+          <div class="tasa-header colmena"><i class="ti ti-shield-check"></i><h3>COLMENA</h3></div>
+          <div class="tasa-body">
+            <div class="tasa-big" id="tasa-colmena-total">0 <span class="unit">visitas</span></div>
+            <div class="tasa-bar" id="tasa-colmena-bar"><div class="seg-pres"></div><div class="seg-virt"></div></div>
+            <div class="tasa-mod" id="tasa-colmena-mod"></div>
+            <div class="tasa-years" id="tasa-colmena-years"></div>
+          </div>
+        </div>
+      </div>
+      <div class="charts-grid">
+        <div class="chart-card">
+          <h3><i class="ti ti-chart-bar"></i> Modalidad de visitas</h3>
+          <p class="sub">Distribución por tipo · cantidad y participación</p>
+          <div class="chart-wrap"><canvas id="chart-modalidad"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <h3><i class="ti ti-chart-donut-3"></i> Participación por aseguradora</h3>
+          <p class="sub">Distribución del filtro actual</p>
+          <div class="chart-wrap"><canvas id="chart-aseg"></canvas></div>
+        </div>
+      </div>
+      <div class="resumen-exec">
+        <div class="resumen-exec-header">
+          <h3><i class="ti ti-trophy"></i> Rankings destacados</h3>
+          <p>Top 3 funcionarios · oficinas · meses con mayor concentración</p>
+        </div>
+        <div class="resumen-exec-body">
+          <div class="resumen-block">
+            <h4><i class="ti ti-user-star"></i> Top 3 funcionarios más activos</h4>
+            <div id="top-funcionarios"><div class="resumen-empty">Carga datos para ver el ranking</div></div>
+          </div>
+          <div class="resumen-block">
+            <h4><i class="ti ti-building"></i> Top 3 oficinas / ciudades</h4>
+            <div id="top-oficinas"><div class="resumen-empty">Carga datos para ver el ranking</div></div>
+          </div>
+        </div>
+        <div class="resumen-block" style="border-top:1px solid var(--bd);border-right:none">
+          <h4><i class="ti ti-calendar-event"></i> Top 3 meses con mayor actividad (por año)</h4>
+          <div id="top-meses"><div class="resumen-empty">Carga datos para ver el ranking</div></div>
+        </div>
+      </div>
+      <div class="tabla-card">
+        <div class="tabla-top">
+          <h3><i class="ti ti-table"></i> Detalle de visitas <span class="count" id="tabla-count">0</span></h3>
+          <input type="search" class="tabla-search" id="tabla-buscar" placeholder="🔍 Buscar oficina, funcionario, regional..." oninput="renderTabla()">
+        </div>
+        <div class="tabla-scroll">
+          <table>
+            <thead>
+              <tr id="tabla-head">
+                <th data-campo="fecha">Fecha <span class="sort-icon">▼</span></th>
+                <th data-campo="hora_registro">Hora <span class="sort-icon">▼</span></th>
+                <th data-campo="funcionario">Funcionario <span class="sort-icon">▼</span></th>
+                <th data-campo="aseguradora">Aseg. <span class="sort-icon">▼</span></th>
+                <th data-campo="gerencia_regional">Regional <span class="sort-icon">▼</span></th>
+                <th data-campo="gerencia_zonal">Zonal <span class="sort-icon">▼</span></th>
+                <th data-campo="oficina">Oficina <span class="sort-icon">▼</span></th>
+                <th class="no-sort">Sban</th>
+                <th data-campo="modalidad">Modalidad <span class="sort-icon">▼</span></th>
+                <th data-campo="objetivo">Objetivo <span class="sort-icon">▼</span></th>
+                <th class="no-sort">Com.</th>
+                <th class="no-sort">Op.</th>
+                <th class="no-sort"></th>
+              </tr>
+            </thead>
+            <tbody id="tabla-body"></tbody>
+          </table>
+        </div>
+        <div id="tabla-empty" class="empty-state hidden">
+          <i class="ti ti-database-off"></i>
+          <h4>No hay registros</h4>
+          <p>Prueba ajustando los filtros o la búsqueda</p>
+        </div>
+        <div class="paginacion" id="paginacion"></div>
+      </div>
+      <div class="tabla-card">
+        <div class="tabla-top">
+          <h3><i class="ti ti-user-star"></i> Ranking detallado por funcionario <span class="count" id="tabla-func-count">0</span></h3>
+        </div>
+        <div class="tabla-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Funcionario</th>
+                <th>Aseguradora</th>
+                <th>Visitas</th>
+                <th>Participación</th>
+                <th>Oficinas visitadas</th>
+                <th>Presencial</th>
+                <th>Virtual</th>
+              </tr>
+            </thead>
+            <tbody id="tabla-funcionarios-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="page" id="page-operacion">
+      <div class="dash-top">
+        <div>
+          <h1><i class="ti ti-world"></i> Operación</h1>
+          <p>Análisis por funcionario, modalidad y regional</p>
+        </div>
+      </div>
+      <div class="kpi-grid">
+        <div class="kpi-card"><div class="kl">Presenciales</div><div class="kv" id="kpi-presencial-op">0</div></div>
+        <div class="kpi-card"><div class="kl">Virtuales</div><div class="kv" id="kpi-virtual-op">0</div></div>
+        <div class="kpi-card mapfre"><div class="kl">Regionales activas</div><div class="kv" id="kpi-regionales-op">0</div></div>
+        <div class="kpi-card colmena"><div class="kl">Zonales activas</div><div class="kv" id="kpi-zonales-op">0</div></div>
+      </div>
+      <div class="charts-grid2">
+        <div class="chart-card">
+          <h3><i class="ti ti-building-bank"></i> Top oficinas más visitadas</h3>
+          <p class="sub">Concentración geográfica</p>
+          <div class="chart-wrap tall"><canvas id="chart-oficinas-op"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <h3><i class="ti ti-users-group"></i> Ranking por funcionario</h3>
+          <p class="sub">Distribución operativa</p>
+          <div class="chart-wrap tall"><canvas id="chart-funcionarios-op"></canvas></div>
+        </div>
+      </div>
+      <div class="charts-grid">
+        <div class="chart-card">
+          <h3><i class="ti ti-map-pin"></i> Visitas por Regional</h3>
+          <p class="sub">Impacto por gerencia regional</p>
+          <div class="chart-wrap"><canvas id="chart-regionales-op"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <h3><i class="ti ti-chart-pie"></i> Impacto por modalidad</h3>
+          <p class="sub">Distribución Presencial vs Virtual</p>
+          <div class="chart-wrap"><canvas id="chart-modalidad-op"></canvas></div>
+        </div>
+      </div>
+    </div>
+    <div class="page" id="page-visitas">
+      <div class="dash-top">
+        <div>
+          <h1><i class="ti ti-list-details"></i> Distribución de visitas</h1>
+          <p>Análisis por fecha, regional y modalidad</p>
+        </div>
+      </div>
+      <div class="chart-card" style="margin-bottom:20px">
+        <h3><i class="ti ti-chart-line"></i> Tendencia temporal</h3>
+        <p class="sub">Evolución diaria de las visitas filtradas</p>
+        <div class="chart-wrap tall"><canvas id="chart-tendencia-visitas"></canvas></div>
+      </div>
+      <div class="charts-grid2">
+        <div class="chart-card">
+          <h3><i class="ti ti-map-pin"></i> Por regional</h3>
+          <p class="sub">Top 10 regionales</p>
+          <div class="chart-wrap tall"><canvas id="chart-regionales-visitas"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <h3><i class="ti ti-building"></i> Por oficina</h3>
+          <p class="sub">Top 10 oficinas</p>
+          <div class="chart-wrap tall"><canvas id="chart-oficinas-visitas"></canvas></div>
+        </div>
+      </div>
+    </div>
+    <div class="page" id="page-funcionarios">
+      <div class="dash-top">
+        <div>
+          <h1><i class="ti ti-user-star"></i> Rendimiento por funcionario</h1>
+          <p>Comparativa de productividad</p>
+        </div>
+      </div>
+      <div class="kpi-grid">
+        <div class="kpi-card"><div class="kl">Funcionarios activos</div><div class="kv" id="kpi-func-total">0</div></div>
+        <div class="kpi-card mapfre"><div class="kl">Mapfre</div><div class="kv" id="kpi-func-mapfre">0</div></div>
+        <div class="kpi-card colmena"><div class="kl">Colmena</div><div class="kv" id="kpi-func-colmena">0</div></div>
+        <div class="kpi-card ok"><div class="kl">Promedio / funcionario</div><div class="kv" id="kpi-func-prom">0</div></div>
+      </div>
+      <div class="charts-grid2">
+        <div class="chart-card">
+          <h3><i class="ti ti-trophy"></i> Top 15 funcionarios</h3>
+          <p class="sub">Ranking por número de visitas</p>
+          <div class="chart-wrap tall"><canvas id="chart-top-func-pg"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <h3><i class="ti ti-chart-donut-3"></i> Distribución de modalidad por funcionario</h3>
+          <p class="sub">Presencial vs Virtual (Top 10)</p>
+          <div class="chart-wrap tall"><canvas id="chart-modal-func-pg"></canvas></div>
+        </div>
+      </div>
+    </div>
+    <div class="page" id="page-regionales">
+      <div class="dash-top">
+        <div>
+          <h1><i class="ti ti-map"></i> Análisis Regional</h1>
+          <p>Concentración geográfica jerárquica</p>
+        </div>
+      </div>
+      <div class="charts-grid2">
+        <div class="chart-card">
+          <h3><i class="ti ti-map-pin"></i> Visitas por Regional</h3>
+          <p class="sub">Distribución por gerencia regional</p>
+          <div class="chart-wrap tall"><canvas id="chart-regionales-pg"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <h3><i class="ti ti-map-2"></i> Visitas por Zonal</h3>
+          <p class="sub">Distribución por gerencia zonal</p>
+          <div class="chart-wrap tall"><canvas id="chart-zonales-pg"></canvas></div>
+        </div>
+      </div>
+    </div>
+    <div class="page" id="page-tendencias">
+      <div class="dash-top">
+        <div>
+          <h1><i class="ti ti-trending-up"></i> Tendencias</h1>
+          <p>Evolución histórica de visitas</p>
+        </div>
+      </div>
+      <div class="chart-card" style="margin-bottom:20px">
+        <h3><i class="ti ti-chart-line"></i> Tendencia de visitas</h3>
+        <p class="sub">Evolución diaria</p>
+        <div class="chart-wrap tall"><canvas id="chart-tendencia-pg"></canvas></div>
+      </div>
+      <div class="charts-grid">
+        <div class="chart-card">
+          <h3><i class="ti ti-chart-bar"></i> Visitas por mes</h3>
+          <p class="sub">Agregado mensual</p>
+          <div class="chart-wrap"><canvas id="chart-mensual-pg"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <h3><i class="ti ti-chart-donut"></i> Comparativo anual</h3>
+          <p class="sub">2025 vs 2026</p>
+          <div class="chart-wrap"><canvas id="chart-anual-pg"></canvas></div>
+        </div>
+      </div>
+    </div>
+    <div class="status-line">
+      <span class="live-dot"></span>
+      <span id="status-line">Sincronizado con Supabase</span>
+    </div>
+  </div>
+</div>
+<script>
+const SUPABASE_URL = "https://lzsluzquoksiheyxcior.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_frToEsE65PivRXN83cIckw_S0snLVgv";
+const COLOR_MAPFRE = '#185FA5';
+const COLOR_COLMENA = '#EF9F27';
+const PAGE_SIZE = 10;
+let VISITAS = [];
+let VISITAS_ANTERIOR = [];
+let VISITAS_FILTRADAS = [];
+let FILAS_ACTUALES = [];
+let paginaActual = 1;
+let sortCampo = 'fecha';
+let sortDir = 'desc';
+let charts = {};
+let fpDesde = null, fpHasta = null;
+let liveMode = false;
+let liveInterval = null;
+let quickFilterActivo = 'todos';
+let primeraCarga = true;
+let FUNCIONARIOS_ADMIN = [];
+let ACCESS_TOKEN = null;
+let currentPage = 'resumen';
+let config = { animaciones: true, sonidoToasts: false, liveIntervalSec: 10, compacto: false };
+let funcionTabActivo = 'todos';
+let activeFilters = [];
+
+const $ = id => document.getElementById(id);
+const cargarConfig = () => { try { config = { ...config, ...JSON.parse(localStorage.getItem('rv_config') || '{}') }; } catch(e){} };
+const guardarConfig = () => localStorage.setItem('rv_config', JSON.stringify(config));
+const aplicarAnimaciones = () => document.body.classList.toggle('no-animations', !config.animaciones);
+
+function setTheme(t){
+  document.body.setAttribute('data-theme', t);
+  localStorage.setItem('rv_theme', t);
+  if(!$('dash-wrap').classList.contains('hidden')) renderCharts();
+  showToast(`Tema ${t==='dark'?'oscuro':'claro'} activado`,'info');
+}
+
+(function initTheme(){
+  if (localStorage.getItem('rv_theme') === 'dark') document.body.setAttribute('data-theme', 'dark');
+  cargarConfig();
+  aplicarAnimaciones();
+})();
+
+function toggleSidebar(){
+  const sb = $('sidebar');
+  const main = $('main');
+  sb.classList.toggle('collapsed');
+  main.classList.toggle('expanded');
+  localStorage.setItem('rv_sidebar_collapsed', sb.classList.contains('collapsed'));
+  setTimeout(() => Object.values(charts).forEach(c => c && c.resize && c.resize()), 350);
+}
+
+function toggleMobileSidebar(){
+  $('sidebar').classList.toggle('mobile-open');
+  $('mobile-overlay').classList.toggle('show');
+}
+
+function cerrarSidebarClick(){
+  const sb = $('sidebar');
+  if (sb.classList.contains('mobile-open')) {
+    sb.classList.remove('mobile-open');
+    $('mobile-overlay').classList.remove('show');
+  } else if (!sb.classList.contains('collapsed') && window.innerWidth > 900) {
+    toggleSidebar();
+  }
+}
+
+(function initSidebar(){
+  if(localStorage.getItem('rv_sidebar_collapsed') === 'true'){
+    $('sidebar').classList.add('collapsed');
+    $('main').classList.add('expanded');
+  }
+  document.addEventListener('click', e => {
+    const sb = $('sidebar');
+    if (sb.classList.contains('collapsed')) return;
+    if (window.innerWidth <= 900) return;
+    if (sb.contains(e.target)) return;
+    if (e.target.closest('.modal-overlay.show')) return;
+    if (e.target.closest('.toast-stack')) return;
+    if (e.target.closest('.mobile-toggle')) return;
+    cerrarSidebarClick();
+  });
+})();
+
+function cambiarPagina(page){
+  currentPage = page;
+  document.querySelectorAll('.sidebar-item[data-page]').forEach(el => {
+    el.classList.toggle('active', el.dataset.page === page);
+  });
+  document.querySelectorAll('.page').forEach(el => {
+    el.classList.toggle('active', el.id === 'page-'+page);
+  });
+  $('sidebar').classList.remove('mobile-open');
+  $('mobile-overlay').classList.remove('show');
+  setTimeout(() => renderPageCharts(page), 100);
+}
+
+function showToast(msg, type='info'){
+  const stack = $('toast-stack');
+  const el = document.createElement('div');
+  el.className = 'toast' + (type ? ' ' + type : '');
+  const iconMap = {success:'ti-check', error:'ti-alert-circle', info:'ti-info-circle'};
+  el.innerHTML = `<i class="ti ${iconMap[type]||'ti-info-circle'}"></i><span>${msg}</span>`;
+  stack.appendChild(el);
+  requestAnimationFrame(() => el.classList.add('show'));
+  setTimeout(() => { el.classList.remove('show'); setTimeout(()=>el.remove(), 300); }, 3200);
+}
+
+function togglePassword(){
+  const inp = $('gate-pass');
+  const eye = $('pass-eye');
+  const mostrando = inp.type === 'text';
+  inp.type = mostrando ? 'password' : 'text';
+  eye.className = 'ti pass-eye ' + (mostrando ? 'ti-eye' : 'ti-eye-off');
+}
+
+async function verificarClave(){
+  const usuario = $('gate-user').value.trim();
+  const pass = $('gate-pass').value;
+  if (!usuario || !pass) { $('err-gate').classList.add('show'); return; }
+  const btn = $('btn-entrar');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Verificando...';
+  try {
+    const respEmail = await fetch(SUPABASE_URL + '/rest/v1/rpc/email_por_username', {
+      method: 'POST',
+      headers: { apikey: SUPABASE_ANON_KEY, Authorization: 'Bearer ' + SUPABASE_ANON_KEY, 'Content-Type':'application/json' },
+      body: JSON.stringify({ p_username: usuario })
+    });
+    const email = await respEmail.json();
+    if (!email) throw new Error('credenciales');
+    const respLogin = await fetch(SUPABASE_URL + '/auth/v1/token?grant_type=password', {
+      method: 'POST',
+      headers: { apikey: SUPABASE_ANON_KEY, 'Content-Type':'application/json' },
+      body: JSON.stringify({ email, password: pass })
+    });
+    if (!respLogin.ok) throw new Error('credenciales');
+    const data = await respLogin.json();
+    ACCESS_TOKEN = data.access_token;
+    sessionStorage.setItem('rv_admin_token', ACCESS_TOKEN);
+    sessionStorage.setItem('rv_admin_refresh', data.refresh_token);
+    $('err-gate').classList.remove('show');
+    mostrarDashboard();
+    showToast('Bienvenido al panel administrativo', 'success');
+  } catch (e) {
+    $('err-gate').classList.add('show');
+    $('gate-pass').value = '';
+    $('gate-pass').focus();
+    const card = $('gate-card');
+    card.classList.remove('shake'); void card.offsetWidth; card.classList.add('shake');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="ti ti-key"></i> Entrar al panel';
+  }
+}
+
+$('gate-pass').addEventListener('keydown', e => { if(e.key === 'Enter') verificarClave(); });
+$('gate-user').addEventListener('keydown', e => { if(e.key === 'Enter') verificarClave(); });
+
+function mostrarDashboard(){
+  document.body.classList.remove('login-active');
+  $('gate-wrap').classList.add('hidden');
+  $('dash-wrap').classList.remove('hidden');
+  cargarTodo();
+}
+
+function cerrarSesion(){
+  if(!confirm('¿Cerrar sesión y salir del panel?')) return;
+  sessionStorage.removeItem('rv_admin_token');
+  sessionStorage.removeItem('rv_admin_refresh');
+  ACCESS_TOKEN = null;
+  document.body.classList.add('login-active');
+  $('dash-wrap').classList.add('hidden');
+  $('gate-wrap').classList.remove('hidden');
+  $('gate-user').value = '';
+  $('gate-pass').value = '';
+  showToast('Sesión cerrada','info');
+}
+
+function abrirConfig(){
+  const body = $('config-body');
+  body.innerHTML = `
+    <div class="config-section">
+      <h5><i class="ti ti-palette"></i> Interfaz</h5>
+      <div class="config-row">
+        <div>
+          <div class="config-row-label">Animaciones</div>
+          <div class="config-row-desc">Activar animaciones en todo el panel</div>
+        </div>
+        <label class="switch"><input type="checkbox" ${config.animaciones?'checked':''} onchange="config.animaciones=this.checked;aplicarAnimaciones();guardarConfig();showToast('Preferencia guardada','info')"><span class="switch-slider"></span></label>
+      </div>
+      <div class="config-row">
+        <div>
+          <div class="config-row-label">Modo compacto</div>
+          <div class="config-row-desc">Reduce espaciados y tamaños</div>
+        </div>
+        <label class="switch"><input type="checkbox" ${config.compacto?'checked':''} onchange="config.compacto=this.checked;guardarConfig();showToast('Reinicia para aplicar','info')"><span class="switch-slider"></span></label>
+      </div>
+    </div>
+    <div class="config-section">
+      <h5><i class="ti ti-broadcast"></i> Modo en vivo</h5>
+      <div class="config-row">
+        <div>
+          <div class="config-row-label">Intervalo de actualización (segundos)</div>
+          <div class="config-row-desc">Rango: 5 a 300 segundos</div>
+        </div>
+        <input type="number" class="config-input" value="${config.liveIntervalSec}" min="5" max="300" onchange="config.liveIntervalSec=Math.max(5,Math.min(300,parseInt(this.value)||10));this.value=config.liveIntervalSec;guardarConfig();if(liveMode){clearInterval(liveInterval);liveInterval=setInterval(()=>cargarTodo(true),config.liveIntervalSec*1000);}showToast('Intervalo actualizado a '+config.liveIntervalSec+'s','info')">
+      </div>
+    </div>
+    <div class="config-section">
+      <h5><i class="ti ti-bell"></i> Notificaciones</h5>
+      <div class="config-row">
+        <div>
+          <div class="config-row-label">Sonido de toasts</div>
+          <div class="config-row-desc">Reproducir sonido al mostrar mensajes</div>
+        </div>
+        <label class="switch"><input type="checkbox" ${config.sonidoToasts?'checked':''} onchange="config.sonidoToasts=this.checked;guardarConfig();showToast('Preferencia guardada','info')"><span class="switch-slider"></span></label>
+      </div>
+    </div>
+    <div class="config-section">
+      <h5><i class="ti ti-database"></i> Datos y caché</h5>
+      <div class="config-row">
+        <div>
+          <div class="config-row-label">Exportar configuración</div>
+          <div class="config-row-desc">Descarga tus preferencias como JSON</div>
+        </div>
+        <button class="btn ghost small" onclick="exportarConfig()"><i class="ti ti-download"></i> Exportar</button>
+      </div>
+      <div class="config-row">
+        <div>
+          <div class="config-row-label">Limpiar filtros guardados</div>
+          <div class="config-row-desc">Restablece todos los filtros del sidebar</div>
+        </div>
+        <button class="btn ghost small" onclick="limpiarFiltros();cerrarConfig()"><i class="ti ti-eraser"></i> Limpiar</button>
+      </div>
+      <div class="config-row">
+        <div>
+          <div class="config-row-label">Cerrar sesión</div>
+          <div class="config-row-desc">Salir del panel y volver al login</div>
+        </div>
+        <button class="config-danger" onclick="cerrarConfig();cerrarSesion()"><i class="ti ti-logout"></i> Cerrar sesión</button>
+      </div>
+    </div>
+  `;
+  $('modal-config-overlay').classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+
+function cerrarConfig(){
+  $('modal-config-overlay').classList.remove('show');
+  document.body.style.overflow = '';
+}
+
+function exportarConfig(){
+  const data = { config, tema: document.body.getAttribute('data-theme'), sidebarColapsado: $('sidebar').classList.contains('collapsed') };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type:'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `panel_config_${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('Configuración exportada', 'success');
+}
+
+async function abrirFuncionarios(){
+  $('modal-func-overlay').classList.add('show');
+  document.body.style.overflow = 'hidden';
+  await cargarFuncionariosAdmin();
+}
+
+function cerrarFuncionarios(){
+  $('modal-func-overlay').classList.remove('show');
+  document.body.style.overflow = '';
+}
+
+function cerrarAgregarFuncionario(){
+  $('modal-add-func-overlay').classList.remove('show');
+  $('nf-nombre').value = '';
+}
+
+function abrirAgregarFuncionario(){
+  const sel = $('nf-aseg');
+  const aseguradoras = [...new Set(FUNCIONARIOS_ADMIN.map(f => f.aseguradora).filter(Boolean))];
+  if (!aseguradoras.includes('Mapfre')) aseguradoras.unshift('Mapfre');
+  if (!aseguradoras.includes('Colmena')) aseguradoras.unshift('Colmena');
+  sel.innerHTML = aseguradoras.map(a => `<option value="${a}">${a}</option>`).join('');
+  $('modal-add-func-overlay').classList.add('show');
+  setTimeout(() => $('nf-nombre').focus(), 150);
+}
+
+async function cargarFuncionariosAdmin(){
+  const cont = $('lista-funcionarios');
+  cont.innerHTML = '<div class="resumen-empty">Cargando funcionarios...</div>';
+  try{
+    const resp = await fetch(SUPABASE_URL + '/rest/v1/rpc/admin_listar_funcionarios', {
+      method:'POST',
+      headers:{ apikey:SUPABASE_ANON_KEY, Authorization:'Bearer '+SUPABASE_ANON_KEY, 'Content-Type':'application/json' },
+      body: JSON.stringify({})
+    });
+    FUNCIONARIOS_ADMIN = await resp.json();
+    renderFuncionariosAdmin();
+  }catch(e){
+    cont.innerHTML = '<div class="resumen-empty">Error al cargar funcionarios</div>';
+  }
+}
+
+function renderFuncionariosAdmin(){
+  const total = FUNCIONARIOS_ADMIN.length;
+  const activas = FUNCIONARIOS_ADMIN.filter(f => f.activo).length;
+  const porAseg = {};
+  FUNCIONARIOS_ADMIN.forEach(f => {
+    const k = f.aseguradora || 'Sin dato';
+    if (!porAseg[k]) porAseg[k] = { total: 0, activos: 0 };
+    porAseg[k].total++;
+    if (f.activo) porAseg[k].activos++;
+  });
+  $('func-stats').innerHTML = `
+    <div class="func-stat"><div class="v">${total}</div><div class="l">Total</div></div>
+    <div class="func-stat"><div class="v">${activas}</div><div class="l">Activos</div></div>
+    <div class="func-stat"><div class="v">${total - activas}</div><div class="l">Inactivos</div></div>
+  `;
+  let tabsHtml = `
+    <button class="func-tab ${funcionTabActivo==='todos'?'activo':''}" onclick="setFuncTab('todos')">
+      <i class="ti ti-users"></i> Todos <span class="count">${total}</span>
+    </button>
+  `;
+  Object.keys(porAseg).sort().forEach(aseg => {
+    const clase = aseg.toLowerCase() === 'mapfre' ? 'mapfre' : aseg.toLowerCase() === 'colmena' ? 'colmena' : '';
+    const icon = aseg === 'Mapfre' ? 'ti-shield' : aseg === 'Colmena' ? 'ti-shield-check' : 'ti-shield-star';
+    tabsHtml += `
+      <button class="func-tab ${clase} ${funcionTabActivo===aseg?'activo':''}" onclick="setFuncTab('${aseg.replace(/'/g,"\\'")}')">
+        <i class="ti ${icon}"></i> ${aseg} <span class="count">${porAseg[aseg].total}</span>
+      </button>
+    `;
+  });
+  tabsHtml += `<button class="func-tab-add" onclick="abrirAgregarFuncionario()" title="Agregar funcionario"><i class="ti ti-plus"></i></button>`;
+  $('func-tabs').innerHTML = tabsHtml;
+  const filtrados = funcionTabActivo === 'todos' ? FUNCIONARIOS_ADMIN : FUNCIONARIOS_ADMIN.filter(f => f.aseguradora === funcionTabActivo);
+  const cont = $('lista-funcionarios');
+  if(!filtrados.length){
+    cont.innerHTML = `<div class="resumen-empty">Sin funcionarios${funcionTabActivo!=='todos'?' en '+funcionTabActivo:''}</div>`;
+    return;
+  }
+  cont.innerHTML = filtrados.map(f => {
+    const iniciales = (f.nombre || '??').split(' ').slice(0,2).map(s => (s||'').charAt(0)).join('').toUpperCase();
+    const clase = f.aseguradora === 'Colmena' ? 'colmena' : '';
+    const colorBadge = f.aseguradora === 'Mapfre' ? 'background:var(--brand-l);color:var(--brand-d)' : 'background:var(--colmena-l);color:var(--colmena-d)';
+    return `
+      <div class="func-list-item">
+        <div class="func-avatar ${clase}">${iniciales}</div>
+        <div style="flex:1;min-width:0">
+          <div class="func-list-name ${f.activo?'':'inactivo'}">${f.nombre}</div>
+          <div style="display:flex;align-items:center;gap:6px;margin-top:3px">
+            <span class="func-list-aseg" style="${colorBadge}">${f.aseguradora||'?'}</span>
+            ${f.activo?'<span style="font-size:10px;color:var(--ok);font-weight:700">● Activo</span>':'<span style="font-size:10px;color:var(--t3);font-weight:700">● Inactivo</span>'}
+          </div>
+        </div>
+        <button class="btn ghost small" onclick="toggleActivoFuncionario('${f.id}', ${!f.activo})" title="${f.activo?'Desactivar':'Activar'}">
+          <i class="ti ti-${f.activo?'eye-off':'eye'}"></i>
+        </button>
+        <button class="btn ghost small" onclick="eliminarFuncionario('${f.id}')" title="Eliminar" style="color:var(--err)">
+          <i class="ti ti-trash"></i>
+        </button>
+      </div>
+    `;
+  }).join('');
+}
+
+function setFuncTab(tab){
+  funcionTabActivo = tab;
+  renderFuncionariosAdmin();
+}
+
+async function crearFuncionario(){
+  const nombre = $('nf-nombre').value.trim().toUpperCase();
+  const aseg = $('nf-aseg').value;
+  if(!nombre){ showToast('Escribe un nombre','error'); $('nf-nombre').focus(); return; }
+  try {
+    await fetch(SUPABASE_URL + '/rest/v1/rpc/admin_crear_funcionario', {
+      method:'POST',
+      headers:{ apikey:SUPABASE_ANON_KEY, Authorization:'Bearer '+SUPABASE_ANON_KEY, 'Content-Type':'application/json' },
+      body: JSON.stringify({ p_nombre: nombre, p_aseguradora: aseg })
+    });
+    cerrarAgregarFuncionario();
+    showToast('Funcionario creado','success');
+    cargarFuncionariosAdmin();
+  } catch(e){ showToast('Error al crear','error'); }
+}
+
+async function toggleActivoFuncionario(id, nuevoEstado){
+  const f = FUNCIONARIOS_ADMIN.find(x => x.id === id);
+  if(!f) return;
+  await fetch(SUPABASE_URL + '/rest/v1/rpc/admin_editar_funcionario', {
+    method:'POST',
+    headers:{ apikey:SUPABASE_ANON_KEY, Authorization:'Bearer '+SUPABASE_ANON_KEY, 'Content-Type':'application/json' },
+    body: JSON.stringify({ p_id: id, p_nombre: f.nombre, p_aseguradora: f.aseguradora, p_activo: nuevoEstado })
+  });
+  showToast(nuevoEstado ? 'Funcionario activado' : 'Funcionario desactivado', 'success');
+  cargarFuncionariosAdmin();
+}
+
+async function eliminarFuncionario(id){
+  if(!confirm('¿Eliminar este funcionario definitivamente?')) return;
+  await fetch(SUPABASE_URL + '/rest/v1/rpc/admin_eliminar_funcionario', {
+    method:'POST',
+    headers:{ apikey:SUPABASE_ANON_KEY, Authorization:'Bearer '+SUPABASE_ANON_KEY, 'Content-Type':'application/json' },
+    body: JSON.stringify({ p_id: id })
+  });
+  showToast('Funcionario eliminado','success');
+  cargarFuncionariosAdmin();
+}
+
+async function fetchTodasVisitas(){
+  const LIMIT = 1000;
+  let offset = 0;
+  let todas = [];
+  while (true) {
+    const url = `${SUPABASE_URL}/rest/v1/visitas?select=*&order=fecha.desc,hora_registro.desc&limit=${LIMIT}&offset=${offset}`;
+    const resp = await fetch(url, { headers: { apikey: SUPABASE_ANON_KEY, Authorization: 'Bearer ' + SUPABASE_ANON_KEY } });
+    if (!resp.ok) throw new Error('Error ' + resp.status);
+    const rows = await resp.json();
+    todas = todas.concat(rows);
+    if (rows.length < LIMIT) break;
+    offset += LIMIT;
+  }
+  return todas;
+}
+
+async function cargarTodo(silent=false){
+  if (!silent) $('status-line').textContent = 'Consultando Supabase...';
+  try {
+    VISITAS_ANTERIOR = [...VISITAS];
+    VISITAS = await fetchTodasVisitas();
+    poblarFiltros();
+    aplicarFiltros();
+    const hora = new Date().toLocaleTimeString('es-CO', {hour:'2-digit', minute:'2-digit'});
+    $('status-line').textContent = `Sincronizado · ${hora}`;
+    if (!silent && !primeraCarga && VISITAS.length > VISITAS_ANTERIOR.length) {
+      const nuevas = VISITAS.length - VISITAS_ANTERIOR.length;
+      showToast(`${nuevas} nueva${nuevas>1?'s':''}`, 'success');
+    }
+    primeraCarga = false;
+  } catch (err) {
+    $('status-line').textContent = 'Error: ' + err.message;
+    showToast('Error al sincronizar', 'error');
+  }
+}
+
+function toggleLiveMode(){
+  liveMode = !liveMode;
+  const btn = $('sb-live');
+  if (liveMode) {
+    btn.classList.add('active');
+    btn.style.background = 'var(--grad-ok)';
+    btn.style.color = '#fff';
+    liveInterval = setInterval(() => cargarTodo(true), config.liveIntervalSec * 1000);
+    showToast(`Modo en vivo (${config.liveIntervalSec}s)`,'info');
+  } else {
+    btn.classList.remove('active');
+    btn.style.background = '';
+    btn.style.color = '';
+    clearInterval(liveInterval);
+    showToast('Modo en vivo desactivado','info');
+  }
+}
+
+function poblarFiltros(){
+  const funcs = [...new Set(VISITAS.map(r => r.funcionario).filter(Boolean))].sort();
+  const regionales = [...new Set(VISITAS.map(r => r.gerencia_regional).filter(Boolean))].sort();
+  $('fl-func').innerHTML = '<option value="">Todos</option>' + funcs.map(f => `<option>${f}</option>`).join('');
+  $('fl-regional').innerHTML = '<option value="">Todas</option>' + regionales.map(r => `<option>${r}</option>`).join('');
+  actualizarZonales();
+  if (!fpDesde) {
+    fpDesde = flatpickr('#fl-desde', { dateFormat: 'Y-m-d', locale: 'es', allowInput: true, onChange: aplicarFiltros });
+    fpHasta = flatpickr('#fl-hasta', { dateFormat: 'Y-m-d', locale: 'es', allowInput: true, onChange: aplicarFiltros });
+  }
+}
+
+function actualizarZonales(){
+  const regional = $('fl-regional').value;
+  const pool = regional ? VISITAS.filter(r => r.gerencia_regional === regional) : VISITAS;
+  const zonales = [...new Set(pool.map(r => r.gerencia_zonal).filter(Boolean))].sort();
+  $('fl-zonal').innerHTML = '<option value="">Todas</option>' + zonales.map(z => `<option>${z}</option>`).join('');
+}
+
+$('fl-regional').addEventListener('change', () => { actualizarZonales(); aplicarFiltros(); });
+
+function quickFilter(tipo){
+  quickFilterActivo = tipo;
+  document.querySelectorAll('.sf-quick-btn').forEach(b => b.classList.toggle('activo', b.dataset.qf === tipo));
+  const hoy = new Date();
+  const fmt = d => d.toISOString().slice(0,10);
+  if (tipo === 'todos') {
+    $('fl-desde').value = ''; $('fl-hasta').value = '';
+    if (fpDesde) fpDesde.clear(); if (fpHasta) fpHasta.clear();
+  } else if (tipo === 'hoy') {
+    $('fl-desde').value = fmt(hoy); $('fl-hasta').value = fmt(hoy);
+    if (fpDesde) fpDesde.setDate(hoy); if (fpHasta) fpHasta.setDate(hoy);
+  } else if (tipo === 'ayer') {
+    const ayer = new Date(hoy); ayer.setDate(ayer.getDate()-1);
+    const f = fmt(ayer);
+    $('fl-desde').value = f; $('fl-hasta').value = f;
+    if (fpDesde) fpDesde.setDate(ayer); if (fpHasta) fpHasta.setDate(ayer);
+  } else if (tipo === 'semana') {
+    const inicio = new Date(hoy);
+    inicio.setDate(hoy.getDate() - (hoy.getDay() || 7) + 1);
+    $('fl-desde').value = fmt(inicio); $('fl-hasta').value = fmt(hoy);
+    if (fpDesde) fpDesde.setDate(inicio); if (fpHasta) fpHasta.setDate(hoy);
+  } else if (tipo === 'mes') {
+    const inicio = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
+    $('fl-desde').value = fmt(inicio); $('fl-hasta').value = fmt(hoy);
+    if (fpDesde) fpDesde.setDate(inicio); if (fpHasta) fpHasta.setDate(hoy);
+  }
+  aplicarFiltros();
+}
+
+function aplicarFiltros(){
+  const aseg = $('fl-aseg').value;
+  const func = $('fl-func').value;
+  const regional = $('fl-regional').value;
+  const zonal = $('fl-zonal').value;
+  const modal = $('fl-modal').value;
+  const desde = $('fl-desde').value;
+  const hasta = $('fl-hasta').value;
+  VISITAS_FILTRADAS = VISITAS.filter(r => {
+    if (aseg && r.aseguradora !== aseg) return false;
+    if (func && r.funcionario !== func) return false;
+    if (regional && r.gerencia_regional !== regional) return false;
+    if (zonal && r.gerencia_zonal !== zonal) return false;
+    if (modal && r.modalidad !== modal) return false;
+    if (desde && r.fecha < desde) return false;
+    if (hasta && r.fecha > hasta) return false;
+    return true;
+  });
+  paginaActual = 1;
+  renderActiveFilters();
+  renderAll();
+}
+
+function renderActiveFilters(){
+  const chips = [];
+  const mapeo = [
+    {id:'fl-aseg', label:'Aseg', clear:null},
+    {id:'fl-func', label:'Func', clear:null},
+    {id:'fl-regional', label:'Regional', clear:()=>{$('fl-regional').value='';actualizarZonales();aplicarFiltros()}},
+    {id:'fl-zonal', label:'Zonal', clear:null},
+    {id:'fl-modal', label:'Modal', clear:null},
+  ];
+  mapeo.forEach(m => {
+    const val = $(m.id).value;
+    if (val) chips.push({label:`${m.label}: ${val}`, clear: m.clear || (()=>{$(m.id).value='';aplicarFiltros()})});
+  });
+  if ($('fl-desde').value) chips.push({label:`Desde: ${$('fl-desde').value}`, clear:()=>{$('fl-desde').value='';if(fpDesde)fpDesde.clear();aplicarFiltros()}});
+  if ($('fl-hasta').value) chips.push({label:`Hasta: ${$('fl-hasta').value}`, clear:()=>{$('fl-hasta').value='';if(fpHasta)fpHasta.clear();aplicarFiltros()}});
+  const container = $('active-filters');
+  if (chips.length === 0) { container.innerHTML = ''; return; }
+  activeFilters = chips.map(c => c.clear);
+  container.innerHTML = chips.map((c, i) =>
+    `<span class="af-chip">${c.label} <button onclick="event.stopPropagation();activeFilters[${i}]()">×</button></span>`
+  ).join('') + `<button class="af-clear" onclick="limpiarFiltros()"><i class="ti ti-x"></i> Limpiar</button>`;
+}
+
+function limpiarFiltros(){
+  ['fl-aseg','fl-func','fl-regional','fl-zonal','fl-modal'].forEach(id => $(id).value = '');
+  $('fl-desde').value = ''; $('fl-hasta').value = '';
+  if (fpDesde) fpDesde.clear(); if (fpHasta) fpHasta.clear();
+  actualizarZonales();
+  quickFilter('todos');
+  showToast('Filtros restablecidos','info');
+}
+
+function contarPor(arr, campo){
+  const mapa = {};
+  arr.forEach(r => { const k = r[campo] || 'Sin dato'; mapa[k] = (mapa[k]||0) + 1; });
+  return mapa;
+}
+
+function animarNumero(el, valor){
+  if(!el) return;
+  const start = parseFloat(el.dataset.val || el.textContent) || 0;
+  const end = parseFloat(valor);
+  const esDecimal = end % 1 !== 0;
+  const duration = 500;
+  const startTime = performance.now();
+  const step = (now) => {
+    const progress = Math.min((now - startTime) / duration, 1);
+    const eased = 1 - Math.pow(1 - progress, 3);
+    const actual = start + (end - start) * eased;
+    el.textContent = esDecimal ? actual.toFixed(1) : Math.round(actual);
+    if (progress < 1) requestAnimationFrame(step); else el.dataset.val = end;
+  };
+  requestAnimationFrame(step);
+}
+
+function normTxt(s){ return String(s||'').toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g,''); }
+
+function formatFecha(f){
+  if (!f) return '';
+  const d = new Date(f + 'T00:00:00');
+  return d.toLocaleDateString('es-CO', {day:'2-digit', month:'short', year:'numeric'});
+}
+
+function colorTexto(){ return getComputedStyle(document.body).getPropertyValue('--t2').trim(); }
+function colorGrid(){ return getComputedStyle(document.body).getPropertyValue('--bd').trim(); }
+function destruirChart(id){ if (charts[id]) { charts[id].destroy(); delete charts[id]; } }
+
+function renderAll(){
+  renderKPIs();
+  renderTasas();
+  renderResumenExec();
+  renderTabla();
+  renderTablaFuncionarios();
+  renderPageCharts(currentPage);
+}
+
+function renderPageCharts(page){
+  if(page === 'resumen'){
+    renderChartModalidad('chart-modalidad');
+    renderChartAseguradora('chart-aseg');
+  } else if(page === 'operacion'){
+    renderChartOficinas('chart-oficinas-op');
+    renderChartFuncionarios('chart-funcionarios-op');
+    renderChartRegionales('chart-regionales-op');
+    renderChartModalidadOp('chart-modalidad-op');
+  } else if(page === 'visitas'){
+    renderChartTendencia('chart-tendencia-visitas');
+    renderChartRegionales('chart-regionales-visitas');
+    renderChartOficinas('chart-oficinas-visitas');
+  } else if(page === 'funcionarios'){
+    renderTopFuncPg('chart-top-func-pg');
+    renderModalFuncPg('chart-modal-func-pg');
+  } else if(page === 'regionales'){
+    renderChartRegionales('chart-regionales-pg');
+    renderChartZonales('chart-zonales-pg');
+  } else if(page === 'tendencias'){
+    renderChartTendencia('chart-tendencia-pg');
+    renderChartMensual('chart-mensual-pg');
+    renderChartAnual('chart-anual-pg');
+  }
+}
+
+function renderKPIs(){
+  const total = VISITAS_FILTRADAS.length;
+  const mapfre = VISITAS_FILTRADAS.filter(r => r.aseguradora === 'Mapfre').length;
+  const colmena = VISITAS_FILTRADAS.filter(r => r.aseguradora === 'Colmena').length;
+  const dias = new Set(VISITAS_FILTRADAS.map(r => r.fecha)).size || 1;
+  const promedio = parseFloat((total / dias).toFixed(1));
+  animarNumero($('kpi-total'), total);
+  animarNumero($('kpi-mapfre'), mapfre);
+  animarNumero($('kpi-colmena'), colmena);
+  animarNumero($('kpi-promedio'), promedio);
+  const presencial = VISITAS_FILTRADAS.filter(r => r.modalidad === 'Presencial').length;
+  const virtual = VISITAS_FILTRADAS.filter(r => r.modalidad === 'Virtual').length;
+  const regionales = new Set(VISITAS_FILTRADAS.map(r => r.gerencia_regional).filter(Boolean)).size;
+  const zonales = new Set(VISITAS_FILTRADAS.map(r => r.gerencia_zonal).filter(Boolean)).size;
+  animarNumero($('kpi-presencial-op'), presencial);
+  animarNumero($('kpi-virtual-op'), virtual);
+  animarNumero($('kpi-regionales-op'), regionales);
+  animarNumero($('kpi-zonales-op'), zonales);
+  const hora = new Date().toLocaleTimeString('es-CO', {hour:'2-digit', minute:'2-digit'});
+  $('resumen-linea').textContent = `${hora}`;
+  const funcSet = new Set(VISITAS_FILTRADAS.map(r => r.funcionario).filter(Boolean));
+  const funcsMapfre = new Set(VISITAS_FILTRADAS.filter(r => r.aseguradora === 'Mapfre').map(r => r.funcionario).filter(Boolean)).size;
+  const funcsColmena = new Set(VISITAS_FILTRADAS.filter(r => r.aseguradora === 'Colmena').map(r => r.funcionario).filter(Boolean)).size;
+  animarNumero($('kpi-func-total'), funcSet.size);
+  animarNumero($('kpi-func-mapfre'), funcsMapfre);
+  animarNumero($('kpi-func-colmena'), funcsColmena);
+  animarNumero($('kpi-func-prom'), funcSet.size ? parseFloat((total / funcSet.size).toFixed(1)) : 0);
+}
+
+function renderTasas(){
+  renderTasaAseg('mapfre', VISITAS_FILTRADAS.filter(r => r.aseguradora === 'Mapfre'));
+  renderTasaAseg('colmena', VISITAS_FILTRADAS.filter(r => r.aseguradora === 'Colmena'));
+}
+
+function renderTasaAseg(key, arr){
+  const total = arr.length;
+  const pres = arr.filter(r => r.modalidad === 'Presencial').length;
+  const virt = arr.filter(r => r.modalidad === 'Virtual').length;
+  const pctPres = total ? (pres / total) * 100 : 0;
+  const pctVirt = total ? (virt / total) * 100 : 0;
+  $(`tasa-${key}-total`).innerHTML = `${total.toLocaleString('es-CO')} <span class="unit">visitas</span>`;
+  const bar = $(`tasa-${key}-bar`);
+  bar.innerHTML = `<div class="seg-pres" style="width:${pctPres}%"></div><div class="seg-virt" style="width:${pctVirt}%"></div>`;
+  $(`tasa-${key}-mod`).innerHTML = `
+    <div class="tasa-mod-item">
+      <div class="tasa-mod-icon presencial"><i class="ti ti-walk"></i></div>
+      <div style="flex:1">
+        <div class="tasa-mod-label">Presencial</div>
+        <div class="tasa-mod-val">${pres.toLocaleString('es-CO')}</div>
+        <div class="tasa-mod-pct">${pctPres.toFixed(1)}%</div>
+      </div>
+    </div>
+    <div class="tasa-mod-item">
+      <div class="tasa-mod-icon virtual"><i class="ti ti-video"></i></div>
+      <div style="flex:1">
+        <div class="tasa-mod-label">Virtual</div>
+        <div class="tasa-mod-val">${virt.toLocaleString('es-CO')}</div>
+        <div class="tasa-mod-pct">${pctVirt.toFixed(1)}%</div>
+      </div>
+    </div>
+  `;
+  const years = {};
+  arr.forEach(r => {
+    if (!r.fecha || r.fecha.length < 4) return;
+    const year = r.fecha.slice(0, 4);
+    if (!years[year]) years[year] = { total: 0, p: 0, v: 0 };
+    years[year].total++;
+    if (r.modalidad === 'Presencial') years[year].p++;
+    if (r.modalidad === 'Virtual') years[year].v++;
+  });
+  const sortedYears = Object.keys(years).sort();
+  if (!sortedYears.length) {
+    $(`tasa-${key}-years`).innerHTML = '<div class="resumen-empty" style="padding:8px;font-size:11px">Sin datos por año</div>';
+    return;
+  }
+  $(`tasa-${key}-years`).innerHTML = sortedYears.map(y => {
+    const d = years[y];
+    return `
+      <div class="tasa-year">
+        <div class="yl">${y}</div>
+        <div class="yv"><strong>${d.total}</strong> <span class="split">·</span> <span class="p">${d.p}</span><span class="split">/</span><span class="v">${d.v}</span></div>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderResumenExec(){
+  const porFunc = contarPor(VISITAS_FILTRADAS, 'funcionario');
+  const topF = Object.entries(porFunc).sort((a,b)=>b[1]-a[1]).slice(0,3);
+  $('top-funcionarios').innerHTML = topF.length ? topF.map(([n,v],i) => `
+    <div class="resumen-item">
+      <div class="resumen-rank">${i+1}</div>
+      <div class="resumen-item-name">${n}</div>
+      <div class="resumen-item-val">${v} ${v===1?'visita':'visitas'}</div>
+    </div>`).join('') : '<div class="resumen-empty">Sin datos</div>';
+  const porOf = contarPor(VISITAS_FILTRADAS, 'oficina');
+  const topO = Object.entries(porOf).sort((a,b)=>b[1]-a[1]).slice(0,3);
+  $('top-oficinas').innerHTML = topO.length ? topO.map(([n,v],i) => `
+    <div class="resumen-item">
+      <div class="resumen-rank">${i+1}</div>
+      <div class="resumen-item-name">${n}</div>
+      <div class="resumen-item-val">${v}</div>
+    </div>`).join('') : '<div class="resumen-empty">Sin datos de oficinas</div>';
+  const porMes = {};
+  VISITAS_FILTRADAS.forEach(r => {
+    if(!r.fecha) return;
+    const ym = r.fecha.slice(0,7);
+    porMes[ym] = (porMes[ym]||0) + 1;
+  });
+  const topM = Object.entries(porMes).sort((a,b)=>b[1]-a[1]).slice(0,3);
+  const meses = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+  $('top-meses').innerHTML = topM.length ? topM.map(([ym,v],i) => {
+    const [y,m] = ym.split('-');
+    return `<div class="resumen-item"><div class="resumen-rank">${i+1}</div><div class="resumen-item-name">${meses[parseInt(m)-1]} ${y}</div><div class="resumen-item-val">${v} ${v===1?'visita':'visitas'}</div></div>`;
+  }).join('') : '<div class="resumen-empty">Sin datos mensuales</div>';
+}
+
+function renderChartModalidad(canvasId){
+  const presencial = VISITAS_FILTRADAS.filter(r => r.modalidad === 'Presencial').length;
+  const virtual = VISITAS_FILTRADAS.filter(r => r.modalidad === 'Virtual').length;
+  destruirChart(canvasId);
+  const canvas = $(canvasId);
+  if(!canvas) return;
+  charts[canvasId] = new Chart(canvas, {
+    type: 'bar',
+    data: {
+      labels: ['Presencial','Virtual'],
+      datasets: [{
+        label:'Visitas', data: [presencial, virtual],
+        backgroundColor: [COLOR_MAPFRE, COLOR_COLMENA],
+        borderRadius: 8, borderSkipped: false
+      }]
+    },
+    options: {
+      responsive:true, maintainAspectRatio:false,
+      plugins:{
+        legend:{display:false},
+        tooltip:{backgroundColor:'#0f172a', padding:12, callbacks:{ label: (c) => {
+          const total = presencial + virtual || 1;
+          return ` ${c.parsed.y} visitas (${((c.parsed.y/total)*100).toFixed(1)}%)`;
+        }}}
+      },
+      scales:{
+        y:{beginAtZero:true,ticks:{precision:0,font:{size:11},color:colorTexto()},grid:{color:colorGrid()}},
+        x:{grid:{display:false},ticks:{font:{size:12,weight:'600'},color:colorTexto()}}
+      }
+    }
+  });
+}
+
+function renderChartAseguradora(canvasId){
+  const mapfre = VISITAS_FILTRADAS.filter(r => r.aseguradora === 'Mapfre').length;
+  const colmena = VISITAS_FILTRADAS.filter(r => r.aseguradora === 'Colmena').length;
+  destruirChart(canvasId);
+  const canvas = $(canvasId);
+  if(!canvas) return;
+  charts[canvasId] = new Chart(canvas, {
+    type: 'doughnut',
+    data: { labels: ['Mapfre','Colmena'], datasets: [{ data: [mapfre, colmena], backgroundColor: [COLOR_MAPFRE, COLOR_COLMENA], borderWidth: 4, borderColor: getComputedStyle(document.body).getPropertyValue('--bg').trim() || '#fff', hoverOffset: 10 }] },
+    options: {
+      responsive:true, maintainAspectRatio:false, cutout:'65%',
+      plugins:{
+        legend:{position:'bottom', labels:{padding:16,font:{size:12,weight:'600'},usePointStyle:true,color:colorTexto()}},
+        tooltip:{backgroundColor:'#0f172a', padding:12, callbacks:{ label: (c) => ` ${c.label}: ${c.parsed} (${((c.parsed/(mapfre+colmena||1))*100).toFixed(1)}%)` }}
+      }
+    }
+  });
+}
+
+function renderChartOficinas(canvasId){
+  const porOficina = contarPor(VISITAS_FILTRADAS, 'oficina');
+  const top = Object.entries(porOficina).sort((a,b)=>b[1]-a[1]).slice(0,10);
+  destruirChart(canvasId);
+  const canvas = $(canvasId);
+  if(!canvas) return;
+  charts[canvasId] = new Chart(canvas, {
+    type: 'bar',
+    data: {
+      labels: top.map(t => t[0].length > 25 ? t[0].slice(0,22)+'...' : t[0]),
+      datasets: [{
+        label:'Visitas', data: top.map(t => t[1]),
+        backgroundColor: (ctx) => {
+          const g = ctx.chart.ctx.createLinearGradient(0,0,600,0);
+          g.addColorStop(0, COLOR_MAPFRE); g.addColorStop(1, '#4a90d9');
+          return g;
+        },
+        borderRadius: 6, borderSkipped: false
+      }]
+    },
+    options: {
+      indexAxis:'y', responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{display:false}, tooltip:{backgroundColor:'#0f172a', padding:12, callbacks:{ label: (c) => ` ${c.parsed.x} visitas` }} },
+      scales:{
+        x:{beginAtZero:true,ticks:{precision:0,font:{size:11},color:colorTexto()},grid:{color:colorGrid()}},
+        y:{grid:{display:false},ticks:{font:{size:11,weight:'600'},color:colorTexto()}}
+      }
+    }
+  });
+}
+
+function renderChartFuncionarios(canvasId){
+  const porFunc = contarPor(VISITAS_FILTRADAS, 'funcionario');
+  const top = Object.entries(porFunc).sort((a,b)=>b[1]-a[1]).slice(0,12);
+  destruirChart(canvasId);
+  const canvas = $(canvasId);
+  if(!canvas) return;
+  charts[canvasId] = new Chart(canvas, {
+    type: 'bar',
+    data: {
+      labels: top.map(t => t[0].length > 25 ? t[0].slice(0,22)+'...' : t[0]),
+      datasets: [{
+        label:'Visitas', data: top.map(t => t[1]),
+        backgroundColor: (ctx) => {
+          const g = ctx.chart.ctx.createLinearGradient(0,0,600,0);
+          g.addColorStop(0, COLOR_COLMENA); g.addColorStop(1, '#fbbf24');
+          return g;
+        },
+        borderRadius: 6, borderSkipped: false
+      }]
+    },
+    options: {
+      indexAxis:'y', responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{display:false}, tooltip:{backgroundColor:'#0f172a', padding:12, callbacks:{ label: (c) => ` ${c.parsed.x} visitas` }} },
+      scales:{
+        x:{beginAtZero:true,ticks:{precision:0,font:{size:11},color:colorTexto()},grid:{color:colorGrid()}},
+        y:{grid:{display:false},ticks:{font:{size:11,weight:'600'},color:colorTexto()}}
+      }
+    }
+  });
+}
+
+function renderChartRegionales(canvasId){
+  const porReg = contarPor(VISITAS_FILTRADAS, 'gerencia_regional');
+  const top = Object.entries(porReg).sort((a,b)=>b[1]-a[1]).slice(0,10);
+  destruirChart(canvasId);
+  const canvas = $(canvasId);
+  if(!canvas) return;
+  charts[canvasId] = new Chart(canvas, {
+    type: 'bar',
+    data: {
+      labels: top.map(t => t[0]),
+      datasets: [{ label:'Visitas', data: top.map(t => t[1]), backgroundColor: COLOR_MAPFRE, borderRadius: 6, borderSkipped: false }]
+    },
+    options: {
+      indexAxis:'y', responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{display:false}, tooltip:{backgroundColor:'#0f172a', padding:12, callbacks:{ label: (c) => ` ${c.parsed.x} visitas` }} },
+      scales:{
+        x:{beginAtZero:true,ticks:{precision:0,font:{size:11},color:colorTexto()},grid:{color:colorGrid()}},
+        y:{grid:{display:false},ticks:{font:{size:11,weight:'600'},color:colorTexto()}}
+      }
+    }
+  });
+}
+
+function renderChartZonales(canvasId){
+  const porZ = contarPor(VISITAS_FILTRADAS, 'gerencia_zonal');
+  const top = Object.entries(porZ).sort((a,b)=>b[1]-a[1]).slice(0,10);
+  destruirChart(canvasId);
+  const canvas = $(canvasId);
+  if(!canvas) return;
+  charts[canvasId] = new Chart(canvas, {
+    type: 'bar',
+    data: {
+      labels: top.map(t => t[0]),
+      datasets: [{ label:'Visitas', data: top.map(t => t[1]), backgroundColor: COLOR_COLMENA, borderRadius: 6, borderSkipped: false }]
+    },
+    options: {
+      indexAxis:'y', responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{display:false}, tooltip:{backgroundColor:'#0f172a', padding:12, callbacks:{ label: (c) => ` ${c.parsed.x} visitas` }} },
+      scales:{
+        x:{beginAtZero:true,ticks:{precision:0,font:{size:11},color:colorTexto()},grid:{color:colorGrid()}},
+        y:{grid:{display:false},ticks:{font:{size:11,weight:'600'},color:colorTexto()}}
+      }
+    }
+  });
+}
+
+function renderChartModalidadOp(canvasId){
+  const presencial = VISITAS_FILTRADAS.filter(r => r.modalidad === 'Presencial').length;
+  const virtual = VISITAS_FILTRADAS.filter(r => r.modalidad === 'Virtual').length;
+  destruirChart(canvasId);
+  const canvas = $(canvasId);
+  if(!canvas) return;
+  charts[canvasId] = new Chart(canvas, {
+    type: 'pie',
+    data: { labels: ['Presencial','Virtual'], datasets: [{ data: [presencial, virtual], backgroundColor: [COLOR_MAPFRE, COLOR_COLMENA], borderWidth: 3, borderColor: getComputedStyle(document.body).getPropertyValue('--bg').trim() || '#fff' }] },
+    options: {
+      responsive:true, maintainAspectRatio:false,
+      plugins:{
+        legend:{position:'bottom', labels:{padding:16,font:{size:12,weight:'600'},usePointStyle:true,color:colorTexto()}},
+        tooltip:{backgroundColor:'#0f172a', padding:12}
+      }
+    }
+  });
+}
+
+function renderChartTendencia(canvasId){
+  const porFecha = contarPor(VISITAS_FILTRADAS, 'fecha');
+  const fechas = Object.keys(porFecha).sort();
+  destruirChart(canvasId);
+  const canvas = $(canvasId);
+  if(!canvas) return;
+  charts[canvasId] = new Chart(canvas, {
+    type: 'line',
+    data: {
+      labels: fechas.map(f => { const d = new Date(f + 'T00:00:00'); return d.toLocaleDateString('es-CO', {day:'2-digit', month:'short'}); }),
+      datasets: [{
+        label: 'Visitas', data: fechas.map(f => porFecha[f]),
+        borderColor: COLOR_MAPFRE,
+        backgroundColor: (ctx) => {
+          const g = ctx.chart.ctx.createLinearGradient(0,0,0,280);
+          g.addColorStop(0, 'rgba(24,95,165,.3)'); g.addColorStop(1, 'rgba(24,95,165,0)');
+          return g;
+        },
+        fill: true, tension: .4, pointRadius: 3, pointHoverRadius: 6,
+        pointBackgroundColor: '#fff', pointBorderColor: COLOR_MAPFRE, pointBorderWidth: 2
+      }]
+    },
+    options: {
+      responsive:true, maintainAspectRatio:false,
+      plugins:{
+        legend:{display:false},
+        tooltip:{backgroundColor:'#0f172a', padding:12, callbacks:{ label: (c) => ` ${c.parsed.y} visitas` }}
+      },
+      scales:{
+        y:{beginAtZero:true,ticks:{precision:0,font:{size:11},color:colorTexto()},grid:{color:colorGrid()}},
+        x:{grid:{display:false},ticks:{font:{size:11},color:colorTexto()}}
+      }
+    }
+  });
+}
+
+function renderChartMensual(canvasId){
+  const porMes = {};
+  VISITAS_FILTRADAS.forEach(r => {
+    if(!r.fecha) return;
+    porMes[r.fecha.slice(0,7)] = (porMes[r.fecha.slice(0,7)]||0) + 1;
+  });
+  const meses = Object.keys(porMes).sort();
+  const mesesN = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+  destruirChart(canvasId);
+  const canvas = $(canvasId);
+  if(!canvas) return;
+  charts[canvasId] = new Chart(canvas, {
+    type: 'bar',
+    data: {
+      labels: meses.map(m => { const [y,mm] = m.split('-'); return mesesN[parseInt(mm)-1]+' '+y.slice(2); }),
+      datasets: [{ label:'Visitas', data: meses.map(m => porMes[m]), backgroundColor: COLOR_MAPFRE, borderRadius: 6, borderSkipped: false }]
+    },
+    options: {
+      responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{display:false}, tooltip:{backgroundColor:'#0f172a', padding:12} },
+      scales:{
+        y:{beginAtZero:true,ticks:{precision:0,font:{size:11},color:colorTexto()},grid:{color:colorGrid()}},
+        x:{grid:{display:false},ticks:{font:{size:10},color:colorTexto()}}
+      }
+    }
+  });
+}
+
+function renderChartAnual(canvasId){
+  const v2025 = VISITAS_FILTRADAS.filter(r => r.fecha && r.fecha.startsWith('2025')).length;
+  const v2026 = VISITAS_FILTRADAS.filter(r => r.fecha && r.fecha.startsWith('2026')).length;
+  destruirChart(canvasId);
+  const canvas = $(canvasId);
+  if(!canvas) return;
+  charts[canvasId] = new Chart(canvas, {
+    type: 'doughnut',
+    data: { labels: ['2025','2026'], datasets: [{ data: [v2025, v2026], backgroundColor: [COLOR_MAPFRE, COLOR_COLMENA], borderWidth: 4, borderColor: getComputedStyle(document.body).getPropertyValue('--bg').trim() || '#fff' }] },
+    options: {
+      responsive:true, maintainAspectRatio:false, cutout:'60%',
+      plugins:{
+        legend:{position:'bottom', labels:{padding:16,font:{size:12,weight:'600'},usePointStyle:true,color:colorTexto()}},
+        tooltip:{backgroundColor:'#0f172a', padding:12}
+      }
+    }
+  });
+}
+
+function renderTopFuncPg(canvasId){
+  const porFunc = contarPor(VISITAS_FILTRADAS, 'funcionario');
+  const top = Object.entries(porFunc).sort((a,b)=>b[1]-a[1]).slice(0,15);
+  destruirChart(canvasId);
+  const canvas = $(canvasId);
+  if(!canvas) return;
+  charts[canvasId] = new Chart(canvas, {
+    type: 'bar',
+    data: {
+      labels: top.map(t => t[0].length > 22 ? t[0].slice(0,20)+'...' : t[0]),
+      datasets: [{
+        label:'Visitas', data: top.map(t => t[1]),
+        backgroundColor: (ctx) => {
+          const g = ctx.chart.ctx.createLinearGradient(0,0,600,0);
+          g.addColorStop(0, COLOR_MAPFRE); g.addColorStop(1, COLOR_COLMENA);
+          return g;
+        },
+        borderRadius: 6, borderSkipped: false
+      }]
+    },
+    options: {
+      indexAxis:'y', responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{display:false}, tooltip:{backgroundColor:'#0f172a', padding:12, callbacks:{ label: (c) => ` ${c.parsed.x} visitas` }} },
+      scales:{
+        x:{beginAtZero:true,ticks:{precision:0,font:{size:11},color:colorTexto()},grid:{color:colorGrid()}},
+        y:{grid:{display:false},ticks:{font:{size:11,weight:'600'},color:colorTexto()}}
+      }
+    }
+  });
+}
+
+function renderModalFuncPg(canvasId){
+  const porFunc = {};
+  VISITAS_FILTRADAS.forEach(r => {
+    const f = r.funcionario || 'Sin dato';
+    if (!porFunc[f]) porFunc[f] = { p: 0, v: 0 };
+    if (r.modalidad === 'Presencial') porFunc[f].p++;
+    else if (r.modalidad === 'Virtual') porFunc[f].v++;
+  });
+  const top = Object.entries(porFunc).map(([n,d]) => ({n,p:d.p,v:d.v,t:d.p+d.v})).sort((a,b)=>b.t-a.t).slice(0,10);
+  destruirChart(canvasId);
+  const canvas = $(canvasId);
+  if(!canvas) return;
+  charts[canvasId] = new Chart(canvas, {
+    type: 'bar',
+    data: {
+      labels: top.map(t => t.n.length > 18 ? t.n.slice(0,16)+'...' : t.n),
+      datasets: [
+        { label:'Presencial', data: top.map(t => t.p), backgroundColor: '#16a34a', borderRadius: 4, borderSkipped: false },
+        { label:'Virtual', data: top.map(t => t.v), backgroundColor: COLOR_MAPFRE, borderRadius: 4, borderSkipped: false }
+      ]
+    },
+    options: {
+      indexAxis:'y', responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{position:'bottom', labels:{padding:14,font:{size:11,weight:'600'},usePointStyle:true,color:colorTexto()}}, tooltip:{backgroundColor:'#0f172a', padding:12} },
+      scales:{
+        x:{stacked:true,beginAtZero:true,ticks:{precision:0,font:{size:11},color:colorTexto()},grid:{color:colorGrid()}},
+        y:{stacked:true,grid:{display:false},ticks:{font:{size:11,weight:'600'},color:colorTexto()}}
+      }
+    }
+  });
+}
+
+document.addEventListener('click', function(e){
+  const th = e.target.closest('#tabla-head th[data-campo]');
+  if (th) sortTable(th.dataset.campo);
+});
+
+function sortTable(campo){
+  if (sortCampo === campo) { sortDir = sortDir === 'asc' ? 'desc' : 'asc'; }
+  else { sortCampo = campo; sortDir = 'asc'; }
+  document.querySelectorAll('#tabla-head th').forEach(th => th.classList.remove('sorted'));
+  const activo = document.querySelector(`#tabla-head th[data-campo="${campo}"]`);
+  if (activo) activo.classList.add('sorted');
+  renderTabla();
+}
+
+function renderTabla(){
+  const q = normTxt($('tabla-buscar').value);
+  let filas = [...VISITAS_FILTRADAS];
+  if (q) {
+    filas = filas.filter(r =>
+      normTxt(r.funcionario).includes(q) || normTxt(r.oficina).includes(q) ||
+      normTxt(r.gerencia_regional).includes(q) || normTxt(r.gerencia_zonal).includes(q) ||
+      normTxt(r.objetivo).includes(q)
+    );
+  }
+  filas.sort((a, b) => {
+    let va = a[sortCampo] || '';
+    let vb = b[sortCampo] || '';
+    if (typeof va === 'string') { va = va.toLowerCase(); vb = (vb||'').toLowerCase(); }
+    if (va < vb) return sortDir === 'asc' ? -1 : 1;
+    if (va > vb) return sortDir === 'asc' ? 1 : -1;
+    return 0;
+  });
+  FILAS_ACTUALES = filas;
+  $('tabla-count').textContent = filas.length;
+  $('tabla-empty').classList.toggle('hidden', filas.length > 0);
+  const totalPaginas = Math.max(1, Math.ceil(filas.length / PAGE_SIZE));
+  if (paginaActual > totalPaginas) paginaActual = totalPaginas;
+  const inicio = (paginaActual - 1) * PAGE_SIZE;
+  const pagina = filas.slice(inicio, inicio + PAGE_SIZE);
+  let html = '';
+  pagina.forEach((r, idx) => {
+    const globalIdx = inicio + idx;
+    html += `<tr>
+      <td><strong>${formatFecha(r.fecha)}</strong></td>
+      <td>${r.hora_registro||''}</td>
+      <td>${r.funcionario||''}</td>
+      <td><span class="badge-aseg ${r.aseguradora==='Mapfre'?'mapfre':'colmena'}">${r.aseguradora||''}</span></td>
+      <td>${r.gerencia_regional||''}</td>
+      <td>${r.gerencia_zonal||''}</td>
+      <td><strong>${r.oficina||''}</strong></td>
+      <td><code style="font-size:11px;color:var(--t2)">${r.cod_oficina||''}</code></td>
+      <td><span class="badge-modal ${r.modalidad==='Presencial'?'presencial':'virtual'}"><i class="ti ti-${r.modalidad==='Presencial'?'walk':'video'}"></i> ${r.modalidad||''}</span></td>
+      <td><span class="badge-obj">${r.objetivo||''}</span></td>
+      <td style="text-align:center;font-weight:700">${r.comerciales||'-'}</td>
+      <td style="text-align:center;font-weight:700">${r.operativos||'-'}</td>
+      <td><button class="btn-ver" onclick="abrirModal(${globalIdx})" title="Ver detalle"><i class="ti ti-eye"></i></button></td>
+    </tr>`;
+  });
+  $('tabla-body').innerHTML = html;
+  renderPaginacion(totalPaginas);
+}
+
+function renderPaginacion(totalPaginas){
+  let html = `<button class="pg-btn" onclick="cambiarPaginaTabla(-1)" ${paginaActual<=1?'disabled':''}><i class="ti ti-chevron-left"></i></button>`;
+  const maxVisible = 5;
+  let start = Math.max(1, paginaActual - Math.floor(maxVisible/2));
+  let end = Math.min(totalPaginas, start + maxVisible - 1);
+  if (end - start < maxVisible - 1) start = Math.max(1, end - maxVisible + 1);
+  if (start > 1) { html += `<button class="pg-btn" onclick="irAPagina(1)">1</button>`; if (start > 2) html += `<span style="padding:0 4px">...</span>`; }
+  for (let i = start; i <= end; i++) html += `<button class="pg-btn ${i===paginaActual?'active':''}" onclick="irAPagina(${i})">${i}</button>`;
+  if (end < totalPaginas) { if (end < totalPaginas - 1) html += `<span style="padding:0 4px">...</span>`; html += `<button class="pg-btn" onclick="irAPagina(${totalPaginas})">${totalPaginas}</button>`; }
+  html += `<button class="pg-btn" onclick="cambiarPaginaTabla(1)" ${paginaActual>=totalPaginas?'disabled':''}><i class="ti ti-chevron-right"></i></button>`;
+  $('paginacion').innerHTML = html;
+}
+
+function cambiarPaginaTabla(delta){ paginaActual += delta; renderTabla(); }
+function irAPagina(p){ paginaActual = p; renderTabla(); }
+
+function renderTablaFuncionarios(){
+  const porFunc = {};
+  VISITAS_FILTRADAS.forEach(r => {
+    const f = r.funcionario || 'Sin dato';
+    if(!porFunc[f]) porFunc[f] = { total:0, aseg:new Set(), oficinas:new Set(), presencial:0, virtual:0 };
+    porFunc[f].total++;
+    if(r.aseguradora) porFunc[f].aseg.add(r.aseguradora);
+    if(r.oficina) porFunc[f].oficinas.add(r.oficina);
+    if(r.modalidad === 'Presencial') porFunc[f].presencial++;
+    else if(r.modalidad === 'Virtual') porFunc[f].virtual++;
+  });
+  const total = VISITAS_FILTRADAS.length || 1;
+  const arr = Object.entries(porFunc).sort((a,b) => b[1].total - a[1].total);
+  let html = '';
+  arr.forEach(([f, d], i) => {
+    const pct = ((d.total/total)*100).toFixed(1);
+    const aseg = [...d.aseg].join(', ');
+    html += `<tr>
+      <td><strong>${i+1}</strong></td>
+      <td><strong>${f}</strong></td>
+      <td><span class="badge-aseg ${aseg.includes('Mapfre')?'mapfre':'colmena'}">${aseg}</span></td>
+      <td><strong>${d.total}</strong></td>
+      <td>${pct}%</td>
+      <td>${d.oficinas.size}</td>
+      <td>${d.presencial}</td>
+      <td>${d.virtual}</td>
+    </tr>`;
+  });
+  $('tabla-funcionarios-body').innerHTML = html || '<tr><td colspan="8" style="text-align:center;padding:30px;color:var(--t3)">Sin datos</td></tr>';
+  const countEl = $('tabla-func-count');
+  if (countEl) countEl.textContent = arr.length;
+}
+
+function abrirModal(idx){
+  const r = FILAS_ACTUALES[idx];
+  if (!r) return;
+  const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+  let fechaTexto = r.fecha || '';
+  try {
+    const f = new Date(r.fecha + 'T00:00:00');
+    fechaTexto = `${f.getDate()} de ${meses[f.getMonth()]} de ${f.getFullYear()}`;
+  } catch(e){}
+  $('modal-body').innerHTML = `
+    <div class="modal-row"><i class="ti ti-user"></i><div><div class="ml">Funcionario</div><div class="mv">${r.funcionario||'—'}</div></div></div>
+    <div class="modal-row"><i class="ti ti-shield"></i><div><div class="ml">Aseguradora</div><div class="mv"><span class="badge-aseg ${r.aseguradora==='Mapfre'?'mapfre':'colmena'}">${r.aseguradora||'—'}</span></div></div></div>
+    <div class="modal-row"><i class="ti ti-building"></i><div><div class="ml">Oficina</div><div class="mv">${r.oficina||'—'} ${r.cod_oficina ? '· Sban '+r.cod_oficina : ''}</div></div></div>
+    <div class="modal-row"><i class="ti ti-map"></i><div><div class="ml">Regional / Zonal</div><div class="mv">${r.gerencia_regional||'—'} · ${r.gerencia_zonal||'—'}</div></div></div>
+    <div class="modal-row"><i class="ti ti-calendar"></i><div><div class="ml">Fecha y hora</div><div class="mv">${fechaTexto} · ${r.hora_registro||'--:--'}</div></div></div>
+    <div class="modal-row"><i class="ti ti-${r.modalidad==='Virtual'?'video':'walk'}"></i><div><div class="ml">Modalidad / Objetivo</div><div class="mv"><span class="badge-modal ${r.modalidad==='Presencial'?'presencial':'virtual'}"><i class="ti ti-${r.modalidad==='Presencial'?'walk':'video'}"></i> ${r.modalidad||'—'}</span> &nbsp; <span class="badge-obj">${r.objetivo||'—'}</span></div></div></div>
+    ${r.estado ? `<div class="modal-row"><i class="ti ti-circle-check"></i><div><div class="ml">Estado</div><div class="mv">${r.estado}</div></div></div>` : ''}
+    <div class="modal-stats">
+      <div class="modal-stat"><div class="msv">${r.comerciales||0}</div><div class="msl">Comerciales</div></div>
+      <div class="modal-stat"><div class="msv">${r.operativos||0}</div><div class="msl">Operativos</div></div>
+    </div>
+  `;
+  $('modal-overlay').classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+
+function cerrarModal(){
+  $('modal-overlay').classList.remove('show');
+  document.body.style.overflow = '';
+}
+
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { cerrarModal(); cerrarFuncionarios(); cerrarConfig(); cerrarAgregarFuncionario(); } });
+
+function renderCharts(){
+  renderPageCharts(currentPage);
+}
+
+async function exportarExcel(){
+  if (!VISITAS_FILTRADAS.length) { showToast('No hay datos para exportar', 'error'); return; }
+  showToast('Generando Excel...','info');
+  try {
+    const wb = new ExcelJS.Workbook();
+    wb.creator = 'Correcol';
+    wb.created = new Date();
+    const AZUL_OSCURO = 'FF0C447C';
+    const AZUL_CLARO = 'FFEEF4FC';
+    const BLANCO = 'FFFFFFFF';
+    const GRIS_FILA = 'FFF8FAFC';
+    const VERDE = 'FF16A34A';
+    const AZUL = 'FF185FA5';
+    const NARANJA = 'FFB36D00';
+    const BORDE = { style:'thin', color:{ argb:'FFCBD5E1' } };
+    const bordeCompleto = { top:BORDE, left:BORDE, bottom:BORDE, right:BORDE };
+
+    const wsResumen = wb.addWorksheet('Resumen', { views:[{ state:'frozen', ySplit:4 }] });
+    wsResumen.columns = [
+      { key:'metrica', width:24 },
+      { key:'cantidad', width:14 },
+      { key:'porcentaje', width:14 },
+      { key:'estado', width:18 }
+    ];
+
+    wsResumen.mergeCells('A1:D1');
+    const tituloCell = wsResumen.getCell('A1');
+    tituloCell.value = 'REPORTE EJECUTIVO DE VISITAS';
+    tituloCell.font = { bold:true, size:16, color:{ argb:AZUL_OSCURO } };
+    tituloCell.alignment = { horizontal:'center', vertical:'middle' };
+    wsResumen.getRow(1).height = 28;
+
+    wsResumen.mergeCells('A2:D2');
+    const fechaCell = wsResumen.getCell('A2');
+    fechaCell.value = 'Generado: ' + new Date().toLocaleString('es-CO');
+    fechaCell.font = { size:10, color:{ argb:'FF64748B' } };
+    fechaCell.alignment = { horizontal:'center', vertical:'middle' };
+    wsResumen.getRow(2).height = 18;
+
+    wsResumen.getRow(3).height = 6;
+
+    const headers = ['MÉTRICA','CANTIDAD','PORCENTAJE','ESTADO'];
+    const headerRow = wsResumen.getRow(4);
+    headers.forEach((h, i) => {
+      const cell = headerRow.getCell(i + 1);
+      cell.value = h;
+      cell.font = { bold:true, size:10, color:{ argb:BLANCO } };
+      cell.fill = { type:'pattern', pattern:'solid', fgColor:{ argb:AZUL_OSCURO } };
+      cell.border = bordeCompleto;
+      cell.alignment = { horizontal:'center', vertical:'middle' };
+    });
+    headerRow.height = 20;
+
+    const total = VISITAS_FILTRADAS.length;
+    const mapfre = VISITAS_FILTRADAS.filter(r => r.aseguradora === 'Mapfre').length;
+    const colmena = VISITAS_FILTRADAS.filter(r => r.aseguradora === 'Colmena').length;
+    const presencial = VISITAS_FILTRADAS.filter(r => r.modalidad === 'Presencial').length;
+    const virtual = VISITAS_FILTRADAS.filter(r => r.modalidad === 'Virtual').length;
+    const pct = (n) => total ? Math.round((n/total)*100) + '%' : '0%';
+
+    const resumenData = [
+      { m:'Total Visitas', c:total, p:'100%', e:'Global', mc:AZUL_OSCURO, ec:AZUL_OSCURO },
+      { m:'Mapfre', c:mapfre, p:pct(mapfre), e:'Aseguradora', mc:AZUL, ec:AZUL_OSCURO },
+      { m:'Colmena', c:colmena, p:pct(colmena), e:'Aseguradora', mc:NARANJA, ec:AZUL_OSCURO },
+      { m:'Presenciales', c:presencial, p:pct(presencial), e:'Modalidad', mc:VERDE, ec:VERDE },
+      { m:'Virtuales', c:virtual, p:pct(virtual), e:'Modalidad', mc:AZUL, ec:AZUL },
+    ];
+
+    resumenData.forEach((r, idx) => {
+      const row = wsResumen.getRow(5 + idx);
+      const cells = [row.getCell(1), row.getCell(2), row.getCell(3), row.getCell(4)];
+      cells[0].value = r.m;
+      cells[1].value = r.c;
+      cells[2].value = r.p;
+      cells[3].value = r.e;
+      cells.forEach(cell => {
+        cell.border = bordeCompleto;
+        cell.alignment = { vertical:'middle' };
+        cell.font = { size:11 };
+      });
+      cells[0].font = { bold:true, size:11, color:{ argb:r.mc } };
+      cells[1].alignment = { horizontal:'center', vertical:'middle' };
+      cells[2].alignment = { horizontal:'center', vertical:'middle' };
+      cells[3].alignment = { horizontal:'center', vertical:'middle' };
+      cells[3].font = { bold:true, size:10, color:{ argb:r.ec } };
+      row.height = 20;
+      if (idx % 2 === 1) {
+        cells.forEach(cell => { cell.fill = { type:'pattern', pattern:'solid', fgColor:{ argb:GRIS_FILA } }; });
+      }
+    });
+
+    const wsDatos = wb.addWorksheet('Datos', { views:[{ state:'frozen', ySplit:1 }] });
+    wsDatos.columns = [
+      { header:'No.', key:'no', width:5 },
+      { header:'Fecha', key:'fecha', width:12 },
+      { header:'Hora', key:'hora', width:8 },
+      { header:'Funcionario', key:'func', width:26 },
+      { header:'Aseguradora', key:'aseg', width:12 },
+      { header:'Regional', key:'reg', width:16 },
+      { header:'Zonal', key:'zon', width:18 },
+      { header:'Oficina', key:'ofc', width:28 },
+      { header:'Sban', key:'sban', width:8 },
+      { header:'Modalidad', key:'mod', width:12 },
+      { header:'Objetivo', key:'obj', width:18 },
+      { header:'Comerciales', key:'com', width:12 },
+      { header:'Operativos', key:'ope', width:12 }
+    ];
+
+    const headerD = wsDatos.getRow(1);
+    headerD.eachCell(c => {
+      c.fill = { type:'pattern', pattern:'solid', fgColor:{ argb:AZUL_OSCURO } };
+      c.font = { color:{ argb:BLANCO }, bold:true, size:10 };
+      c.border = bordeCompleto;
+      c.alignment = { vertical:'middle', horizontal:'center' };
+    });
+    headerD.height = 20;
+
+    const datosOrdenados = [...VISITAS_FILTRADAS].sort((a, b) => {
+      const fa = (a.fecha || '') + ' ' + (a.hora_registro || '');
+      const fb = (b.fecha || '') + ' ' + (b.hora_registro || '');
+      return fa.localeCompare(fb);
+    });
+
+    datosOrdenados.forEach((r, i) => {
+      const row = wsDatos.addRow({
+        no:i+1, fecha:r.fecha, hora:r.hora_registro, func:r.funcionario, aseg:r.aseguradora,
+        reg:r.gerencia_regional, zon:r.gerencia_zonal, ofc:r.oficina, sban:r.cod_oficina,
+        mod:r.modalidad, obj:r.objetivo, com:r.comerciales, ope:r.operativos
+      });
+      row.eachCell(c => { c.border = bordeCompleto; });
+      if (i % 2 === 1) {
+        row.eachCell(c => { c.fill = { type:'pattern', pattern:'solid', fgColor:{ argb:GRIS_FILA } }; });
+      }
+      const asegCell = row.getCell('aseg');
+      asegCell.font = { bold:true, color:{ argb: r.aseguradora === 'Mapfre' ? AZUL : NARANJA } };
+      const modCell = row.getCell('mod');
+      modCell.font = { bold:true, color:{ argb: r.modalidad === 'Presencial' ? VERDE : AZUL } };
+    });
+
+    wsDatos.autoFilter = { from:'A1', to:'M1' };
+    const buffer = await wb.xlsx.writeBuffer();
+    const blob = new Blob([buffer], { type:'application/octet-stream' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Reporte_Visitas_${new Date().toISOString().slice(0,10)}.xlsx`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+    showToast(`Excel descargado: ${VISITAS_FILTRADAS.length} registros`, 'success');
+  } catch (err) {
+    showToast('Error al generar Excel: ' + err.message, 'error');
+  }
+}
+
+document.addEventListener('keydown', (e) => {
+  if ($('dash-wrap').classList.contains('hidden')) return;
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT' || e.target.tagName === 'TEXTAREA') return;
+  const k = e.key.toLowerCase();
+  if (k === 'r') { e.preventDefault(); cargarTodo(); }
+  else if (k === 'e') { e.preventDefault(); exportarExcel(); }
+  else if (k === 'l') { e.preventDefault(); toggleLiveMode(); }
+  else if (k === '1') quickFilter('todos');
+  else if (k === '2') quickFilter('hoy');
+  else if (k === '3') quickFilter('ayer');
+  else if (k === '4') quickFilter('semana');
+  else if (k === '5') quickFilter('mes');
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+  const token = sessionStorage.getItem('rv_admin_token');
+  if (token) { ACCESS_TOKEN = token; mostrarDashboard(); }
+});
+</script>
+</body>
+</html>
