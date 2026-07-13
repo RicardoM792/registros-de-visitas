@@ -96,7 +96,6 @@ body.login-active .main{margin-left:0!important}
 .sidebar-item .label{overflow:hidden;text-overflow:ellipsis}
 .sidebar.collapsed .sidebar-item{justify-content:center;padding:10px 0;margin:2px 6px}
 .sidebar.collapsed .sidebar-item .label{display:none}
-.sidebar.collapsed .sidebar-item[data-tooltip]:hover::after{content:attr(data-tooltip);position:absolute;left:calc(100% + 12px);top:50%;transform:translateY(-50%);background:var(--t1);color:var(--bg);padding:5px 10px;border-radius:6px;font-size:11px;white-space:nowrap;z-index:200;box-shadow:var(--sh-lg)}
 .sidebar-filters{padding:6px 14px}
 .sidebar.collapsed .sidebar-filters{display:none}
 .sf-group{margin-bottom:8px}
@@ -162,6 +161,8 @@ input:focus,select:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0
 .dash-actions{display:flex;gap:8px;flex-wrap:wrap}
 .live-dot{width:7px;height:7px;border-radius:50%;background:var(--ok);display:inline-block;position:relative}
 .live-dot::after{content:'';position:absolute;inset:0;border-radius:50%;background:var(--ok);animation:pulseDot 1.8s ease-out infinite}
+.live-dot.offline{background:var(--err)}
+.live-dot.offline::after{background:var(--err);animation:none;opacity:0}
 
 .active-filters{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;min-height:22px}
 .af-chip{padding:3px 8px;background:var(--brand-l);color:var(--brand-d);border-radius:14px;font-size:10px;font-weight:600;display:inline-flex;align-items:center;gap:5px;animation:slideIn .2s ease}
@@ -190,7 +191,8 @@ input:focus,select:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0
 .aseg-card-head.colmena{background:var(--grad-colmena)}
 .aseg-card-head h3{font-size:13px;letter-spacing:-.2px;font-weight:900}
 .aseg-card-head i{font-size:17px}
-.aseg-card-head .total{margin-left:auto;font-size:18px;font-weight:900}
+.aseg-card-head .total{font-size:18px;font-weight:900}
+.aseg-pct{font-size:10px;font-weight:700;opacity:.85}
 .aseg-card-body{padding:14px 16px;display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .aseg-mod{background:var(--bg2);border-radius:var(--r-md);padding:10px;display:flex;align-items:center;gap:10px;border:1px solid var(--bd);transition:all .2s}
 .aseg-mod:hover{border-color:var(--brand);transform:translateY(-1px)}
@@ -220,11 +222,14 @@ input:focus,select:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0
 .chart-wrap{position:relative;height:200px;width:100%;overflow:hidden}
 .chart-wrap.tall{height:260px}
 .chart-wrap canvas{max-width:100%!important}
+.chart-empty-msg{position:absolute;inset:0;display:none;align-items:center;justify-content:center;gap:6px;color:var(--t3);font-size:12px;font-weight:600;flex-direction:column;text-align:center}
+.chart-empty-msg i{font-size:26px;opacity:.4}
 
 .resumen-exec{background:var(--bg);border:1px solid var(--bd);border-radius:var(--r-lg);overflow:hidden;box-shadow:var(--sh-sm);margin-bottom:16px}
-.resumen-exec-header{padding:14px 18px;background:var(--grad-brand);color:#fff;display:flex;align-items:center;justify-content:space-between;gap:12px}
-.resumen-exec-header h3{font-size:13px;font-weight:800;display:flex;align-items:center;gap:8px}
-.resumen-exec-header p{font-size:10.5px;opacity:.85;margin-top:2px}
+.resumen-exec-header{padding:14px 18px;background:var(--bg);border-bottom:1px solid var(--bd);color:var(--t1);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.resumen-exec-header h3{font-size:13px;font-weight:800;display:flex;align-items:center;gap:8px;color:var(--brand-d)}
+.resumen-exec-header h3 i{color:var(--brand)}
+.resumen-exec-header p{font-size:10.5px;color:var(--t2);margin-top:2px}
 .resumen-exec-body{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0}
 @media(max-width:900px){.resumen-exec-body{grid-template-columns:1fr}}
 .resumen-block{padding:14px 16px;border-right:1px solid var(--bd)}
@@ -235,12 +240,17 @@ input:focus,select:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0
 .resumen-item{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--bg3)}
 .resumen-item:last-child{border-bottom:none}
 .resumen-rank{width:22px;height:22px;border-radius:50%;background:var(--brand-l);color:var(--brand);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;flex-shrink:0}
-.resumen-rank.gold{background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#fff}
-.resumen-rank.silver{background:linear-gradient(135deg,#d1d5db,#9ca3af);color:#fff}
-.resumen-rank.bronze{background:linear-gradient(135deg,#d97706,#b45309);color:#fff}
 .resumen-item-name{flex:1;font-size:12px;font-weight:600;color:var(--t1);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .resumen-item-val{font-size:12px;font-weight:800;color:var(--brand);white-space:nowrap}
 .resumen-empty{text-align:center;padding:16px;color:var(--t3);font-size:11.5px}
+.rank-row{display:flex;align-items:center;gap:10px;padding:7px 2px;border-bottom:1px solid var(--bg3);transition:background .15s}
+.rank-row:last-child{border-bottom:none}
+.rank-row:hover{background:var(--bg2)}
+.rank-num{width:20px;height:20px;border-radius:6px;background:var(--brand-l);color:var(--brand-d);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;flex-shrink:0}
+.rank-name{flex:1;font-size:12px;font-weight:600;color:var(--t1);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rank-bar-wrap{width:56px;height:5px;background:var(--bg3);border-radius:3px;overflow:hidden;flex-shrink:0}
+.rank-bar{height:100%;background:var(--brand);border-radius:3px;transition:width .5s ease}
+.rank-val{font-size:11px;font-weight:800;color:var(--brand-d);min-width:30px;text-align:right;white-space:nowrap}
 
 .tabla-card{background:var(--bg);border:1px solid var(--bd);border-radius:var(--r-lg);padding:16px;overflow:hidden;box-shadow:var(--sh-sm);transition:var(--transition-theme);margin-bottom:16px}
 .tabla-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px;flex-wrap:wrap}
@@ -416,12 +426,28 @@ tbody tr:hover td{background:var(--brand-l)}
 
 .page{display:none;animation:fadeIn .3s ease}
 .page.active{display:block}
+
+body.compact-mode .card{padding:16px}
+body.compact-mode .kpi-card{padding:8px 10px}
+body.compact-mode .kpi-card .kv{font-size:18px}
+body.compact-mode .chart-card{padding:10px}
+body.compact-mode .chart-wrap{height:160px}
+body.compact-mode .chart-wrap.tall{height:200px}
+body.compact-mode td,body.compact-mode th{padding:6px 9px}
+body.compact-mode .tabla-card{padding:12px}
+
+.td-trunc{max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+.js-tooltip{position:fixed;background:var(--t1);color:var(--bg);padding:5px 10px;border-radius:6px;font-size:11px;font-weight:600;white-space:nowrap;z-index:500;pointer-events:none;opacity:0;transition:opacity .15s;box-shadow:var(--sh-lg)}
+.js-tooltip.show{opacity:1}
+
 </style>
 </head>
 <body class="login-active">
 <button class="mobile-toggle" onclick="toggleMobileSidebar()" title="Menú"><i class="ti ti-menu-2"></i></button>
 <div class="mobile-overlay" id="mobile-overlay" onclick="cerrarSidebarClick()"></div>
 <div class="toast-stack" id="toast-stack"></div>
+<div class="js-tooltip" id="js-tooltip"></div>
 
 <div class="modal-overlay" id="modal-overlay" onclick="if(event.target===this) cerrarModal()">
   <div class="modal-box">
@@ -640,7 +666,7 @@ tbody tr:hover td{background:var(--brand-l)}
     </div>
   </div>
 
-  <div class="wrap hidden" id="dash-wrap">
+<div class="wrap hidden" id="dash-wrap">
     <div class="page active" id="page-resumen">
       <div class="dash-top">
         <div>
@@ -649,21 +675,11 @@ tbody tr:hover td{background:var(--brand-l)}
         </div>
       </div>
       <div class="active-filters" id="active-filters"></div>
-      <div class="kpi-grid">
+    <div class="kpi-grid">
         <div class="kpi-card">
           <div class="kl"><i class="ti ti-database"></i> Total Registros</div>
           <div class="kv" id="kpi-total">0</div>
           <div class="ks" id="kpi-total-sub">—</div>
-        </div>
-        <div class="kpi-card mapfre">
-          <div class="kl"><i class="ti ti-shield"></i> Mapfre</div>
-          <div class="kv" id="kpi-mapfre">0</div>
-          <div class="ks" id="kpi-mapfre-sub">—</div>
-        </div>
-        <div class="kpi-card colmena">
-          <div class="kl"><i class="ti ti-shield-check"></i> Colmena</div>
-          <div class="kv" id="kpi-colmena">0</div>
-          <div class="ks" id="kpi-colmena-sub">—</div>
         </div>
         <div class="kpi-card ok">
           <div class="kl"><i class="ti ti-chart-line"></i> Promedio diario</div>
@@ -677,7 +693,10 @@ tbody tr:hover td{background:var(--brand-l)}
           <div class="aseg-card-head mapfre">
             <i class="ti ti-shield"></i>
             <h3>MAPFRE</h3>
-            <span class="total" id="tasa-mapfre-total">0</span>
+            <div style="margin-left:auto;text-align:right;line-height:1.1">
+              <span class="total" id="tasa-mapfre-total">0</span>
+              <div class="aseg-pct" id="tasa-mapfre-pct">0%</div>
+            </div>
           </div>
           <div class="aseg-card-body">
             <div class="aseg-mod">
@@ -704,7 +723,10 @@ tbody tr:hover td{background:var(--brand-l)}
           <div class="aseg-card-head colmena">
             <i class="ti ti-shield-check"></i>
             <h3>COLMENA</h3>
-            <span class="total" id="tasa-colmena-total">0</span>
+            <div style="margin-left:auto;text-align:right;line-height:1.1">
+              <span class="total" id="tasa-colmena-total">0</span>
+              <div class="aseg-pct" id="tasa-colmena-pct">0%</div>
+            </div>
           </div>
           <div class="aseg-card-body">
             <div class="aseg-mod">
@@ -732,7 +754,12 @@ tbody tr:hover td{background:var(--brand-l)}
         <div class="resumen-exec-header">
           <div>
             <h3><i class="ti ti-trophy"></i> Rankings destacados</h3>
-            <p>Resumen ejecutivo de actividad · Top 3 por categoría</p>
+            <p>Resumen ejecutivo de actividad · Top 5 por categoría</p>
+          </div>
+          <div class="view-toggle" id="ranking-aseg-toggle">
+            <button class="view-toggle-btn active" data-aseg="" onclick="setRankingAseg('')">Todas</button>
+            <button class="view-toggle-btn" data-aseg="Mapfre" onclick="setRankingAseg('Mapfre')">Mapfre</button>
+            <button class="view-toggle-btn" data-aseg="Colmena" onclick="setRankingAseg('Colmena')">Colmena</button>
           </div>
         </div>
         <div class="resumen-exec-body">
@@ -925,9 +952,23 @@ tbody tr:hover td{background:var(--brand-l)}
       </div>
     </div>
 
-    <div class="status-line">
-      <span class="live-dot"></span>
-      <span id="status-line">Sincronizado con Supabase</span>
+    <div class="status-line" id="status-line-wrap">
+      <span class="live-dot" id="status-dot"></span>
+      <span id="status-line">Iniciando panel...</span>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-confirm-overlay" onclick="if(event.target===this) cerrarConfirmacion()">
+  <div class="modal-box" style="max-width:400px">
+    <div class="modal-header">
+      <h4 id="modal-confirm-title"><i class="ti ti-alert-triangle"></i> Confirmar acción</h4>
+      <button class="modal-close" onclick="cerrarConfirmacion()"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="modal-body" id="modal-confirm-body"></div>
+    <div style="padding:0 18px 18px;display:flex;gap:8px;justify-content:flex-end">
+      <button class="btn ghost small" onclick="cerrarConfirmacion()">Cancelar</button>
+      <button class="btn small" id="modal-confirm-btn-ok" style="background:var(--err);box-shadow:none"><i class="ti ti-check"></i> Confirmar</button>
     </div>
   </div>
 </div>
@@ -937,7 +978,6 @@ const SUPABASE_URL = "https://lzsluzquoksiheyxcior.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_frToEsE65PivRXN83cIckw_S0snLVgv";
 const COLOR_MAPFRE = '#185FA5';
 const COLOR_COLMENA = '#EF9F27';
-const PAGE_SIZE = 10;
 
 let VISITAS = [];
 let VISITAS_ANTERIOR = [];
@@ -955,10 +995,10 @@ let primeraCarga = true;
 let FUNCIONARIOS_ADMIN = [];
 let ACCESS_TOKEN = null;
 let currentPage = 'resumen';
-let config = { animaciones: true, sonidoToasts: false, liveIntervalSec: 10, compacto: false };
+let config = { animaciones: true, sonidoToasts: false, liveIntervalSec: 10, compacto: false, filasPorPagina: 10, duracionToast: 3200, vistaDetallePorDefecto: 'tabla', confirmacionReforzada: false };
 let funcionTabActivo = 'todos';
 let activeFilters = [];
-let vistaActual = 'tabla';
+let vistaActual = config.vistaDetallePorDefecto || 'tabla';
 let calMes = new Date().getMonth();
 let calAnio = new Date().getFullYear();
 let acHighlighted = -1;
@@ -967,6 +1007,7 @@ const $ = id => document.getElementById(id);
 const cargarConfig = () => { try { config = { ...config, ...JSON.parse(localStorage.getItem('rv_config') || '{}') }; } catch(e){} };
 const guardarConfig = () => localStorage.setItem('rv_config', JSON.stringify(config));
 const aplicarAnimaciones = () => document.body.classList.toggle('no-animations', !config.animaciones);
+const aplicarCompacto = () => document.body.classList.toggle('compact-mode', config.compacto);
 
 function setTheme(t){
   document.body.setAttribute('data-theme', t);
@@ -979,6 +1020,7 @@ function setTheme(t){
   if (localStorage.getItem('rv_theme') === 'dark') document.body.setAttribute('data-theme', 'dark');
   cargarConfig();
   aplicarAnimaciones();
+  aplicarCompacto();
 })();
 
 function toggleSidebar(){
@@ -1023,6 +1065,22 @@ function cerrarSidebarClick(){
   });
 })();
 
+(function initTooltips(){
+  const tip = $('js-tooltip');
+  document.querySelectorAll('.sidebar-item[data-tooltip]').forEach(item => {
+    item.addEventListener('mouseenter', () => {
+      if (!$('sidebar').classList.contains('collapsed')) return;
+      const rect = item.getBoundingClientRect();
+      tip.textContent = item.dataset.tooltip;
+      tip.style.left = (rect.right + 12) + 'px';
+      tip.style.top = (rect.top + rect.height/2) + 'px';
+      tip.style.transform = 'translateY(-50%)';
+      tip.classList.add('show');
+    });
+    item.addEventListener('mouseleave', () => tip.classList.remove('show'));
+  });
+})();
+
 function cambiarPagina(page){
   currentPage = page;
   document.querySelectorAll('.sidebar-item[data-page]').forEach(el => {
@@ -1039,7 +1097,54 @@ function cambiarPagina(page){
   }
 }
 
+function mostrarConfirmacion(opts){
+  const { titulo='Confirmar acción', mensaje='', textoConfirmacion=null, onConfirm } = opts;
+  $('modal-confirm-title').innerHTML = `<i class="ti ti-alert-triangle"></i> ${titulo}`;
+  let html = `<p style="font-size:13px;color:var(--t1);line-height:1.5;${textoConfirmacion?'margin-bottom:12px':''}">${mensaje}</p>`;
+  if (textoConfirmacion) {
+    html += `<div class="fg"><label>Escribe <strong>${textoConfirmacion}</strong> para confirmar</label><input type="text" id="confirm-input" autocomplete="off"></div>`;
+  }
+  $('modal-confirm-body').innerHTML = html;
+  $('modal-confirm-overlay').classList.add('show');
+  document.body.style.overflow = 'hidden';
+  setTimeout(() => { const inp = $('confirm-input'); if (inp) inp.focus(); }, 150);
+  $('modal-confirm-btn-ok').onclick = () => {
+    if (textoConfirmacion) {
+      const val = $('confirm-input').value.trim();
+      if (val !== textoConfirmacion) { showToast('El texto no coincide', 'error'); return; }
+    }
+    cerrarConfirmacion();
+    onConfirm();
+  };
+}
+
+function cerrarConfirmacion(){
+  $('modal-confirm-overlay').classList.remove('show');
+  document.body.style.overflow = '';
+}
+
+function reproducirSonidoToast(){
+  if(!config.sonidoToasts) return;
+  try{
+    const ctx = new (window.AudioContext||window.webkitAudioContext)();
+    const notas = [660, 880];
+    notas.forEach((freq, i) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.type = 'sine';
+      osc.frequency.value = freq;
+      const inicio = ctx.currentTime + i * 0.09;
+      gain.gain.setValueAtTime(0.001, inicio);
+      gain.gain.exponentialRampToValueAtTime(0.09, inicio + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.001, inicio + 0.18);
+      osc.start(inicio); osc.stop(inicio + 0.2);
+    });
+  }catch(e){}
+}
+
 function showToast(msg, type='info'){
+  reproducirSonidoToast();
   const stack = $('toast-stack');
   const el = document.createElement('div');
   el.className = 'toast' + (type ? ' ' + type : '');
@@ -1047,7 +1152,7 @@ function showToast(msg, type='info'){
   el.innerHTML = `<i class="ti ${iconMap[type]||'ti-info-circle'}"></i><span>${msg}</span>`;
   stack.appendChild(el);
   requestAnimationFrame(() => el.classList.add('show'));
-  setTimeout(() => { el.classList.remove('show'); setTimeout(()=>el.remove(), 300); }, 3200);
+  setTimeout(() => { el.classList.remove('show'); setTimeout(()=>el.remove(), 300); }, config.duracionToast);
 }
 
 function togglePassword(){
@@ -1105,20 +1210,26 @@ function mostrarDashboard(){
   document.body.classList.remove('login-active');
   $('gate-wrap').classList.add('hidden');
   $('dash-wrap').classList.remove('hidden');
+  setVista(vistaActual);
   cargarTodo();
 }
 
 function cerrarSesion(){
-  if(!confirm('¿Cerrar sesión y salir del panel?')) return;
-  sessionStorage.removeItem('rv_admin_token');
-  sessionStorage.removeItem('rv_admin_refresh');
-  ACCESS_TOKEN = null;
-  document.body.classList.add('login-active');
-  $('dash-wrap').classList.add('hidden');
-  $('gate-wrap').classList.remove('hidden');
-  $('gate-user').value = '';
-  $('gate-pass').value = '';
-  showToast('Sesión cerrada','info');
+  mostrarConfirmacion({
+    titulo: 'Cerrar sesión',
+    mensaje: '¿Cerrar sesión y salir del panel?',
+    onConfirm: () => {
+      sessionStorage.removeItem('rv_admin_token');
+      sessionStorage.removeItem('rv_admin_refresh');
+      ACCESS_TOKEN = null;
+      document.body.classList.add('login-active');
+      $('dash-wrap').classList.add('hidden');
+      $('gate-wrap').classList.remove('hidden');
+      $('gate-user').value = '';
+      $('gate-pass').value = '';
+      showToast('Sesión cerrada','info');
+    }
+  });
 }
 
 function abrirConfig(){
@@ -1133,6 +1244,52 @@ function abrirConfig(){
         </div>
         <label class="switch"><input type="checkbox" ${config.animaciones?'checked':''} onchange="config.animaciones=this.checked;aplicarAnimaciones();guardarConfig();showToast('Preferencia guardada','info')"><span class="switch-slider"></span></label>
       </div>
+      <div class="config-row">
+        <div>
+          <div class="config-row-label">Modo compacto</div>
+          <div class="config-row-desc">Reduce espacios y tamaños para ver más en pantalla</div>
+        </div>
+        <label class="switch"><input type="checkbox" ${config.compacto?'checked':''} onchange="config.compacto=this.checked;aplicarCompacto();guardarConfig();showToast('Preferencia guardada','info')"><span class="switch-slider"></span></label>
+      </div>
+      <div class="config-row">
+        <div>
+          <div class="config-row-label">Sonido en notificaciones</div>
+          <div class="config-row-desc">Beep corto al mostrar un toast</div>
+        </div>
+        <label class="switch"><input type="checkbox" ${config.sonidoToasts?'checked':''} onchange="config.sonidoToasts=this.checked;guardarConfig();showToast('Preferencia guardada','info')"><span class="switch-slider"></span></label>
+      </div>
+      <div class="config-row">
+        <div>
+          <div class="config-row-label">Duración de notificaciones (ms)</div>
+          <div class="config-row-desc">Rango: 1500 a 8000 ms</div>
+        </div>
+        <input type="number" class="config-input" value="${config.duracionToast}" min="1500" max="8000" step="500" onchange="config.duracionToast=Math.max(1500,Math.min(8000,parseInt(this.value)||3200));this.value=config.duracionToast;guardarConfig();showToast('Preferencia guardada','info')">
+      </div>
+    </div>
+    <div class="config-section">
+      <h5><i class="ti ti-table"></i> Tabla y vistas</h5>
+      <div class="config-row">
+        <div>
+          <div class="config-row-label">Filas por página</div>
+          <div class="config-row-desc">En Detalle Completo</div>
+        </div>
+        <select class="config-input" style="width:75px" onchange="config.filasPorPagina=parseInt(this.value);paginaActual=1;guardarConfig();renderTabla();showToast('Preferencia guardada','info')">
+          <option value="10" ${config.filasPorPagina===10?'selected':''}>10</option>
+          <option value="25" ${config.filasPorPagina===25?'selected':''}>25</option>
+          <option value="50" ${config.filasPorPagina===50?'selected':''}>50</option>
+          <option value="100" ${config.filasPorPagina===100?'selected':''}>100</option>
+        </select>
+      </div>
+      <div class="config-row">
+        <div>
+          <div class="config-row-label">Vista por defecto en Detalle</div>
+          <div class="config-row-desc">Qué vista abrir al entrar al panel</div>
+        </div>
+        <select class="config-input" style="width:110px" onchange="config.vistaDetallePorDefecto=this.value;guardarConfig();showToast('Preferencia guardada','info')">
+          <option value="tabla" ${config.vistaDetallePorDefecto==='tabla'?'selected':''}>Tabla</option>
+          <option value="calendario" ${config.vistaDetallePorDefecto==='calendario'?'selected':''}>Calendario</option>
+        </select>
+      </div>
     </div>
     <div class="config-section">
       <h5><i class="ti ti-broadcast"></i> Modo en vivo</h5>
@@ -1142,6 +1299,16 @@ function abrirConfig(){
           <div class="config-row-desc">Rango: 5 a 300 segundos</div>
         </div>
         <input type="number" class="config-input" value="${config.liveIntervalSec}" min="5" max="300" onchange="config.liveIntervalSec=Math.max(5,Math.min(300,parseInt(this.value)||10));this.value=config.liveIntervalSec;guardarConfig();if(liveMode){clearInterval(liveInterval);liveInterval=setInterval(()=>cargarTodo(true),config.liveIntervalSec*1000);}showToast('Intervalo actualizado a '+config.liveIntervalSec+'s','info')">
+      </div>
+    </div>
+    <div class="config-section">
+      <h5><i class="ti ti-shield-lock"></i> Seguridad</h5>
+      <div class="config-row">
+        <div>
+          <div class="config-row-label">Confirmación reforzada al eliminar</div>
+          <div class="config-row-desc">Pide escribir "ELIMINAR" antes de borrar un funcionario</div>
+        </div>
+        <label class="switch"><input type="checkbox" ${config.confirmacionReforzada?'checked':''} onchange="config.confirmacionReforzada=this.checked;guardarConfig();showToast('Preferencia guardada','info')"><span class="switch-slider"></span></label>
       </div>
     </div>
     <div class="config-section">
@@ -1288,27 +1455,39 @@ async function crearFuncionario(){
   } catch(e){ showToast('Error al crear','error'); }
 }
 
-async function toggleActivoFuncionario(id, nuevoEstado){
+function toggleActivoFuncionario(id, nuevoEstado){
   const f = FUNCIONARIOS_ADMIN.find(x => x.id === id);
   if(!f) return;
-  await fetch(SUPABASE_URL + '/rest/v1/rpc/admin_editar_funcionario', {
-    method:'POST',
-    headers:{ apikey:SUPABASE_ANON_KEY, Authorization:'Bearer '+SUPABASE_ANON_KEY, 'Content-Type':'application/json' },
-    body: JSON.stringify({ p_id: id, p_nombre: f.nombre, p_aseguradora: f.aseguradora, p_activo: nuevoEstado })
+  mostrarConfirmacion({
+    titulo: nuevoEstado ? 'Activar funcionario' : 'Desactivar funcionario',
+    mensaje: `¿${nuevoEstado ? 'Activar' : 'Desactivar'} a ${f.nombre}?`,
+    onConfirm: async () => {
+      await fetch(SUPABASE_URL + '/rest/v1/rpc/admin_editar_funcionario', {
+        method:'POST',
+        headers:{ apikey:SUPABASE_ANON_KEY, Authorization:'Bearer '+SUPABASE_ANON_KEY, 'Content-Type':'application/json' },
+        body: JSON.stringify({ p_id: id, p_nombre: f.nombre, p_aseguradora: f.aseguradora, p_activo: nuevoEstado })
+      });
+      showToast(nuevoEstado ? 'Funcionario activado' : 'Funcionario desactivado', 'success');
+      cargarFuncionariosAdmin();
+    }
   });
-  showToast(nuevoEstado ? 'Funcionario activado' : 'Funcionario desactivado', 'success');
-  cargarFuncionariosAdmin();
 }
 
-async function eliminarFuncionario(id){
-  if(!confirm('¿Eliminar este funcionario definitivamente?')) return;
-  await fetch(SUPABASE_URL + '/rest/v1/rpc/admin_eliminar_funcionario', {
-    method:'POST',
-    headers:{ apikey:SUPABASE_ANON_KEY, Authorization:'Bearer '+SUPABASE_ANON_KEY, 'Content-Type':'application/json' },
-    body: JSON.stringify({ p_id: id })
+function eliminarFuncionario(id){
+  mostrarConfirmacion({
+    titulo: 'Eliminar funcionario',
+    mensaje: '¿Eliminar este funcionario definitivamente? Esta acción no se puede deshacer.',
+    textoConfirmacion: config.confirmacionReforzada ? 'ELIMINAR' : null,
+    onConfirm: async () => {
+      await fetch(SUPABASE_URL + '/rest/v1/rpc/admin_eliminar_funcionario', {
+        method:'POST',
+        headers:{ apikey:SUPABASE_ANON_KEY, Authorization:'Bearer '+SUPABASE_ANON_KEY, 'Content-Type':'application/json' },
+        body: JSON.stringify({ p_id: id })
+      });
+      showToast('Funcionario eliminado','success');
+      cargarFuncionariosAdmin();
+    }
   });
-  showToast('Funcionario eliminado','success');
-  cargarFuncionariosAdmin();
 }
 
 async function fetchTodasVisitas(){
@@ -1327,23 +1506,33 @@ async function fetchTodasVisitas(){
   return todas;
 }
 
+function setEstadoConexion(ok){
+  const dot = $('status-dot');
+  if (dot) dot.classList.toggle('offline', !ok);
+}
+
 async function cargarTodo(silent=false){
-  if (!silent) $('status-line').textContent = 'Consultando Supabase...';
+  if (!silent) $('status-line').textContent = 'Consultando información...';
   try {
     VISITAS_ANTERIOR = [...VISITAS];
     VISITAS = await fetchTodasVisitas();
     poblarFiltros();
+    if (silent) Chart.defaults.animation = false;
     aplicarFiltros();
+    if (silent) Chart.defaults.animation = true;
     const hora = new Date().toLocaleTimeString('es-CO', {hour:'2-digit', minute:'2-digit'});
-    $('status-line').textContent = `Sincronizado · ${hora}`;
+    $('status-line').textContent = silent ? `Panel actualizado · ${hora}` : `Actualizado · ${hora}`;
+    setEstadoConexion(true);
     if (!silent && !primeraCarga && VISITAS.length > VISITAS_ANTERIOR.length) {
       const nuevas = VISITAS.length - VISITAS_ANTERIOR.length;
       showToast(`${nuevas} nueva${nuevas>1?'s':''}`, 'success');
     }
     primeraCarga = false;
   } catch (err) {
-    $('status-line').textContent = 'Error: ' + err.message;
-    showToast('Error al sincronizar', 'error');
+    $('status-line').textContent = 'Sin conexión · reintentando...';
+    setEstadoConexion(false);
+    if (!silent) showToast('Sin conexión con el servidor', 'error');
+    if (!liveMode) setTimeout(() => cargarTodo(true), 8000);
   }
 }
 
@@ -1540,17 +1729,11 @@ function renderKPIs(){
   const colmena = VISITAS_FILTRADAS.filter(r => r.aseguradora === 'Colmena').length;
   const dias = new Set(VISITAS_FILTRADAS.map(r => r.fecha)).size || 1;
   const promedio = parseFloat((total / dias).toFixed(1));
-  animarNumero($('kpi-total'), total);
-  animarNumero($('kpi-mapfre'), mapfre);
-  animarNumero($('kpi-colmena'), colmena);
+animarNumero($('kpi-total'), total);
   animarNumero($('kpi-promedio'), promedio);
 
-  const pctM = total ? ((mapfre/total)*100).toFixed(1) : 0;
-  const pctC = total ? ((colmena/total)*100).toFixed(1) : 0;
   const diasTxt = dias === 1 ? '1 día' : `${dias} días`;
   $('kpi-total-sub').textContent = `${diasTxt} con actividad`;
-  $('kpi-mapfre-sub').textContent = `${pctM}% del total`;
-  $('kpi-colmena-sub').textContent = `${pctC}% del total`;
   $('kpi-promedio-sub').textContent = `${diasTxt} analizados`;
 
   const presencial = VISITAS_FILTRADAS.filter(r => r.modalidad === 'Presencial').length;
@@ -1559,12 +1742,10 @@ function renderKPIs(){
   const zonales = new Set(VISITAS_FILTRADAS.map(r => r.gerencia_zonal).filter(Boolean)).size;
   const oficinas = new Set(VISITAS_FILTRADAS.map(r => r.oficina).filter(Boolean)).size;
   const funcSet = new Set(VISITAS_FILTRADAS.map(r => r.funcionario).filter(Boolean)).size;
-  animarNumero($('kpi-presencial-op'), presencial);
-  animarNumero($('kpi-virtual-op'), virtual);
   animarNumero($('kpi-regionales-op'), regionales);
   animarNumero($('kpi-zonales-op'), zonales);
   animarNumero($('kpi-oficinas-op'), oficinas);
-  animarNumero($('kpi-func-total'), funcSet.size);
+  animarNumero($('kpi-func-total'), funcSet);
 
   const hora = new Date().toLocaleTimeString('es-CO', {hour:'2-digit', minute:'2-digit'});
   $('resumen-linea').textContent = `Actualizado: ${hora}`;
@@ -1581,7 +1762,9 @@ function renderTasaCompacta(key, arr){
   const virt = arr.filter(r => r.modalidad === 'Virtual').length;
   const pctPres = total ? (pres / total) * 100 : 0;
   const pctVirt = total ? (virt / total) * 100 : 0;
+  const pctGrand = VISITAS_FILTRADAS.length ? Math.round((total / VISITAS_FILTRADAS.length) * 100) + '%' : '0%';
   $(`tasa-${key}-total`).textContent = total.toLocaleString('es-CO');
+  $(`tasa-${key}-pct`).textContent = pctGrand;
   $(`tasa-${key}-pres`).textContent = pres.toLocaleString('es-CO');
   $(`tasa-${key}-virt`).textContent = virt.toLocaleString('es-CO');
   $(`tasa-${key}-pres-pct`).textContent = `${pctPres.toFixed(1)}%`;
@@ -1590,40 +1773,53 @@ function renderTasaCompacta(key, arr){
   bar.innerHTML = `<div class="seg-pres" style="width:${pctPres}%"></div><div class="seg-virt" style="width:${pctVirt}%"></div>`;
 }
 
-function renderResumenExec(){
-  const porFunc = contarPor(VISITAS_FILTRADAS, 'funcionario');
-  const topF = Object.entries(porFunc).sort((a,b)=>b[1]-a[1]).slice(0,3);
-  $('top-funcionarios').innerHTML = topF.length ? topF.map(([n,v],i) => {
-    const cls = i===0?'gold':i===1?'silver':i===2?'bronze':'';
-    return `<div class="resumen-item"><div class="resumen-rank ${cls}">${i+1}</div><div class="resumen-item-name">${n}</div><div class="resumen-item-val">${v} ${v===1?'visita':'visitas'}</div></div>`;
-  }).join('') : '<div class="resumen-empty">Sin datos</div>';
+let rankingAsegActivo = '';
+function setRankingAseg(aseg){
+  rankingAsegActivo = aseg;
+  document.querySelectorAll('#ranking-aseg-toggle .view-toggle-btn').forEach(b => b.classList.toggle('active', b.dataset.aseg === aseg));
+  renderResumenExec();
+}
+function renderRankRows(entries, formatName, formatVal){
+  if(!entries.length) return '';
+  const max = Math.max(...entries.map(e => e[1]));
+  return entries.map(([k,v],i) => {
+    const pct = max ? Math.round((v/max)*100) : 0;
+    return `<div class="rank-row">
+      <div class="rank-num">${i+1}</div>
+      <div class="rank-name">${formatName(k)}</div>
+      <div class="rank-bar-wrap"><div class="rank-bar" style="width:${pct}%"></div></div>
+      <div class="rank-val">${formatVal(v)}</div>
+    </div>`;
+  }).join('');
+}
 
-  const porOf = contarPor(VISITAS_FILTRADAS, 'oficina');
-  const topO = Object.entries(porOf).sort((a,b)=>b[1]-a[1]).slice(0,3);
-  $('top-oficinas').innerHTML = topO.length ? topO.map(([n,v],i) => {
-    const cls = i===0?'gold':i===1?'silver':i===2?'bronze':'';
-    return `<div class="resumen-item"><div class="resumen-rank ${cls}">${i+1}</div><div class="resumen-item-name">${n}</div><div class="resumen-item-val">${v}</div></div>`;
-  }).join('') : '<div class="resumen-empty">Sin datos de oficinas</div>';
+function renderResumenExec(){
+  const base = rankingAsegActivo ? VISITAS_FILTRADAS.filter(r => r.aseguradora === rankingAsegActivo) : VISITAS_FILTRADAS;
+
+  const porFunc = contarPor(base, 'funcionario');
+  const topF = Object.entries(porFunc).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  $('top-funcionarios').innerHTML = topF.length ? renderRankRows(topF, n => n, v => v) : '<div class="resumen-empty">Sin datos</div>';
+
+  const porOf = contarPor(base, 'oficina');
+  const topO = Object.entries(porOf).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  $('top-oficinas').innerHTML = topO.length ? renderRankRows(topO, n => n, v => v) : '<div class="resumen-empty">Sin datos de oficinas</div>';
 
   const porMes = {};
-  VISITAS_FILTRADAS.forEach(r => {
+  base.forEach(r => {
     if(!r.fecha) return;
     const ym = r.fecha.slice(0,7);
     porMes[ym] = (porMes[ym]||0) + 1;
   });
-  const topM = Object.entries(porMes).sort((a,b)=>b[1]-a[1]).slice(0,3);
   const meses = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
-  $('top-meses').innerHTML = topM.length ? topM.map(([ym,v],i) => {
-    const [y,m] = ym.split('-');
-    const cls = i===0?'gold':i===1?'silver':i===2?'bronze':'';
-    return `<div class="resumen-item"><div class="resumen-rank ${cls}">${i+1}</div><div class="resumen-item-name">${meses[parseInt(m)-1]} ${y}</div><div class="resumen-item-val">${v} ${v===1?'visita':'visitas'}</div></div>`;
-  }).join('') : '<div class="resumen-empty">Sin datos mensuales</div>';
+  const topM = Object.entries(porMes).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  $('top-meses').innerHTML = topM.length ? renderRankRows(topM, ym => { const [y,m] = ym.split('-'); return `${meses[parseInt(m)-1]} ${y}`; }, v => v) : '<div class="resumen-empty">Sin datos mensuales</div>';
 }
 
 function renderChartModalidad(canvasId){
   const presencial = VISITAS_FILTRADAS.filter(r => r.modalidad === 'Presencial').length;
   const virtual = VISITAS_FILTRADAS.filter(r => r.modalidad === 'Virtual').length;
   destruirChart(canvasId);
+  if(chartVacio(canvasId, presencial + virtual === 0)) return;
   const canvas = $(canvasId);
   if(!canvas) return;
   charts[canvasId] = new Chart(canvas, {
@@ -1646,10 +1842,32 @@ function renderChartModalidad(canvasId){
   });
 }
 
+function chartVacio(canvasId, esVacio){
+  const canvas = $(canvasId);
+  if(!canvas) return false;
+  const wrap = canvas.closest('.chart-wrap');
+  let msg = wrap.querySelector('.chart-empty-msg');
+  if(esVacio){
+    canvas.style.display = 'none';
+    if(!msg){
+      msg = document.createElement('div');
+      msg.className = 'chart-empty-msg';
+      msg.innerHTML = '<i class="ti ti-chart-bar-off"></i><span>Sin datos para este filtro</span>';
+      wrap.appendChild(msg);
+    }
+    msg.style.display = 'flex';
+    return true;
+  }
+  canvas.style.display = '';
+  if(msg) msg.style.display = 'none';
+  return false;
+}
+
 function renderChartAseguradora(canvasId){
   const mapfre = VISITAS_FILTRADAS.filter(r => r.aseguradora === 'Mapfre').length;
   const colmena = VISITAS_FILTRADAS.filter(r => r.aseguradora === 'Colmena').length;
   destruirChart(canvasId);
+  if(chartVacio(canvasId, mapfre + colmena === 0)) return;
   const canvas = $(canvasId);
   if(!canvas) return;
   charts[canvasId] = new Chart(canvas, {
@@ -1802,14 +2020,15 @@ function renderChartMensual(canvasId){
 }
 
 function renderChartAnual(canvasId){
-  const v2025 = VISITAS_FILTRADAS.filter(r => r.fecha && r.fecha.startsWith('2025')).length;
-  const v2026 = VISITAS_FILTRADAS.filter(r => r.fecha && r.fecha.startsWith('2026')).length;
+  const porAnio = {};
+  VISITAS_FILTRADAS.forEach(r => { if(!r.fecha) return; const y = r.fecha.slice(0,4); porAnio[y] = (porAnio[y]||0) + 1; });
+  const anios = Object.keys(porAnio).sort();
   destruirChart(canvasId);
   const canvas = $(canvasId);
   if(!canvas) return;
   charts[canvasId] = new Chart(canvas, {
     type: 'doughnut',
-    data: { labels: ['2025','2026'], datasets: [{ data: [v2025, v2026], backgroundColor: [COLOR_MAPFRE, COLOR_COLMENA], borderWidth: 4, borderColor: getComputedStyle(document.body).getPropertyValue('--bg').trim() || '#fff' }] },
+    data: { labels: anios, datasets: [{ data: anios.map(a => porAnio[a]), backgroundColor: anios.map((_,i) => i % 2 === 0 ? COLOR_MAPFRE : COLOR_COLMENA), borderWidth: 4, borderColor: getComputedStyle(document.body).getPropertyValue('--bg').trim() || '#fff' }] },
     options: {
       responsive:true, maintainAspectRatio:false, cutout:'60%',
       plugins:{
@@ -1887,10 +2106,10 @@ function renderTabla(){
   FILAS_ACTUALES = filas;
   $('tabla-count').textContent = filas.length;
   $('tabla-empty').classList.toggle('hidden', filas.length > 0);
-  const totalPaginas = Math.max(1, Math.ceil(filas.length / PAGE_SIZE));
+  const totalPaginas = Math.max(1, Math.ceil(filas.length / config.filasPorPagina));
   if (paginaActual > totalPaginas) paginaActual = totalPaginas;
-  const inicio = (paginaActual - 1) * PAGE_SIZE;
-  const pagina = filas.slice(inicio, inicio + PAGE_SIZE);
+  const inicio = (paginaActual - 1) * config.filasPorPagina;
+  const pagina = filas.slice(inicio, inicio + config.filasPorPagina);
   let html = '';
   pagina.forEach((r, idx) => {
     const globalIdx = inicio + idx;
@@ -1901,7 +2120,7 @@ function renderTabla(){
       <td><span class="badge-aseg ${r.aseguradora==='Mapfre'?'mapfre':'colmena'}">${r.aseguradora||''}</span></td>
       <td>${r.gerencia_regional||''}</td>
       <td>${r.gerencia_zonal||''}</td>
-      <td><strong>${r.oficina||''}</strong></td>
+      <td class="td-trunc" title="${(r.oficina||'').replace(/"/g,'&quot;')}"><strong>${r.oficina||''}</strong></td>
       <td><code style="font-size:10.5px;color:var(--t2)">${r.cod_oficina||''}</code></td>
       <td><span class="badge-modal ${r.modalidad==='Presencial'?'presencial':'virtual'}"><i class="ti ti-${r.modalidad==='Presencial'?'walk':'video'}"></i> ${r.modalidad||''}</span></td>
       <td><span class="badge-obj">${r.objetivo||''}</span></td>
@@ -2270,6 +2489,7 @@ document.addEventListener('keydown', e => {
     cerrarConfig();
     cerrarAgregarFuncionario();
     cerrarDrilldown();
+    cerrarConfirmacion();
   }
 });
 
@@ -2376,15 +2596,15 @@ async function exportarExcel(){
     const datosOrdenados = [...VISITAS_FILTRADAS].sort((a, b) => {
       const fa = (a.fecha || '') + ' ' + (a.hora_registro || '');
       const fb = (b.fecha || '') + ' ' + (b.hora_registro || '');
-      return fa.localeCompare(fb);
+      return fb.localeCompare(fa);
     });
 
     datosOrdenados.forEach((r, i) => {
       const row = wsDatos.addRow({
-        no:i+1, fecha:r.fecha, hora:r.hora_registro, func:r.funcionario, aseg:r.aseguradora,
-        reg:r.gerencia_regional, zon:r.gerencia_zonal, ofc:r.oficina, sban:r.cod_oficina,
-        mod:r.modalidad, obj:r.objetivo, com:r.comerciales, ope:r.operativos
-      });
+      no: datosOrdenados.length - i, fecha:r.fecha, hora:r.hora_registro, func:r.funcionario, aseg:r.aseguradora,
+      reg:r.gerencia_regional, zon:r.gerencia_zonal, ofc:r.oficina, sban:r.cod_oficina,
+      mod:r.modalidad, obj:r.objetivo, com:r.comerciales, ope:r.operativos
+    });
       row.eachCell(c => { c.border = bordeCompleto; });
       if (i % 2 === 1) row.eachCell(c => { c.fill = { type:'pattern', pattern:'solid', fgColor:{ argb:GRIS_FILA } }; });
       const asegCell = row.getCell('aseg');
