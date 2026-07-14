@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Panel Administrativo · Visitas</title>
+<title>Correcol Insights · Visitas</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.30.0/dist/tabler-icons.min.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
@@ -125,7 +125,9 @@ body.login-active .main{margin-left:0!important}
 .main{margin-left:var(--sidebar-w);transition:margin-left .3s cubic-bezier(.4,0,.2,1);min-height:100vh}
 .main.expanded{margin-left:var(--sidebar-cw)}
 
-.gate-wrap{max-width:420px;margin:90px auto}
+.gate-wrap{max-width:420px;margin:0 auto}
+body.login-active .main{display:flex;align-items:center;min-height:100vh}
+body.login-active .wrap.gate-wrap{padding:24px 20px}
 .card.shake{animation:shake .45s cubic-bezier(.36,.07,.19,.97)}
 .hd{display:flex;align-items:flex-start;gap:14px;margin-bottom:20px}
 .hd-icon{width:44px;height:44px;border-radius:var(--r-md);background:var(--grad-brand);color:#fff;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;box-shadow:0 4px 12px rgba(24,95,165,.3)}
@@ -403,6 +405,7 @@ tbody tr:hover td{background:var(--brand-l)}
 .view-toggle-btn:hover{color:var(--brand)}
 .view-toggle-btn.active{background:var(--grad-brand);color:#fff;box-shadow:0 2px 6px rgba(24,95,165,.2)}
 
+body:not(.es-admin) .solo-admin{display:none!important}
 .status-line{text-align:center;font-size:11.5px;color:var(--t3);margin-top:16px;display:flex;align-items:center;justify-content:center;gap:8px}
 .empty-state{text-align:center;padding:50px 20px;color:var(--t3)}
 .empty-state i{font-size:44px;margin-bottom:12px;display:block;opacity:.4}
@@ -469,16 +472,54 @@ body.compact-mode .tabla-card{padding:12px}
   </div>
 </div>
 
-<div class="modal-overlay" id="modal-func-overlay" onclick="if(event.target===this) cerrarFuncionarios()">
-  <div class="modal-box" style="max-width:580px">
+<div class="modal-overlay" id="modal-usuarios-overlay" onclick="if(event.target===this) cerrarUsuarios()">
+  <div class="modal-box" style="max-width:520px">
     <div class="modal-header">
-      <h4><i class="ti ti-users"></i> Gestión de funcionarios</h4>
-      <button class="modal-close" onclick="cerrarFuncionarios()"><i class="ti ti-x"></i></button>
+      <h4><i class="ti ti-users-group"></i> Gestión de usuarios</h4>
+      <button class="modal-close" onclick="cerrarUsuarios()"><i class="ti ti-x"></i></button>
     </div>
     <div class="modal-body">
+      <div class="func-stats" id="usuarios-stats"></div>
+      <div style="display:flex;justify-content:flex-end;margin-bottom:10px">
+        <button class="btn small green" onclick="abrirCrearUsuario()"><i class="ti ti-user-plus"></i> Nuevo usuario</button>
+      </div>
+      <div id="lista-usuarios"></div>
+      <hr style="border:none;border-top:1px solid var(--bd);margin:16px 0">
+      <h4 style="font-size:12px;font-weight:800;color:var(--brand-d);margin-bottom:10px;display:flex;align-items:center;gap:6px"><i class="ti ti-id"></i> Funcionarios</h4>
       <div class="func-stats" id="func-stats"></div>
       <div class="func-tabs" id="func-tabs"></div>
       <div id="lista-funcionarios"></div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-crear-usuario-overlay" onclick="if(event.target===this) cerrarCrearUsuario()">
+  <div class="modal-box" style="max-width:400px">
+    <div class="modal-header">
+      <h4><i class="ti ti-user-plus"></i> Nuevo usuario</h4>
+      <button class="modal-close" onclick="cerrarCrearUsuario()"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="fg">
+        <label>Usuario <span class="req">*</span></label>
+        <input type="text" id="nu-username" placeholder="Ej: G-1415" autocomplete="off">
+      </div>
+      <div class="fg">
+        <label>Nombre</label>
+        <input type="text" id="nu-nombre" placeholder="Ej: Nombre Apellido" autocomplete="off">
+      </div>
+      <div class="fg">
+        <label>Clave <span class="req">*</span></label>
+        <input type="text" id="nu-password" placeholder="Clave temporal" autocomplete="off">
+      </div>
+      <div class="fg">
+        <label>Rol <span class="req">*</span></label>
+        <select id="nu-rol">
+          <option value="visitor">Visitor (solo ver)</option>
+          <option value="gestor">Gestor (ver + agregar funcionario)</option>
+        </select>
+      </div>
+      <button class="btn full green" onclick="crearUsuarioApp()"><i class="ti ti-check"></i> Crear usuario</button>
     </div>
   </div>
 </div>
@@ -601,8 +642,8 @@ body.compact-mode .tabla-card{padding:12px}
     <div class="sidebar-item" data-tooltip="Actualizar" onclick="cargarTodo()">
       <i class="ti ti-refresh"></i><span class="label">Actualizar</span>
     </div>
-    <div class="sidebar-item" data-tooltip="Gestionar funcionarios" onclick="abrirFuncionarios()">
-      <i class="ti ti-users"></i><span class="label">Gestionar funcionarios</span>
+    <div class="sidebar-item" data-tooltip="Gestionar usuarios" onclick="abrirUsuarios()">
+      <i class="ti ti-users-group"></i><span class="label">Gestionar usuarios</span>
     </div>
     <div class="sidebar-item" data-tooltip="Exportar Excel" onclick="exportarExcel()">
       <i class="ti ti-file-spreadsheet"></i><span class="label">Excel</span>
@@ -619,7 +660,7 @@ body.compact-mode .tabla-card{padding:12px}
     <div class="sidebar-section">
       <div class="sidebar-section-title"><i class="ti ti-settings"></i> Sistema</div>
     </div>
-    <div class="sidebar-item" data-tooltip="Configuración" onclick="abrirConfig()">
+    <div class="sidebar-item solo-admin" data-tooltip="Configuración" onclick="abrirConfig()">
       <i class="ti ti-settings"></i><span class="label">Configuración</span>
     </div>
     <div class="sidebar-item" data-tooltip="Salir" onclick="cerrarSesion()" style="color:var(--err)">
@@ -644,25 +685,25 @@ body.compact-mode .tabla-card{padding:12px}
   <div class="wrap gate-wrap" id="gate-wrap">
     <div class="card" id="gate-card">
       <div class="hd">
-        <div class="hd-icon"><i class="ti ti-lock"></i></div>
+        <div class="hd-icon"><i class="ti ti-chart-dots-3"></i></div>
         <div>
-          <h1>Acceso Administrativo</h1>
-          <p>Panel exclusivo para uso interno. Ingresa la clave de acceso.</p>
+          <h1>Correcol Insights</h1>
+          <p>Panel ejecutivo de seguimiento y análisis de visitas.</p>
         </div>
       </div>
       <div class="fg">
         <label>Usuario <span class="req">*</span></label>
         <input type="text" id="gate-user" placeholder="Ingresar" autocomplete="off">
       </div>
-      <div class="fg">
+      <div class="fg hidden" id="gate-pass-wrap">
         <label>Clave de acceso <span class="req">*</span></label>
         <div class="input-wrap">
           <input type="password" id="gate-pass" placeholder="••••••••" autocomplete="off">
           <i class="ti ti-eye pass-eye" id="pass-eye" onclick="togglePassword()"></i>
         </div>
       </div>
-      <div class="err-msg" id="err-gate"><i class="ti ti-alert-circle"></i> Clave incorrecta, intenta de nuevo</div>
-      <button class="btn full" id="btn-entrar" onclick="verificarClave()"><i class="ti ti-key"></i> Entrar al panel</button>
+      <div class="err-msg" id="err-gate"><i class="ti ti-alert-circle"></i> Usuario no reconocido</div>
+      <button class="btn full" id="btn-entrar" onclick="verificarClave()"><i class="ti ti-arrow-right"></i> Continuar</button>
     </div>
   </div>
 
@@ -995,6 +1036,7 @@ let quickFilterActivo = 'todos';
 let primeraCarga = true;
 let FUNCIONARIOS_ADMIN = [];
 let ACCESS_TOKEN = null;
+let ROL = null;
 let currentPage = 'resumen';
 let config = { animaciones: true, sonidoToasts: false, liveIntervalSec: 10, compacto: false, filasPorPagina: 10, duracionToast: 3200, vistaDetallePorDefecto: 'tabla', confirmacionReforzada: false };
 let funcionTabActivo = 'todos';
@@ -1164,11 +1206,49 @@ function togglePassword(){
   eye.className = 'ti pass-eye ' + (mostrando ? 'ti-eye' : 'ti-eye-off');
 }
 
+let gateModo = null;
+let gateEmailAdmin = null;
+
 async function verificarClave(){
   const usuario = $('gate-user').value.trim();
-  const pass = $('gate-pass').value;
-  if (!usuario || !pass) { $('err-gate').classList.add('show'); return; }
+  if (!usuario) { $('err-gate').classList.add('show'); return; }
   const btn = $('btn-entrar');
+  if (gateModo === 'admin') {
+    const pass = $('gate-pass').value;
+    if (!pass) { $('err-gate').classList.add('show'); return; }
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> Verificando...';
+    try {
+      const respLogin = await fetch(SUPABASE_URL + '/auth/v1/token?grant_type=password', {
+        method: 'POST',
+        headers: { apikey: SUPABASE_ANON_KEY, 'Content-Type':'application/json' },
+        body: JSON.stringify({ email: gateEmailAdmin, password: pass })
+      });
+      if (!respLogin.ok) throw new Error('credenciales');
+      const data = await respLogin.json();
+      ACCESS_TOKEN = data.access_token;
+      ROL = 'admin';
+      sessionStorage.setItem('rv_admin_token', ACCESS_TOKEN);
+      sessionStorage.setItem('rv_admin_refresh', data.refresh_token);
+      sessionStorage.setItem('rv_rol', ROL);
+      sessionStorage.setItem('rv_username', usuario.toUpperCase());
+      $('err-gate').classList.remove('show');
+      mostrarDashboard();
+      showToast('Bienvenido al panel administrativo', 'success');
+    } catch (e) {
+      $('err-gate').innerHTML = '<i class="ti ti-alert-circle"></i> Clave incorrecta, intenta de nuevo';
+      $('err-gate').classList.add('show');
+      $('gate-pass').value = '';
+      $('gate-pass').focus();
+      const card = $('gate-card');
+      card.classList.remove('shake'); void card.offsetWidth; card.classList.add('shake');
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="ti ti-key"></i> Entrar al panel';
+    }
+    return;
+  }
+
   btn.disabled = true;
   btn.innerHTML = '<span class="spinner"></span> Verificando...';
   try {
@@ -1178,29 +1258,39 @@ async function verificarClave(){
       body: JSON.stringify({ p_username: usuario })
     });
     const email = await respEmail.json();
-    if (!email) throw new Error('credenciales');
-    const respLogin = await fetch(SUPABASE_URL + '/auth/v1/token?grant_type=password', {
+
+    if (email) {
+      gateModo = 'admin';
+      gateEmailAdmin = email;
+      $('gate-pass-wrap').classList.remove('hidden');
+      $('err-gate').classList.remove('show');
+      btn.innerHTML = '<i class="ti ti-key"></i> Entrar al panel';
+      setTimeout(() => $('gate-pass').focus(), 100);
+      return;
+    }
+
+    const respApp = await fetch(SUPABASE_URL + '/rest/v1/rpc/login_app_usuario_sin_clave', {
       method: 'POST',
-      headers: { apikey: SUPABASE_ANON_KEY, 'Content-Type':'application/json' },
-      body: JSON.stringify({ email, password: pass })
+      headers: { apikey: SUPABASE_ANON_KEY, Authorization: 'Bearer ' + SUPABASE_ANON_KEY, 'Content-Type':'application/json' },
+      body: JSON.stringify({ p_username: usuario })
     });
-    if (!respLogin.ok) throw new Error('credenciales');
-    const data = await respLogin.json();
-    ACCESS_TOKEN = data.access_token;
-    sessionStorage.setItem('rv_admin_token', ACCESS_TOKEN);
-    sessionStorage.setItem('rv_admin_refresh', data.refresh_token);
+    const filas = await respApp.json();
+    if (!filas || !filas.length) throw new Error('no encontrado');
+
+    ROL = filas[0].rol;
+    sessionStorage.setItem('rv_rol', ROL);
+    sessionStorage.setItem('rv_username', filas[0].username);
     $('err-gate').classList.remove('show');
     mostrarDashboard();
-    showToast('Bienvenido al panel administrativo', 'success');
+    showToast(`Bienvenido, ${filas[0].nombre || filas[0].username}`, 'success');
   } catch (e) {
+    $('err-gate').innerHTML = '<i class="ti ti-alert-circle"></i> Usuario no reconocido';
     $('err-gate').classList.add('show');
-    $('gate-pass').value = '';
-    $('gate-pass').focus();
     const card = $('gate-card');
     card.classList.remove('shake'); void card.offsetWidth; card.classList.add('shake');
   } finally {
     btn.disabled = false;
-    btn.innerHTML = '<i class="ti ti-key"></i> Entrar al panel';
+    if (gateModo !== 'admin') btn.innerHTML = '<i class="ti ti-arrow-right"></i> Continuar';
   }
 }
 
@@ -1209,6 +1299,7 @@ $('gate-user').addEventListener('keydown', e => { if(e.key === 'Enter') verifica
 
 function mostrarDashboard(){
   document.body.classList.remove('login-active');
+  document.body.classList.toggle('es-admin', ROL === 'admin');
   $('gate-wrap').classList.add('hidden');
   $('dash-wrap').classList.remove('hidden');
   setVista(vistaActual);
@@ -1222,7 +1313,11 @@ function cerrarSesion(){
     onConfirm: () => {
       sessionStorage.removeItem('rv_admin_token');
       sessionStorage.removeItem('rv_admin_refresh');
+      sessionStorage.removeItem('rv_rol');
+      sessionStorage.removeItem('rv_username');
       ACCESS_TOKEN = null;
+      ROL = null;
+      document.body.classList.remove('es-admin');
       document.body.classList.add('login-active');
       $('dash-wrap').classList.add('hidden');
       $('gate-wrap').classList.remove('hidden');
@@ -1342,7 +1437,11 @@ function cerrarConfig(){
 async function abrirFuncionarios(){
   $('modal-func-overlay').classList.add('show');
   document.body.style.overflow = 'hidden';
-  await cargarFuncionariosAdmin();
+  if (ROL === 'admin') {
+    await cargarFuncionariosAdmin();
+  } else {
+    renderFuncionariosAdmin();
+  }
 }
 
 function cerrarFuncionarios(){
@@ -1382,6 +1481,57 @@ async function cargarFuncionariosAdmin(){
 }
 
 function renderFuncionariosAdmin(){
+  if (ROL !== 'admin') {
+    const total = FUNCIONARIOS_ADMIN.length;
+    const activas = FUNCIONARIOS_ADMIN.filter(f => f.activo).length;
+    $('func-stats').innerHTML = `
+      <div class="func-stat"><div class="v">${total}</div><div class="l">Total</div></div>
+      <div class="func-stat"><div class="v">${activas}</div><div class="l">Activos</div></div>
+      <div class="func-stat"><div class="v">${total - activas}</div><div class="l">Inactivos</div></div>
+    `;
+    const porAseg = {};
+    FUNCIONARIOS_ADMIN.forEach(f => {
+      const k = f.aseguradora || 'Sin dato';
+      if (!porAseg[k]) porAseg[k] = { total: 0, activos: 0 };
+      porAseg[k].total++;
+      if (f.activo) porAseg[k].activos++;
+    });
+    
+    let tabsHtml = `<button class="func-tab ${funcionTabActivo==='todos'?'activo':''}" onclick="setFuncTab('todos')"><i class="ti ti-users"></i> Todos <span class="count">${total}</span></button>`;
+    Object.keys(porAseg).sort().forEach(aseg => {
+      const clase = aseg.toLowerCase() === 'mapfre' ? 'mapfre' : aseg.toLowerCase() === 'colmena' ? 'colmena' : '';
+      const icon = aseg === 'Mapfre' ? 'ti-shield' : aseg === 'Colmena' ? 'ti-shield-check' : 'ti-shield-star';
+      tabsHtml += `<button class="func-tab ${clase} ${funcionTabActivo===aseg?'activo':''}" onclick="setFuncTab('${aseg.replace(/'/g,"\\'")}')"><i class="ti ${icon}"></i> ${aseg} <span class="count">${porAseg[aseg].total}</span></button>`;
+    });
+    tabsHtml += `<button class="func-tab-add" onclick="abrirAgregarFuncionario()" title="Agregar funcionario"><i class="ti ti-plus"></i></button>`;
+    $('func-tabs').innerHTML = tabsHtml;
+    const filtrados = funcionTabActivo === 'todos' ? FUNCIONARIOS_ADMIN : FUNCIONARIOS_ADMIN.filter(f => f.aseguradora === funcionTabActivo);
+    const cont = $('lista-funcionarios');
+    if(!filtrados.length){
+      cont.innerHTML = `<div class="resumen-empty">Sin funcionarios${funcionTabActivo!=='todos'?' en '+funcionTabActivo:''}</div>`;
+      return;
+    }
+    cont.innerHTML = filtrados.map(f => {
+      const iniciales = (f.nombre || '??').split(' ').slice(0,2).map(s => (s||'').charAt(0)).join('').toUpperCase();
+      const clase = f.aseguradora === 'Colmena' ? 'colmena' : '';
+      const colorBadge = f.aseguradora === 'Mapfre' ? 'background:var(--brand-l);color:var(--brand-d)' : 'background:var(--colmena-l);color:var(--colmena-d)';
+      return `
+        <div class="func-list-item">
+          <div class="func-avatar ${clase}">${iniciales}</div>
+          <div style="flex:1;min-width:0">
+            <div class="func-list-name ${f.activo?'':'inactivo'}">${f.nombre}</div>
+            <div style="display:flex;align-items:center;gap:6px;margin-top:3px">
+              <span class="func-list-aseg" style="${colorBadge}">${f.aseguradora||'?'}</span>
+              ${f.activo?'<span style="font-size:9.5px;color:var(--ok);font-weight:700">● Activo</span>':'<span style="font-size:9.5px;color:var(--t3);font-weight:700">● Inactivo</span>'}
+            </div>
+          </div>
+          <!-- SIN botones de editar, activar/desactivar o eliminar para gestores -->
+        </div>
+      `;
+    }).join('');
+    return;
+  }
+
   const total = FUNCIONARIOS_ADMIN.length;
   const activas = FUNCIONARIOS_ADMIN.filter(f => f.activo).length;
   const porAseg = {};
@@ -1424,6 +1574,9 @@ function renderFuncionariosAdmin(){
             ${f.activo?'<span style="font-size:9.5px;color:var(--ok);font-weight:700">● Activo</span>':'<span style="font-size:9.5px;color:var(--t3);font-weight:700">● Inactivo</span>'}
           </div>
         </div>
+        <button class="btn ghost small" onclick="editarNombreFuncionario('${f.id}')" title="Editar nombre">
+        <i class="ti ti-edit"></i>
+        </button>
         <button class="btn ghost small" onclick="toggleActivoFuncionario('${f.id}', ${!f.activo})" title="${f.activo?'Desactivar':'Activar'}">
           <i class="ti ti-${f.activo?'eye-off':'eye'}"></i>
         </button>
@@ -1465,10 +1618,29 @@ function toggleActivoFuncionario(id, nuevoEstado){
     onConfirm: async () => {
       await fetch(SUPABASE_URL + '/rest/v1/rpc/admin_editar_funcionario', {
         method:'POST',
-        headers:{ apikey:SUPABASE_ANON_KEY, Authorization:'Bearer '+SUPABASE_ANON_KEY, 'Content-Type':'application/json' },
+        headers: authHeaders(),
         body: JSON.stringify({ p_id: id, p_nombre: f.nombre, p_aseguradora: f.aseguradora, p_activo: nuevoEstado })
       });
       showToast(nuevoEstado ? 'Funcionario activado' : 'Funcionario desactivado', 'success');
+      cargarFuncionariosAdmin();
+    }
+  });
+}
+
+function editarNombreFuncionario(id){
+  const f = FUNCIONARIOS_ADMIN.find(x => x.id === id);
+  if(!f) return;
+  mostrarConfirmacion({
+    titulo: 'Editar nombre',
+    mensaje: `<div class="fg" style="margin-top:6px"><label>Nombre</label><input type="text" id="f-edit-nombre" value="${f.nombre.replace(/"/g,'&quot;')}" autocomplete="off"></div>`,
+    onConfirm: async () => {
+      const nuevo = document.getElementById('f-edit-nombre')?.value.trim().toUpperCase();
+      if(!nuevo){ showToast('Escribe un nombre','error'); return; }
+      await fetch(SUPABASE_URL + '/rest/v1/rpc/admin_editar_funcionario', {
+        method:'POST', headers: authHeaders(),
+        body: JSON.stringify({ p_id: id, p_nombre: nuevo, p_aseguradora: f.aseguradora, p_activo: f.activo })
+      });
+      showToast('Nombre actualizado','success');
       cargarFuncionariosAdmin();
     }
   });
@@ -1482,11 +1654,190 @@ function eliminarFuncionario(id){
     onConfirm: async () => {
       await fetch(SUPABASE_URL + '/rest/v1/rpc/admin_eliminar_funcionario', {
         method:'POST',
-        headers:{ apikey:SUPABASE_ANON_KEY, Authorization:'Bearer '+SUPABASE_ANON_KEY, 'Content-Type':'application/json' },
+        headers: authHeaders(),
         body: JSON.stringify({ p_id: id })
       });
       showToast('Funcionario eliminado','success');
       cargarFuncionariosAdmin();
+    }
+  });
+}
+
+let USUARIOS_ADMIN = [];
+
+function authHeaders(){
+  return { apikey:SUPABASE_ANON_KEY, Authorization:'Bearer '+ACCESS_TOKEN, 'Content-Type':'application/json' };
+}
+
+async function abrirUsuarios(){
+  $('modal-usuarios-overlay').classList.add('show');
+  document.body.style.overflow = 'hidden';
+  await cargarFuncionariosAdmin();
+  if (ROL === 'admin') {
+    await cargarUsuariosAdmin();
+    document.querySelector('#modal-usuarios-overlay .func-stats:first-child').style.display = '';
+    document.querySelector('#modal-usuarios-overlay .btn.small.green').style.display = '';
+    document.querySelector('#lista-usuarios').style.display = '';
+    document.querySelector('#modal-usuarios-overlay hr').style.display = '';
+  } else {
+    document.querySelector('#modal-usuarios-overlay .func-stats:first-child').style.display = 'none';
+    document.querySelector('#modal-usuarios-overlay .btn.small.green').style.display = 'none';
+    document.querySelector('#lista-usuarios').style.display = 'none';
+    document.querySelector('#modal-usuarios-overlay hr').style.display = 'none';
+  }
+}
+
+function cerrarUsuarios(){
+  $('modal-usuarios-overlay').classList.remove('show');
+  document.body.style.overflow = '';
+}
+
+function abrirCrearUsuario(){
+  $('nu-username').value = '';
+  $('nu-nombre').value = '';
+  $('nu-password').value = '';
+  $('nu-rol').value = 'visitor';
+  $('modal-crear-usuario-overlay').classList.add('show');
+  setTimeout(() => $('nu-username').focus(), 150);
+}
+
+function cerrarCrearUsuario(){
+  $('modal-crear-usuario-overlay').classList.remove('show');
+}
+
+async function cargarUsuariosAdmin(){
+  const cont = $('lista-usuarios');
+  cont.innerHTML = '<div class="resumen-empty">Cargando usuarios...</div>';
+  try{
+    const resp = await fetch(SUPABASE_URL + '/rest/v1/rpc/admin_listar_usuarios', {
+      method:'POST', headers: authHeaders(), body: JSON.stringify({})
+    });
+    if(!resp.ok) throw new Error();
+    USUARIOS_ADMIN = await resp.json();
+    renderUsuariosAdmin();
+  }catch(e){
+    cont.innerHTML = '<div class="resumen-empty">Error al cargar usuarios</div>';
+  }
+}
+
+function renderUsuariosAdmin(){
+  const total = USUARIOS_ADMIN.length;
+  const activos = USUARIOS_ADMIN.filter(u => u.activo).length;
+  const gestores = USUARIOS_ADMIN.filter(u => u.rol === 'gestor').length;
+  $('usuarios-stats').innerHTML = `
+    <div class="func-stat"><div class="v">${total}</div><div class="l">Total</div></div>
+    <div class="func-stat"><div class="v">${activos}</div><div class="l">Activos</div></div>
+    <div class="func-stat"><div class="v">${gestores}</div><div class="l">Gestores</div></div>
+  `;
+  const cont = $('lista-usuarios');
+  if(!total){ cont.innerHTML = '<div class="resumen-empty">Sin usuarios registrados</div>'; return; }
+  cont.innerHTML = USUARIOS_ADMIN.map(u => {
+    const iniciales = (u.nombre || u.username).split(' ').slice(0,2).map(s=>(s||'').charAt(0)).join('').toUpperCase();
+    return `
+      <div class="func-list-item">
+        <div class="func-avatar">${iniciales}</div>
+        <div style="flex:1;min-width:0">
+          <div class="func-list-name ${u.activo?'':'inactivo'}">${u.username}${u.nombre ? ' · '+u.nombre : ''}</div>
+          <div style="display:flex;align-items:center;gap:6px;margin-top:3px">
+            <span class="func-list-aseg" style="background:var(--brand-l);color:var(--brand-d)">${u.rol}</span>
+            ${u.activo?'<span style="font-size:9.5px;color:var(--ok);font-weight:700">● Activo</span>':'<span style="font-size:9.5px;color:var(--t3);font-weight:700">● Inactivo</span>'}
+          </div>
+        </div>
+        <button class="btn ghost small" onclick="editarNombreUsuario('${u.username}', '${(u.nombre||'').replace(/'/g,"\\'")}')" title="Editar nombre">
+          <i class="ti ti-edit"></i>
+        </button>
+        <button class="btn ghost small" onclick="resetPasswordUsuario('${u.username}')" title="Cambiar clave">
+          <i class="ti ti-key"></i>
+        </button>
+        <button class="btn ghost small" onclick="toggleActivoUsuario('${u.username}', ${!u.activo})" title="${u.activo?'Desactivar':'Activar'}">
+          <i class="ti ti-${u.activo?'eye-off':'eye'}"></i>
+        </button>
+        <button class="btn ghost small" onclick="eliminarUsuarioApp('${u.username}')" title="Eliminar" style="color:var(--err)">
+          <i class="ti ti-trash"></i>
+        </button>
+      </div>
+    `;
+  }).join('');
+}
+
+async function crearUsuarioApp(){
+  const username = $('nu-username').value.trim();
+  const nombre = $('nu-nombre').value.trim();
+  const password = $('nu-password').value;
+  const rol = $('nu-rol').value;
+  if(!username || !password){ showToast('Usuario y clave son obligatorios','error'); return; }
+  try{
+    const resp = await fetch(SUPABASE_URL + '/rest/v1/rpc/admin_crear_usuario', {
+      method:'POST', headers: authHeaders(),
+      body: JSON.stringify({ p_username: username, p_password: password, p_rol: rol, p_nombre: nombre || null })
+    });
+    if(!resp.ok) throw new Error();
+    cerrarCrearUsuario();
+    showToast('Usuario creado','success');
+    cargarUsuariosAdmin();
+  }catch(e){ showToast('Error al crear (¿usuario ya existe?)','error'); }
+}
+
+function toggleActivoUsuario(username, nuevoEstado){
+  mostrarConfirmacion({
+    titulo: nuevoEstado ? 'Activar usuario' : 'Desactivar usuario',
+    mensaje: `¿${nuevoEstado ? 'Activar' : 'Desactivar'} a ${username}?`,
+    onConfirm: async () => {
+      await fetch(SUPABASE_URL + '/rest/v1/rpc/admin_editar_usuario', {
+        method:'POST', headers: authHeaders(),
+        body: JSON.stringify({ p_username: username, p_activo: nuevoEstado })
+      });
+      showToast(nuevoEstado ? 'Usuario activado' : 'Usuario desactivado', 'success');
+      cargarUsuariosAdmin();
+    }
+  });
+}
+
+function resetPasswordUsuario(username){
+  mostrarConfirmacion({
+    titulo: 'Cambiar clave',
+    mensaje: `<div class="fg" style="margin-top:6px"><label>Nueva clave para ${username}</label><input type="text" id="nu-reset-pass" autocomplete="off"></div>`,
+    onConfirm: async () => {
+      const nueva = document.getElementById('nu-reset-pass')?.value.trim();
+      if(!nueva){ showToast('Escribe una clave','error'); return; }
+      await fetch(SUPABASE_URL + '/rest/v1/rpc/admin_editar_usuario', {
+        method:'POST', headers: authHeaders(),
+        body: JSON.stringify({ p_username: username, p_activo: true, p_nueva_password: nueva })
+      });
+      showToast('Clave actualizada','success');
+      cargarUsuariosAdmin();
+    }
+  });
+}
+
+function editarNombreUsuario(username, nombreActual){
+  mostrarConfirmacion({
+    titulo: 'Editar nombre',
+    mensaje: `<div class="fg" style="margin-top:6px"><label>Nombre para ${username}</label><input type="text" id="u-edit-nombre" value="${nombreActual}" autocomplete="off"></div>`,
+    onConfirm: async () => {
+      const nuevo = document.getElementById('u-edit-nombre')?.value.trim();
+      await fetch(SUPABASE_URL + '/rest/v1/rpc/admin_editar_usuario', {
+        method:'POST', headers: authHeaders(),
+        body: JSON.stringify({ p_username: username, p_activo: true, p_nombre: nuevo })
+      });
+      showToast('Nombre actualizado','success');
+      cargarUsuariosAdmin();
+    }
+  });
+}
+
+function eliminarUsuarioApp(username){
+  mostrarConfirmacion({
+    titulo: 'Eliminar usuario',
+    mensaje: `¿Eliminar a ${username} definitivamente? Esta acción no se puede deshacer.`,
+    textoConfirmacion: config.confirmacionReforzada ? 'ELIMINAR' : null,
+    onConfirm: async () => {
+      await fetch(SUPABASE_URL + '/rest/v1/rpc/admin_eliminar_usuario', {
+        method:'POST', headers: authHeaders(),
+        body: JSON.stringify({ p_username: username })
+      });
+      showToast('Usuario eliminado','success');
+      cargarUsuariosAdmin();
     }
   });
 }
@@ -1779,7 +2130,8 @@ animarNumero($('kpi-total'), total);
   animarNumero($('kpi-func-total'), funcSet);
 
   const hora = new Date().toLocaleTimeString('es-CO', {hour:'2-digit', minute:'2-digit'});
-  $('resumen-linea').textContent = `Actualizado: ${hora}`;
+  const etiquetaRol = ROL === 'admin' ? 'Admin' : ROL === 'gestor' ? 'Gestor' : 'Visitor';
+  $('resumen-linea').textContent = `Actualizado: ${hora} · ${etiquetaRol}`;
 }
 
 function renderTasasCompactas(){
@@ -2584,6 +2936,8 @@ document.addEventListener('keydown', e => {
     cerrarAgregarFuncionario();
     cerrarDrilldown();
     cerrarConfirmacion();
+    cerrarUsuarios();
+    cerrarCrearUsuario();
   }
 });
 
@@ -2740,7 +3094,9 @@ document.addEventListener('keydown', (e) => {
 
 document.addEventListener('DOMContentLoaded', () => {
   const token = sessionStorage.getItem('rv_admin_token');
-  if (token) { ACCESS_TOKEN = token; mostrarDashboard(); }
+  const rolGuardado = sessionStorage.getItem('rv_rol');
+  if (token) { ACCESS_TOKEN = token; ROL = 'admin'; mostrarDashboard(); }
+  else if (rolGuardado) { ROL = rolGuardado; mostrarDashboard(); }
 });
 </script>
 </body>
