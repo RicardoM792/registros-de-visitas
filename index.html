@@ -2128,11 +2128,13 @@ function cargarOficinasRed() {
 
 async function cargarOficinasInicial() {
   if (cargarOficinasCache()) {
-    return await cargarFuncionarios();
+    await cargarFuncionarios();
+    return true;
   }
   const ok = await cargarOficinasRed();
   if (ok) {
-    return await cargarFuncionarios();
+    await cargarFuncionarios();
+    return true;
   }
   return false;
 }
