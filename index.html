@@ -184,19 +184,28 @@ body.login-view .wrap { padding-top: 16px; padding-bottom: 16px; }
 .change-user:hover { background: var(--err); color: #fff; transform: none; }
 .theme-toggle:hover { background: var(--brand); color: #fff; transform: scale(1.1); }
 
-.dashboard-metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
+.dashboard-metrics { 
+  display: grid; 
+  grid-template-columns: repeat(3, 1fr); 
+  gap: 8px; 
+  margin-bottom: 16px; 
+}
 
 .metric-card {
   background: var(--glass-bg);
   backdrop-filter: blur(10px);
   border: 1px solid var(--glass-border);
   border-radius: var(--r-lg);
-  padding: 14px 12px;
+  padding: 8px 6px;
   text-align: center;
   position: relative;
   overflow: hidden;
   transition: var(--transition);
   cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 .metric-card::before {
@@ -205,18 +214,51 @@ body.login-view .wrap { padding-top: 16px; padding-bottom: 16px; }
   top: 0;
   left: 0;
   right: 0;
-  height: 3px;
+  height: 2px;
   background: linear-gradient(90deg, var(--brand), var(--brand-d));
   opacity: 0;
   transition: var(--transition);
 }
 
 .metric-card:hover::before { opacity: 1; }
-.metric-card:hover { transform: translateY(-3px); box-shadow: var(--sh-lg); }
-.metric-icon { font-size: 20px; color: var(--brand); margin-bottom: 4px; }
-.metric-value { font-size: 20px; font-weight: 800; color: var(--t1); display: block; }
-.metric-label { font-size: 10px; color: var(--t2); font-weight: 600; text-transform: uppercase; letter-spacing: .3px; }
-.metric-trend { font-size: 10px; font-weight: 700; margin-top: 4px; display: inline-flex; align-items: center; gap: 2px; padding: 2px 8px; border-radius: 10px; }
+.metric-card:hover { transform: translateY(-2px); box-shadow: var(--sh-lg); }
+
+.metric-icon { 
+  font-size: 16px; 
+  color: var(--brand); 
+  margin-bottom: 2px; 
+}
+
+.metric-value { 
+  font-size: 16px; 
+  font-weight: 800; 
+  color: var(--t1); 
+  line-height: 1.1;
+  display: block; 
+}
+
+.metric-label { 
+  font-size: 9px; 
+  color: var(--t2); 
+  font-weight: 600; 
+  text-transform: uppercase; 
+  letter-spacing: .2px; 
+  line-height: 1.1;
+  margin-top: 2px;
+}
+
+.metric-trend { 
+  font-size: 8px; 
+  font-weight: 700; 
+  margin-top: 2px; 
+  display: inline-flex; 
+  align-items: center; 
+  gap: 2px; 
+  padding: 1px 5px; 
+  border-radius: 8px; 
+  white-space: nowrap;
+}
+
 .metric-trend.up { color: var(--ok); background: var(--ok-bg); }
 .metric-trend.down { color: var(--err); background: var(--err-bg); }
 .metric-trend.flat { color: var(--t2); background: var(--bg3); }
