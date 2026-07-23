@@ -2800,12 +2800,12 @@ function obtenerMensajeExito(fecha) {
   const fechaVisita = new Date(fecha + 'T00:00:00'); fechaVisita.setHours(0, 0, 0, 0);
   const diffDias = Math.round((fechaVisita - hoy) / (1000 * 60 * 60 * 24));
 
-  if (diffDias === 0) return '✓ Tu visita de hoy ha sido registrada';
-  if (diffDias === 1) return '✓ Tu visita de mañana ha sido registrada';
-  if (diffDias === -1) return '✓ Tu visita de ayer ha sido registrada';
+  if (diffDias === 0) return '✓ ¡Éxito! Tu visita de hoy ha sido registrada correctamente.';
+  if (diffDias === 1) return '✓ ¡Éxito! Tu visita programada para mañana ha sido registrada.';
+  if (diffDias === -1) return '✓ ¡Éxito! Tu visita de ayer ha sido registrada correctamente.';
+  if (diffDias > 1) return `✓ ¡Éxito! Tu visita programada para el ${fechaVisita.toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })} ha sido registrada.`;
 
-  const opciones = { day: 'numeric', month: 'long', year: 'numeric' };
-  return `✓ Tu visita del ${fechaVisita.toLocaleDateString('es-ES', opciones)} ha sido registrada`;
+  return `✓ ¡Éxito! Tu visita del ${fechaVisita.toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })} ha sido registrada.`;
 }
 
 function confirmarDuplicado(cantidad, oficina) {
