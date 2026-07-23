@@ -3203,11 +3203,11 @@ function actualizarDashboard() {
   const ayer = new Date(hoy);
   ayer.setDate(hoy.getDate() - 1);
   const ayerStr = ayer.getFullYear() + '-' + String(ayer.getMonth() + 1).padStart(2, '0') + '-' + String(ayer.getDate()).padStart(2, '0');
-
+  
   const visitasHoy = contarVisitasEnFecha(hoyStr);
   const visitasAyer = contarVisitasEnFecha(ayerStr);
   const oficinasUnicas = new Set(visitasCache.map(v => v.oficina)).size;
-
+  
   const visitasPorDia = {};
   visitasCache.forEach(v => {
     if (v.fecha) {
@@ -3217,17 +3217,31 @@ function actualizarDashboard() {
   });
 
   let rachaActual = 0;
-  const fechasOrdenadas = Object.keys(visitasPorDia).sort();
   let fechaBase = new Date();
   fechaBase.setHours(0, 0, 0, 0);
+  let diasRevisados = 0;
+  if (fechaBase.getDay() !== 0 && fechaBase.getDay() !== 6) {
+    if (!visitasPorDia[hoyStr] || visitasPorDia[hoyStr].length === 0) {
+      diasRevisados++;
+    }
+  }
 
-  for (let i = fechasOrdenadas.length - 1; i >= 0; i--) {
-    const fechaVisita = new Date(fechasOrdenadas[i] + 'T00:00:00');
-    fechaVisita.setHours(0, 0, 0, 0);
-    const diffDias = Math.round((fechaBase - fechaVisita) / (1000 * 60 * 60 * 24));
+  for (let i = 0; i < 365; i++) {
+    let fechaIterada = new Date(fechaBase);
+    fechaIterada.setDate(fechaBase.getDate() - diasRevisados);
 
-    if (diffDias === rachaActual) {
+    if (fechaIterada.getDay() === 0 || fechaIterada.getDay() === 6) {
+      diasRevisados++;
+      continue;
+    }
+
+    const fechaStr = fechaIterada.getFullYear() + '-' + 
+      String(fechaIterada.getMonth() + 1).padStart(2, '0') + '-' + 
+      String(fechaIterada.getDate()).padStart(2, '0');
+
+    if (visitasPorDia[fechaStr] && visitasPorDia[fechaStr].length > 0) {
       rachaActual++;
+      diasRevisados++;
     } else {
       break;
     }
