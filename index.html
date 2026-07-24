@@ -259,9 +259,13 @@ body.login-view .wrap { padding-top: 16px; padding-bottom: 16px; }
   white-space: nowrap;
 }
 
-.metric-trend.up { color: var(--ok); background: var(--ok-bg); }
-.metric-trend.down { color: var(--err); background: var(--err-bg); }
-.metric-trend.flat { color: var(--t2); background: var(--bg3); }
+.metric-trend.up,
+.metric-trend.down,
+.metric-trend.flat {
+  color: var(--t3);
+  background: transparent;
+  opacity: .8;
+}
 
 .chart-container {
   background: var(--glass-bg);
@@ -365,15 +369,16 @@ label { display: block; font-size: 12.5px; font-weight: 600; color: var(--t2); m
 
 input[type=text], input[type=search], select {
   width: 100%;
-  padding: 10px 12px;
+  padding: 12px 14px;
   border: 1.5px solid var(--bd);
-  border-radius: var(--r-md);
+  border-radius: var(--r-lg);
   font-size: 14px;
   color: var(--t1);
   background: var(--glass-bg);
   backdrop-filter: blur(5px);
   transition: var(--transition);
   font-family: inherit;
+  box-shadow: var(--sh-md);
 }
 
 input:focus, select:focus { outline: none; border-color: var(--brand); box-shadow: 0 0 0 3px rgba(24,95,165,.15); }
@@ -429,10 +434,11 @@ select:disabled, input:disabled { background: var(--bg3); color: var(--t3); curs
 .sel-card {
   background: var(--glass-bg);
   backdrop-filter: blur(10px);
-  border: 1.5px dashed var(--bd);
-  border-radius: var(--r-md);
-  padding: 14px;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--r-lg);
+  padding: 16px;
   margin-top: 8px;
+  box-shadow: var(--sh-md);
   display: none;
 }
 
@@ -466,20 +472,20 @@ select:disabled, input:disabled { background: var(--bg3); color: var(--t3); curs
 .osc-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 9px; }
 
 .of-chip {
-  font-size: 11px;
-  color: var(--t1);
-  background: var(--glass-bg);
-  backdrop-filter: blur(5px);
+  font-size: 10.5px;
+  color: var(--t2);
+  background: transparent;
   border: 1px solid var(--bd);
-  border-radius: 20px;
-  padding: 4px 10px;
+  border-radius: 14px;
+  padding: 2px 8px;
   display: inline-flex;
   align-items: center;
   gap: 4px;
   font-weight: 500;
+  line-height: 1.4;
 }
 
-.of-chip i { font-size: 12px; color: var(--brand); }
+.of-chip i { font-size: 11px; color: var(--brand); }
 
 .btn-mini-red {
   margin-top: 10px;
@@ -503,7 +509,7 @@ select:disabled, input:disabled { background: var(--bg3); color: var(--t3); curs
   width: 100%;
   padding: 13px;
   border: none;
-  border-radius: var(--r-md);
+  border-radius: var(--r-lg);
   background: var(--brand);
   color: #fff;
   font-size: 14.5px;
@@ -516,6 +522,7 @@ select:disabled, input:disabled { background: var(--bg3); color: var(--t3); curs
   transition: var(--transition);
   position: relative;
   overflow: hidden;
+  box-shadow: var(--sh-md);
 }
 
 .btn::after {
@@ -556,7 +563,21 @@ select:disabled, input:disabled { background: var(--bg3); color: var(--t3); curs
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 .toast.error { background: var(--err); }
 .toast i { font-size: 18px; }
-.status-line { text-align: center; font-size: 9px; color: var(--t3); margin-top: 14px; opacity: .45; }
+.status-line {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: fit-content;
+  margin: 14px auto 0;
+  text-align: center;
+  font-size: 9px;
+  font-weight: 500;
+  color: var(--t3);
+  opacity: .5;
+}
+
+.status-line i { font-size: 10px; color: var(--t3); }
 .spinner { width: 15px; height: 15px; border: 2px solid rgba(255,255,255,.4); border-top-color: #fff; border-radius: 50%; animation: spin .6s linear infinite; }
 
 @keyframes spin { to { transform: rotate(360deg); } }
@@ -589,9 +610,10 @@ select:disabled, input:disabled { background: var(--bg3); color: var(--t3); curs
   display: flex;
   align-items: center;
   border: 1.5px solid var(--bd);
-  border-radius: var(--r-md);
+  border-radius: var(--r-lg);
   overflow: hidden;
   background: var(--glass-bg);
+  box-shadow: var(--sh-md);
 }
 
 .stepper:focus-within { border-color: var(--brand); box-shadow: 0 0 0 3px rgba(24,95,165,.15); }
@@ -1191,24 +1213,22 @@ select:disabled, input:disabled { background: var(--bg3); color: var(--t3); curs
 .meta-info-banner { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 4px; }
 
 .badge-estado {
-  font-size: 10px;
+  font-size: 10.5px;
   font-weight: 600;
-  padding: 2px 8px;
-  border-radius: 14px;
+  letter-spacing: .2px;
+  padding: 4px 11px 4px 9px;
+  border-radius: 20px;
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 5px;
   width: fit-content;
-  background: var(--ok-bg);
-  color: var(--ok);
-  border: 1px solid #86efac;
+  background: var(--bg2);
+  color: var(--t2);
+  border: 1px solid var(--bd);
   white-space: nowrap;
 }
 
-.badge-estado i { font-size: 11px; }
-.badge-estado.receso { background: #fffbeb; color: #d97706; border: 1px solid #fde68a; }
-.badge-estado.inactivo { background: var(--err-bg); color: var(--err); border: 1px solid #fca5a5; }
-.badge-estado.fin-semana { background: var(--err-bg); color: var(--err); border: 1px solid #fca5a5; }
+.badge-estado i { font-size: 12px; }
 
 .fecha-reloj-badge {
   font-size: 10px;
@@ -1299,6 +1319,48 @@ select:disabled, input:disabled { background: var(--bg3); color: var(--t3); curs
   .cal-titulo-mes { font-size: 12px; }
 }
 
+.acciones-premium {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.accion-premium-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--r-lg);
+  padding: 10px 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  cursor: pointer;
+  transition: var(--transition);
+  box-shadow: var(--sh-md);
+  font-family: inherit;
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--t1);
+}
+
+.accion-premium-card { padding: 8px 4px; gap: 5px; font-size: 9.5px; }
+
+.accion-premium-icon {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--brand-l);
+  color: var(--brand);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  flex-shrink: 0;
+}
+
 .conn-overlay {
   position: fixed;
   inset: 0;
@@ -1306,7 +1368,9 @@ select:disabled, input:disabled { background: var(--bg3); color: var(--t3); curs
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  background-color: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   padding: 20px;
   opacity: 0;
   pointer-events: none;
@@ -1352,8 +1416,19 @@ select:disabled, input:disabled { background: var(--bg3); color: var(--t3); curs
   border: 1px solid rgba(255,255,255,0.8);
   border-radius: 28px;
   box-shadow: 0 40px 80px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.9);
-  animation: connCardIn .6s cubic-bezier(.34,1.56,.64,1) both;
+  animation: connCardIn .6s cubic-bezier(.34,1.56,.64,1) both, cardFloatGlow 3s ease-in-out infinite alternate;
   z-index: 2;
+}
+
+@keyframes cardFloatGlow {
+  0% { 
+    box-shadow: 0 30px 60px rgba(0,0,0,0.08), 0 0 0 rgba(24,95,165,0); 
+    transform: translateY(0); 
+  }
+  100% { 
+    box-shadow: 0 40px 80px rgba(0,0,0,0.12), 0 15px 40px rgba(24,95,165,0.15); 
+    transform: translateY(-6px); 
+  }
 }
 
 @keyframes connCardIn {
@@ -1379,12 +1454,23 @@ select:disabled, input:disabled { background: var(--bg3); color: var(--t3); curs
   align-items: center;
   justify-content: center;
   font-size: 34px;
-  background: rgba(24,95,165,0.06);
-  border: 1.5px solid rgba(24,95,165,0.15);
+  background: linear-gradient(135deg, rgba(24,95,165,0.02) 0%, rgba(24,95,165,0.12) 100%);
+  border: 2px solid transparent;
   color: var(--brand);
   position: relative;
   z-index: 2;
-  transition: all .4s ease;
+  box-shadow: 0 0 25px rgba(24,95,165,0.15), inset 0 0 15px rgba(24,95,165,0.05);
+}
+
+.conn-icon::before {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  border-top-color: var(--brand);
+  border-right-color: rgba(24,95,165,0.3);
+  animation: connSpin 1.2s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
 }
 
 .conn-icon.pulse { animation: connIconPulse 2.4s ease-in-out infinite; }
@@ -1409,11 +1495,29 @@ select:disabled, input:disabled { background: var(--bg3); color: var(--t3); curs
 
 .conn-icon.error { background: rgba(220,38,38,0.08); border-color: rgba(220,38,38,0.2); color: var(--err); }
 .conn-icon.success { background: rgba(22,163,74,0.08); border-color: rgba(22,163,74,0.2); color: var(--ok); }
-.conn-title { font-size: 22px; font-weight: 700; color: var(--t1); text-align: center; letter-spacing: -.3px; margin-bottom: 8px; }
-.conn-subtitle { font-size: 14px; color: var(--t2); text-align: center; line-height: 1.6; margin-bottom: 24px; min-height: 48px; }
+.conn-title {
+  font-size: 24px;
+  font-weight: 800;
+  text-align: center;
+  letter-spacing: -0.025em;
+  margin-bottom: 12px;
+  background: linear-gradient(90deg, var(--t1) 0%, var(--brand) 50%, var(--t1) 100%);
+  background-size: 200% auto;
+  color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: textShimmer 3s linear infinite;
+}
+
+@keyframes textShimmer {
+  to { background-position: 200% center; }
+}
+.conn-subtitle { font-size: 15px; color: #64748b; text-align: center; line-height: 1.5; margin-bottom: 24px; min-height: 48px; }
 .conn-subtitle .hl-warn { color: #d97706; font-weight: 600; }
 .conn-subtitle .hl-err { color: var(--err); font-weight: 600; }
-
+.conn-subtitle {
+  transition: opacity 0.2s ease-in-out;
+}
 .conn-attempt {
   display: flex;
   align-items: center;
@@ -1539,6 +1643,11 @@ select:disabled, input:disabled { background: var(--bg3); color: var(--t3); curs
 .conn-status-badge.loading .conn-dot-ind { background: var(--brand); animation: connPulseDot .6s ease-in-out infinite; }
 .conn-status-badge.success { background: rgba(22,163,74,0.06); border-color: rgba(22,163,74,0.15); color: var(--ok); }
 .conn-status-badge.success .conn-dot-ind { background: var(--ok); animation: none; }
+.conn-card.modo-carga .conn-attempt,
+.conn-card.modo-carga .conn-status-badge,
+.conn-card.modo-carga .conn-btn {
+  display: none;
+}
 </style>
 </head>
 <body>
@@ -1667,13 +1776,13 @@ select:disabled, input:disabled { background: var(--bg3); color: var(--t3); curs
     </div>
 
     <div class="racha-grid">
-      <div class="racha-card" id="racha-widget">
-        <div class="racha-icon"><i class="ti ti-flame"></i></div>
-        <div class="racha-info">
-          <div class="racha-titulo"><span>Racha semanal</span><span>0 de 10</span></div>
-          <div class="racha-bar"><div class="racha-fill" style="width:0%"></div></div>
-        </div>
-      </div>
+<div class="racha-card" id="visitas-mes-widget">
+  <div class="racha-icon"><i class="ti ti-calendar-stats"></i></div>
+  <div class="racha-info">
+    <div class="racha-titulo"><span>Visitas este mes</span><span id="visitas-mes-cantidad">0</span></div>
+    <span id="visitas-mes-trend" class="metric-trend flat" style="margin-top:4px"><i class="ti ti-minus"></i> vs mes anterior</span>
+  </div>
+</div>
       <div class="racha-card" id="mini-progreso-card">
         <div class="racha-icon"><i class="ti ti-clipboard-list" id="progreso-icon"></i></div>
         <div class="racha-info">
@@ -1681,14 +1790,6 @@ select:disabled, input:disabled { background: var(--bg3); color: var(--t3); curs
           <div class="racha-bar"><div class="racha-fill" id="progress-fill" style="width:0%"></div></div>
         </div>
       </div>
-    </div>
-
-    <div class="logros-container" id="logros-container">
-      <span class="logro-item locked" id="logro-primera"><i class="ti ti-star"></i> Primera visita</span>
-      <span class="logro-item locked" id="logro-5"><i class="ti ti-flame"></i> 5 visitas</span>
-      <span class="logro-item locked" id="logro-10"><i class="ti ti-trophy"></i> 10 visitas</span>
-      <span class="logro-item locked" id="logro-25"><i class="ti ti-crown"></i> 25 visitas</span>
-      <span class="logro-item locked" id="logro-50"><i class="ti ti-award"></i> 50 visitas</span>
     </div>
 
     <div class="fg">
@@ -1775,15 +1876,18 @@ select:disabled, input:disabled { background: var(--bg3); color: var(--t3); curs
       </button>
     </div>
 
-    <div class="botonera dos-botones" style="margin-top:10px;">
-      <button class="btn btn-calendario" onclick="toggleCalendario()">
-        <i class="ti ti-calendar-event"></i> Mi Calendario
+        <div class="acciones-premium">
+      <button class="accion-premium-card" onclick="toggleCalendario()">
+        <div class="accion-premium-icon"><i class="ti ti-calendar-event"></i></div>
+        <span>Mi Calendario</span>
       </button>
-      <button class="btn btn-calendario" onclick="toggleFormularios()">
-        <i class="ti ti-clipboard-check"></i> Formularios
+      <button class="accion-premium-card" onclick="toggleFormularios()">
+        <div class="accion-premium-icon"><i class="ti ti-clipboard-check"></i></div>
+        <span>Formularios</span>
       </button>
-      <button class="btn btn-calendario" onclick="toggleHistorial()">
-        <i class="ti ti-history"></i> Historial
+      <button class="accion-premium-card" onclick="toggleHistorial()">
+        <div class="accion-premium-icon"><i class="ti ti-history"></i></div>
+        <span>Historial</span>
       </button>
     </div>
 
@@ -1797,24 +1901,6 @@ select:disabled, input:disabled { background: var(--bg3); color: var(--t3); curs
       <div>
         <h1>Mi Calendario</h1>
         <p>Visualiza tus visitas registradas mes a mes.</p>
-      </div>
-    </div>
-    <div class="dashboard-metrics" id="dashboard-metrics">
-      <div class="metric-card">
-        <div class="metric-icon"><i class="ti ti-calendar-check"></i></div>
-        <span class="metric-value" id="metric-hoy">0</span>
-        <span class="metric-label">Visitas hoy</span>
-        <span class="metric-trend up" id="trend-hoy"><i class="ti ti-arrow-up"></i> 0%</span>
-      </div>
-      <div class="metric-card">
-        <div class="metric-icon"><i class="ti ti-trophy"></i></div>
-        <span class="metric-value" id="metric-racha">0</span>
-        <span class="metric-label">Racha actual</span>
-      </div>
-      <div class="metric-card">
-        <div class="metric-icon"><i class="ti ti-building"></i></div>
-        <span class="metric-value" id="metric-oficinas">0</span>
-        <span class="metric-label">Oficinas</span>
       </div>
     </div>
     <div class="chart-container">
@@ -1917,7 +2003,6 @@ select:disabled, input:disabled { background: var(--bg3); color: var(--t3); curs
 const URL_MAESTRO_OFICINAS_CSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTytGtmX-qgf-IxYpKiulo8iRIsJ6iTMgw70cbwQclOHuU5pS2MDKgwPqjMjgDuXzpaulDnLdcRdS5u/pub?gid=1309200962&single=true&output=csv";
 const SUPABASE_URL = "https://lzsluzquoksiheyxcior.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_frToEsE65PivRXN83cIckw_S0snLVgv";
-const META_VISITAS_SEMANAL = 10;
 
 let FUNCIONARIOS = { Mapfre: [], Colmena: [] };
 let OFICINAS = [];
@@ -1934,10 +2019,9 @@ let diaSeleccionado = null;
 let fpFecha = null;
 let fechaConfirmada = null;
 let temaActual = 'light';
-let logrosDesbloqueados = new Set();
-let logrosInicializados = false;
 let bannerInterval = null;
 let intentoConn = 0;
+let connMsgInterval = null;
 const MAX_INTENTOS_CONN = 3;
 
 function obtenerFechaHoyStr() {
@@ -2110,7 +2194,7 @@ function cargarOficinasCache() {
       const UN_DIA = 86400000;
       if (Date.now() - parsed.timestamp < UN_DIA) {
         OFICINAS = parsed.data;
-        $('status-line').textContent = OFICINAS.length + ' oficinas procesadas';
+        $('status-line').innerHTML = `<i class="ti ti-database-check"></i> ${OFICINAS.length} oficinas procesadas`;
         poblarRegionales();
         poblarComercialesOperativos();
         return true;
@@ -2152,7 +2236,7 @@ function cargarOficinasRed() {
         })).filter(o => o.oficina);
 
         if (OFICINAS.length > 0) {
-          $('status-line').textContent = OFICINAS.length + ' oficinas cargadas';
+          $('status-line').innerHTML = `<i class="ti ti-database-check"></i> ${OFICINAS.length} oficinas cargadas`;
           poblarRegionales();
           poblarComercialesOperativos();
           cachearOficinas(OFICINAS);
@@ -2169,20 +2253,40 @@ function cargarOficinasRed() {
 }
 
 async function cargarOficinasInicial() {
-  if (cargarOficinasCache()) {
-    const funcionariosOk = await cargarFuncionarios();
-    if (funcionariosOk) {
-      return true;
+  try {
+    const supabaseUrlOk = typeof SUPABASE_URL !== 'undefined' && SUPABASE_URL;
+    const supabaseKeyOk = typeof SUPABASE_ANON_KEY !== 'undefined' && SUPABASE_ANON_KEY;
+    const csvUrlOk = typeof URL_MAESTRO_OFICINAS_CSV !== 'undefined' && URL_MAESTRO_OFICINAS_CSV;
+
+    if (!supabaseUrlOk || !supabaseKeyOk || !csvUrlOk) {
+      console.error("Error crítico: Faltan llaves de Supabase o la URL del CSV.");
+      updateConnUI(0, 'critico');
+      return false;
     }
-  }
-  const oficinasOk = await cargarOficinasRed();
-  if (oficinasOk) {
-    const funcionariosOk = await cargarFuncionarios();
-    if (funcionariosOk) {
-      return true;
+
+    let oficinasCargadas = cargarOficinasCache();
+    if (!oficinasCargadas) {
+      oficinasCargadas = await cargarOficinasRed();
     }
+
+    if (!oficinasCargadas) {
+      updateConnUI(0, 'oficinas');
+      return false;
+    }
+
+    const funcionariosOk = await cargarFuncionarios();
+    if (!funcionariosOk) {
+      updateConnUI(0, 'credenciales');
+      return false;
+    }
+
+    return true;
+
+  } catch (error) {
+    console.error("Error en cargarOficinasInicial:", error);
+    updateConnUI(0, 'credenciales');
+    return false;
   }
-  return false;
 }
 
 function poblarRegionales(regionalSel, zonalSel) {
@@ -2681,7 +2785,7 @@ function mostrarTarjetaOficina(o) {
     o.codOficina && `<span class="of-chip"><i class="ti ti-building-bank"></i> Sban: ${o.codOficina}</span>`,
     o.tipologia && `<span class="of-chip"><i class="ti ti-tag"></i> ${o.tipologia}</span>`,
     o.modalidadTransporte && `<span class="of-chip"><i class="ti ti-truck"></i> ${o.modalidadTransporte}</span>`,
-    o.categoria && `<span class="of-chip" style="color: #1e3a8a; font-weight: bold; border: 1px solid #1e3a8a; background: #eff6ff;"><i class="ti ti-id-badge"></i> ${o.categoria}</span>`
+    o.categoria && `<span class="of-chip" style="color: #1e3a8a; font-weight: bold;"><i class="ti ti-id-badge"></i> ${o.categoria}</span>`
   ].filter(Boolean).join('');
 
   sc.innerHTML = `
@@ -2957,7 +3061,7 @@ async function registrarVisita() {
       mostrarExito();
       showToast(obtenerMensajeExito(fechaSeleccionada));
       limpiarFormulario();
-      await cargarVisitasCalendario(true);
+      await cargarVisitasCalendario();
 
       if (visitasCache.length >= 10) {
         lanzarConfeti();
@@ -3235,83 +3339,6 @@ function verDetalleDia(año, mes, dia) {
   }, 100);
 }
 
-function contarVisitasEnFecha(fechaStr) {
-  return visitasCache.filter(v => v.fecha === fechaStr).length;
-}
-
-function actualizarDashboard() {
-  const hoy = new Date();
-  const hoyStr = obtenerFechaHoyStr();
-  const ayer = new Date(hoy);
-  ayer.setDate(hoy.getDate() - 1);
-  const ayerStr = ayer.getFullYear() + '-' + String(ayer.getMonth() + 1).padStart(2, '0') + '-' + String(ayer.getDate()).padStart(2, '0');
-  
-  const visitasHoy = contarVisitasEnFecha(hoyStr);
-  const visitasAyer = contarVisitasEnFecha(ayerStr);
-  const oficinasUnicas = new Set(visitasCache.map(v => v.oficina)).size;
-  
-  const visitasPorDia = {};
-  visitasCache.forEach(v => {
-    if (v.fecha) {
-      if (!visitasPorDia[v.fecha]) visitasPorDia[v.fecha] = [];
-      visitasPorDia[v.fecha].push(v);
-    }
-  });
-
-  let rachaActual = 0;
-  let fechaBase = new Date();
-  fechaBase.setHours(0, 0, 0, 0);
-  let diasRevisados = 0;
-  if (fechaBase.getDay() !== 0 && fechaBase.getDay() !== 6) {
-    if (!visitasPorDia[hoyStr] || visitasPorDia[hoyStr].length === 0) {
-      diasRevisados++;
-    }
-  }
-
-  for (let i = 0; i < 365; i++) {
-    let fechaIterada = new Date(fechaBase);
-    fechaIterada.setDate(fechaBase.getDate() - diasRevisados);
-
-    if (fechaIterada.getDay() === 0 || fechaIterada.getDay() === 6) {
-      diasRevisados++;
-      continue;
-    }
-
-    const fechaStr = fechaIterada.getFullYear() + '-' + 
-      String(fechaIterada.getMonth() + 1).padStart(2, '0') + '-' + 
-      String(fechaIterada.getDate()).padStart(2, '0');
-
-    if (visitasPorDia[fechaStr] && visitasPorDia[fechaStr].length > 0) {
-      rachaActual++;
-      diasRevisados++;
-    } else {
-      break;
-    }
-  }
-
-  document.getElementById('metric-hoy').textContent = visitasHoy;
-  document.getElementById('metric-racha').textContent = rachaActual;
-  document.getElementById('metric-oficinas').textContent = oficinasUnicas;
-
-  const trendEl = document.getElementById('trend-hoy');
-  let trendPct, trendClass, trendIcon;
-
-  if (visitasAyer === 0) {
-    trendPct = visitasHoy > 0 ? 100 : 0;
-    trendClass = visitasHoy > 0 ? 'up' : 'flat';
-    trendIcon = visitasHoy > 0 ? 'ti-arrow-up' : 'ti-minus';
-  } else {
-    trendPct = Math.round(((visitasHoy - visitasAyer) / visitasAyer) * 100);
-    trendClass = trendPct > 0 ? 'up' : trendPct < 0 ? 'down' : 'flat';
-    trendIcon = trendPct > 0 ? 'ti-arrow-up' : trendPct < 0 ? 'ti-arrow-down' : 'ti-minus';
-  }
-
-  trendEl.className = 'metric-trend ' + trendClass;
-  trendEl.innerHTML = `<i class="ti ${trendIcon}"></i> ${Math.abs(trendPct)}% vs ayer`;
-
-  renderizarGraficos();
-}
-
 function renderizarGraficos() {
   const dias = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
   const visitasPorDiaSemana = dias.map((_, i) => {
@@ -3348,33 +3375,6 @@ function renderizarGraficos() {
       Virtual ${Math.round(virtual / total * 100)}%
     </div>
   `;
-}
-
-function actualizarLogros(notificar) {
-  const total = visitasCache.length;
-  const logros = {
-    'logro-primera': { alcanzado: total >= 1, clase: 'unlocked-primera' },
-    'logro-5': { alcanzado: total >= 5, clase: 'unlocked-5' },
-    'logro-10': { alcanzado: total >= 10, clase: 'unlocked-10' },
-    'logro-25': { alcanzado: total >= 25, clase: 'unlocked-25' },
-    'logro-50': { alcanzado: total >= 50, clase: 'unlocked-50' }
-  };
-
-  Object.entries(logros).forEach(([id, cfg]) => {
-    const el = document.getElementById(id);
-    if (!el) return;
-
-    el.className = 'logro-item' + (cfg.alcanzado ? ' ' + cfg.clase : ' locked');
-
-    if (cfg.alcanzado && !logrosDesbloqueados.has(id)) {
-      logrosDesbloqueados.add(id);
-      if (notificar && logrosInicializados) {
-        showToast('🏆 Logro desbloqueado: ' + el.textContent.trim());
-      }
-    }
-  });
-
-  logrosInicializados = true;
 }
 
 function lanzarConfeti() {
@@ -3565,15 +3565,12 @@ function exportarReporte() {
   filas.forEach((fila, i) => {
     const modalidad = fila[2];
     if (modalidad !== 'Presencial' && modalidad !== 'Virtual') return;
-    const colores = modalidad === 'Presencial'
-      ? { fondo: 'DCFCE7', texto: '16A34A' }
-      : { fondo: 'DBEAFE', texto: '185FA5' };
+    const colorTexto = modalidad === 'Presencial' ? '16A34A' : '185FA5';
     const ref = XLSX.utils.encode_cell({ r: i + 1, c: 2 });
-      hoja[ref].s = {
-        fill: { fgColor: { rgb: colores.fondo } },
-        font: { bold: true, color: { rgb: colores.texto } },
-        alignment: { horizontal: 'center' }
-      };
+    hoja[ref].s = {
+      font: { bold: true, color: { rgb: colorTexto } },
+      alignment: { horizontal: 'center' }
+    };
   });
 
   hoja['!cols'] = [
@@ -3659,40 +3656,49 @@ function obtenerRangoSemanaActual() {
   return { lunes, domingo };
 }
 
-function actualizarRachaWidget() {
-  const widget = $('racha-widget');
+function actualizarVisitasMesWidget() {
+  const widget = document.getElementById('visitas-mes-widget');
   if (!widget) return;
 
-  const { lunes, domingo } = obtenerRangoSemanaActual();
-  const visitasSemana = visitasCache.filter(v => {
+  const hoy = new Date();
+  const mesAnterior = new Date(hoy.getFullYear(), hoy.getMonth() - 1, 1);
+
+  const cantidadMes = visitasCache.filter(v => {
     if (!v.fecha) return false;
     const f = new Date(v.fecha + 'T00:00:00');
-    return f >= lunes && f <= domingo;
-  });
+    return f.getFullYear() === hoy.getFullYear() && f.getMonth() === hoy.getMonth();
+  }).length;
 
-  const cantidad = visitasSemana.length;
-  const pct = Math.min(100, Math.round(cantidad / META_VISITAS_SEMANAL * 100));
-  const completa = cantidad >= META_VISITAS_SEMANAL;
+  const cantidadMesAnterior = visitasCache.filter(v => {
+    if (!v.fecha) return false;
+    const f = new Date(v.fecha + 'T00:00:00');
+    return f.getFullYear() === mesAnterior.getFullYear() && f.getMonth() === mesAnterior.getMonth();
+  }).length;
 
-  widget.className = 'racha-card' + (completa ? ' completa' : '');
-  widget.innerHTML = `
-    <div class="racha-icon"><i class="ti ti-${completa ? 'trophy' : 'flame'}"></i></div>
-    <div class="racha-info">
-      <div class="racha-titulo">
-        <span>${completa ? '¡Meta semanal cumplida! 🎉' : 'Racha semanal'}</span>
-        <span>${cantidad} de ${META_VISITAS_SEMANAL}</span>
-      </div>
-      <div class="racha-bar"><div class="racha-fill" style="width:${pct}%"></div></div>
-    </div>
-  `;
+  let clase, icono, texto;
 
-  if (completa && !widget.dataset.confettiTriggered) {
-    widget.dataset.confettiTriggered = 'true';
-    lanzarConfeti();
+  if (cantidadMesAnterior === 0 && cantidadMes > 0) {
+    clase = 'up'; icono = 'ti-sparkles'; texto = 'Nuevo este mes';
+  } else if (cantidadMesAnterior === 0 && cantidadMes === 0) {
+    clase = 'flat'; icono = 'ti-minus'; texto = 'Aún sin visitas';
+  } else {
+    const diferencia = cantidadMes - cantidadMesAnterior;
+    if (diferencia > 0) { clase = 'up'; icono = 'ti-arrow-up'; texto = diferencia + ' más que el mes anterior'; }
+    else if (diferencia < 0) { clase = 'down'; icono = 'ti-arrow-down'; texto = Math.abs(diferencia) + ' menos que el mes anterior'; }
+    else { clase = 'flat'; icono = 'ti-minus'; texto = 'igual que el mes anterior'; }
+  }
+
+  const elCantidad = document.getElementById('visitas-mes-cantidad');
+  const elTrend = document.getElementById('visitas-mes-trend');
+
+  if (elCantidad) elCantidad.textContent = cantidadMes;
+  if (elTrend) {
+    elTrend.className = 'metric-trend ' + clase;
+    elTrend.innerHTML = `<i class="ti ${icono}"></i> ${texto}`;
   }
 }
 
-async function cargarVisitasCalendario(notificarLogros) {
+async function cargarVisitasCalendario() {
   if (!SESSION) return;
 
   try {
@@ -3711,9 +3717,8 @@ async function cargarVisitasCalendario(notificarLogros) {
     visitasCache = data || [];
 
     renderizarCalendario();
-    actualizarRachaWidget();
-    actualizarDashboard();
-    actualizarLogros(notificarLogros);
+    actualizarVisitasMesWidget();
+    renderizarGraficos();
     renderizarHistorial();
   } catch (err) {
     showConnOverlay();
@@ -3763,22 +3768,17 @@ function iniciarBannerDinamico() {
 
       if (diaSemana === 0 || diaSemana === 6) {
         textoBadge.textContent = 'Fin de semana';
-        badgeElemento.className = 'badge-estado fin-semana';
       } else {
         const horaDecimal = hora + minutos / 60;
 
         if (horaDecimal >= 8 && horaDecimal < 12) {
-          textoBadge.textContent = 'Horario mañana';
-          badgeElemento.className = 'badge-estado';
+          textoBadge.textContent = 'Jornada mañana';
         } else if (horaDecimal >= 12 && horaDecimal < 14) {
           textoBadge.textContent = 'En receso';
-          badgeElemento.className = 'badge-estado receso';
         } else if (horaDecimal >= 14 && horaDecimal <= 17.5) {
-          textoBadge.textContent = 'Horario tarde';
-          badgeElemento.className = 'badge-estado';
+          textoBadge.textContent = 'Jornada tarde';
         } else {
           textoBadge.textContent = 'Fuera de horario';
-          badgeElemento.className = 'badge-estado inactivo';
         }
       }
     }
@@ -3811,28 +3811,64 @@ function crearParticulasConn() {
 }
 
 const connEstados = {
+credenciales: [
+  {
+    icon: "ti-server-off",
+    title: "No se logró conexión con el servidor",
+    msg: 'No pudimos verificar tus datos con el servidor.<br><span class="hl-warn">Revisa tu conexión a internet</span> e inténtalo de nuevo.',
+    button: "Reintentar conexión",
+    status: "Intento 1/3",
+    statusClass: "warning"
+  },
+  {
+    icon: "ti-refresh-alert",
+    title: "El servidor sigue sin responder",
+    msg: 'Seguimos intentando comunicarnos con el servidor.<br><span class="hl-warn">Esto puede tardar unos segundos más...</span>',
+    button: "Forzar reintento",
+    status: "Intento 2/3",
+    statusClass: "warning"
+  },
+  {
+    icon: "ti-server-off",
+    title: "No fue posible conectar con el servidor",
+    msg: 'No logramos establecer conexión tras varios intentos.<br><br><span class="hl-err">Contacta al administrador del sistema</span> o intenta más tarde.',
+    button: "Reintentar todo",
+    status: "Servicio caído",
+    statusClass: "danger"
+  }
+],
+critico: [
+  {
+    icon: "ti-alert-octagon",
+    title: "El sistema no está disponible",
+    msg: 'No fue posible iniciar el sistema en este momento.<br><span class="hl-err">Contacta al administrador del sistema</span> para más información.',
+    button: "Reintentar conexión",
+    status: "Falla crítica",
+    statusClass: "danger"
+  }
+],
   oficinas: [
     {
       icon: "ti-wifi-off",
-      title: "¡Ups! No pudimos conectar",
-      msg: 'No fue posible comunicarnos con el servidor.<br><span class="hl-warn">Verifica tu conexión a Internet</span> e inténtalo nuevamente.',
-      button: "Reintentar",
-      status: "Sin conexión",
+      title: "Sin acceso a oficinas",
+      msg: 'No fue posible consultar el catálogo de oficinas.<br><span class="hl-warn">Revisa tu conexión a internet</span> e inténtalo de nuevo.',
+      button: "Reintentar conexión",
+      status: "Intento 1/3",
       statusClass: "warning"
     },
     {
-      icon: "ti-cloud-storm",
-      title: "Seguimos intentando...",
-      msg: 'El servidor continúa sin responder.<br><span class="hl-warn">Es posible que esté en mantenimiento</span> o exista un problema temporal.',
-      button: "Intentar nuevamente",
-      status: "Segundo intento",
+      icon: "ti-refresh-alert",
+      title: "Respuesta lenta del servidor",
+      msg: 'El servidor está tardando en responder más de lo esperado.<br><span class="hl-warn">Reintentando la carga de oficinas automáticamente...</span>',
+      button: "Forzar reintento",
+      status: "Intento 2/3",
       statusClass: "warning"
     },
     {
-      icon: "ti-server",
-      title: "Servicio no disponible",
-      msg: 'No fue posible establecer la conexión después de varios intentos.<br><br><span class="hl-err">Comunícate con el administrador</span> o intenta más tarde.',
-      button: "Reintentar",
+      icon: "ti-building-hospital-off",
+      title: "Módulo de oficinas fuera de línea",
+      msg: 'No fue posible conectar tras varios intentos.<br><br><span class="hl-err">Contacta al administrador del sistema</span> o intenta más tarde.',
+      button: "Reintentar todo",
       status: "Servicio caído",
       statusClass: "danger"
     }
@@ -3840,25 +3876,25 @@ const connEstados = {
   servidor: [
     {
       icon: "ti-database-off",
-      title: "No pudimos sincronizar",
-      msg: 'No se pudieron cargar tus visitas desde el servidor.<br><span class="hl-warn">Verifica tu conexión a Internet</span> e inténtalo nuevamente.',
-      button: "Reintentar",
-      status: "Sin conexión",
+      title: "Error de sincronización",
+      msg: 'No logramos conectar con la base de datos.<br><span class="hl-warn">Verifica tu conexión</span> para sincronizar tus visitas.',
+      button: "Sincronizar ahora",
+      status: "Intento 1/3",
       statusClass: "warning"
     },
     {
-      icon: "ti-cloud-storm",
-      title: "Sincronización fallida",
-      msg: 'El servidor continúa sin responder.<br><span class="hl-warn">Tus visitas locales siguen disponibles</span> pero no se están actualizando.',
-      button: "Intentar nuevamente",
-      status: "Segundo intento",
+      icon: "ti-cloud-off",
+      title: "Servidor ocupado",
+      msg: 'La sincronización está tomando más tiempo.<br><span class="hl-warn">Tus datos locales están seguros</span> mientras reestablecemos el enlace.',
+      button: "Reintentar sincronización",
+      status: "Intento 2/3",
       statusClass: "warning"
     },
     {
-      icon: "ti-server",
+      icon: "ti-server-off",
       title: "Servidor no disponible",
-      msg: 'No fue posible sincronizar después de varios intentos.<br><br><span class="hl-err">Comunícate con el administrador</span> o intenta más tarde.',
-      button: "Reintentar",
+      msg: 'Se interrumpió la comunicación con el servidor central.<br><br><span class="hl-err">Comunícate con soporte técnico</span> si la falla persiste.',
+      button: "Reintentar conexión",
       status: "Servicio caído",
       statusClass: "danger"
     }
@@ -3874,42 +3910,110 @@ function showConnOverlay() {
 }
 
 function hideConnOverlay() {
+  if (connMsgInterval) clearInterval(connMsgInterval);
   const overlay = document.getElementById('conn-overlay');
   overlay.classList.remove('show');
 }
 
+function mostrarConnCargando(titulo, mensajesCustom) {
+  const overlay = document.getElementById('conn-overlay');
+  overlay.querySelector('.conn-card').classList.add('modo-carga');
+  crearParticulasConn();
+  
+  const iconContainer = document.getElementById('conn-icon-container');
+  iconContainer.className = 'conn-icon pulse spinning';
+  document.getElementById('conn-icon').className = 'ti ti-loader-2';
+  
+  document.getElementById('conn-title').textContent = titulo || 'Sincronizando datos...';
+  const listaMensajes = mensajesCustom || [
+    'Verificando conexión con el servidor...',
+    'Obteniendo información de las oficinas...',
+    'Sincronizando registros del sistema...',
+    'Casi listo, finalizando detalles...'
+  ];
+
+  let indexMsg = 0;
+  const msgElement = document.getElementById('conn-message');
+  msgElement.innerHTML = listaMensajes[0];
+  if (connMsgInterval) clearInterval(connMsgInterval);
+  connMsgInterval = setInterval(() => {
+    indexMsg = (indexMsg + 1) % listaMensajes.length;
+    msgElement.style.opacity = '0';
+    
+    setTimeout(() => {
+      msgElement.innerHTML = listaMensajes[indexMsg];
+      msgElement.style.opacity = '1';
+    }, 200);
+  }, 2500);
+
+  overlay.classList.add('show');
+}
+
 function updateConnUI(index, tipo) {
+  if (connMsgInterval) {clearInterval(connMsgInterval);connMsgInterval = null;
+  }
+  
+  const card = document.querySelector('#conn-overlay .conn-card');
+  if (card) card.classList.remove('modo-carga');
+  
   if (tipo) tipoErrorActual = tipo;
-  const s = connEstados[tipoErrorActual][index];
+  
+  const categoria = connEstados[tipoErrorActual] || connEstados.oficinas || [];
+  const s = categoria[index] || categoria[0];
+  if (!s) return;
+
   const iconContainer = document.getElementById('conn-icon-container');
   const icon = document.getElementById('conn-icon');
   const title = document.getElementById('conn-title');
   const message = document.getElementById('conn-message');
   const btn = document.getElementById('conn-btn');
-  const btnText = btn.querySelector('.conn-btn-text');
+  const btnText = btn ? btn.querySelector('.conn-btn-text') : null;
   const statusBadge = document.getElementById('conn-status');
   const attemptText = document.getElementById('conn-attempt-text');
   const dots = document.querySelectorAll('#conn-dots .conn-dot');
   const loadingBar = document.getElementById('conn-loading-bar');
   const loadingFill = document.getElementById('conn-loading-fill');
 
-  icon.className = 'ti ' + s.icon;
-  iconContainer.classList.remove('pulse', 'spinning', 'bounce', 'success', 'error');
-  void iconContainer.offsetWidth;
-  iconContainer.classList.add('pulse', 'bounce');
-  title.textContent = s.title;
-  message.innerHTML = s.msg;
-  btnText.textContent = s.button;
-  btn.classList.remove('loading');
+  if (icon) icon.className = 'ti ' + s.icon;
+  
+  if (iconContainer) {
+    iconContainer.classList.remove('pulse', 'spinning', 'bounce', 'success', 'error', 'warning', 'info');
+    void iconContainer.offsetWidth;
+    if (s.statusClass === 'danger') {
+      iconContainer.classList.add('error', 'pulse');
+    } else if (s.statusClass === 'warning') {
+      iconContainer.classList.add('warning', 'pulse');
+    } else {
+      iconContainer.classList.add('info', 'pulse');
+    }
+  }
 
-  const dotIndicator = statusBadge.querySelector('.conn-dot-ind');
-  const statusText = statusBadge.querySelector('#conn-status-text');
-  statusText.textContent = s.status;
-  statusBadge.className = 'conn-status-badge ' + s.statusClass;
-  statusBadge.prepend(dotIndicator);
+  if (title) title.textContent = s.title;
+  if (message) message.innerHTML = s.msg;
+  if (btnText) btnText.textContent = s.button;
+  if (btn) btn.classList.remove('loading');
 
+  if (statusBadge) {
+    const dotIndicator = statusBadge.querySelector('.conn-dot-ind');
+    const statusText = statusBadge.querySelector('#conn-status-text');
+    if (statusText) statusText.textContent = s.status;
+    statusBadge.className = 'conn-status-badge ' + s.statusClass;
+    if (dotIndicator) statusBadge.prepend(dotIndicator);
+  }
+
+  const maxIntentos = typeof MAX_INTENTOS_CONN !== 'undefined' ? MAX_INTENTOS_CONN : 3;
   const current = index + 1;
-  attemptText.textContent = `Intento ${current} de ${MAX_INTENTOS_CONN}`;
+  
+  const attemptRow = document.querySelector('.conn-attempt');
+  const isCritico = tipoErrorActual === 'critico';
+  
+  if (attemptRow) {
+    attemptRow.style.display = isCritico ? 'none' : 'flex';
+  }
+  
+  if (attemptText && !isCritico) {
+    attemptText.textContent = `Intento ${current} de ${maxIntentos}`;
+  }
 
   dots.forEach((dot, i) => {
     dot.className = 'conn-dot';
@@ -3918,8 +4022,39 @@ function updateConnUI(index, tipo) {
     else dot.classList.add('inactive');
   });
 
-  loadingBar.classList.remove('active');
-  loadingFill.style.width = '0%';
+  if (loadingBar) loadingBar.classList.remove('active');
+  if (loadingFill) loadingFill.style.width = '0%';
+
+  if (window.connCountdownInterval) {
+    clearInterval(window.connCountdownInterval);
+    window.connCountdownInterval = null;
+  }
+
+  if (s.statusClass === 'warning' && !isCritico) {
+    iniciarAutoReintento(5, () => {
+      handleConnRetry();
+    });
+  }
+}
+
+function iniciarAutoReintento(segundos, callback) {
+  if (window.connCountdownInterval) clearInterval(window.connCountdownInterval);
+  const btn = document.getElementById('conn-btn');
+  const btnText = btn?.querySelector('.conn-btn-text');
+  let restante = segundos;
+
+  if (btnText) btnText.textContent = `Reintentar (${restante}s)`;
+
+  window.connCountdownInterval = setInterval(() => {
+    restante--;
+    if (restante > 0) {
+      if (btnText) btnText.textContent = `Reintentar (${restante}s)`;
+    } else {
+      clearInterval(window.connCountdownInterval);
+      window.connCountdownInterval = null;
+      if (typeof callback === 'function') callback();
+    }
+  }, 1000);
 }
 
 async function handleConnRetry() {
@@ -3962,7 +4097,7 @@ async function handleConnRetry() {
       try {
         let exito = false;
 
-        if (tipoErrorActual === 'oficinas') {
+        if (tipoErrorActual === 'oficinas' || tipoErrorActual === 'credenciales' || tipoErrorActual === 'critico') {
           exito = await cargarOficinasInicial();
         } else {
           const resp = await fetch(SUPABASE_URL + '/rest/v1/rpc/obtener_visitas_funcionario', {
@@ -3985,9 +4120,8 @@ async function handleConnRetry() {
           hideConnOverlay();
           if (tipoErrorActual === 'servidor') {
             renderizarCalendario();
-            actualizarRachaWidget();
-            actualizarDashboard();
-            actualizarLogros(false);
+            actualizarVisitasMesWidget();
+            renderizarGraficos();
             renderizarHistorial();
           } else {
             const saved = localStorage.getItem('rv_session');
@@ -4071,7 +4205,7 @@ document.addEventListener('DOMContentLoaded', async function() {
   const ofInput = $('of-search');
   $('f-regional2').addEventListener('focus', cerrarPanelesSecundarios);
   $('f-fecha').addEventListener('focus', cerrarPanelesSecundarios);
-  ofInput.addEventListener('input', () => buscarOficina(false));
+  ofInput.addEventListener('input', function() { buscarOficina(false); });
 
   ofInput.addEventListener('focus', function() {
     if (this.disabled) return;
@@ -4094,8 +4228,8 @@ document.addEventListener('DOMContentLoaded', async function() {
 
   const calNav = document.getElementById('cal-nav');
   let startX = 0;
-  calNav.addEventListener('touchstart', (e) => { startX = e.touches[0].clientX; });
-  calNav.addEventListener('touchend', (e) => {
+  calNav.addEventListener('touchstart', function(e) { startX = e.touches[0].clientX; });
+  calNav.addEventListener('touchend', function(e) {
     const diff = startX - e.changedTouches[0].clientX;
     if (Math.abs(diff) > 50) {
       if (diff > 0) cambiarMes(1);
@@ -4109,13 +4243,11 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
   });
 
-  showConnOverlay();
-  updateConnUI(0, 'oficinas');
+  mostrarConnCargando();
 
   const oficinasOk = await cargarOficinasInicial();
 
   if (!oficinasOk) {
-    updateConnUI(0, 'oficinas');
     intentoConn = 0;
     return;
   }
@@ -4145,6 +4277,26 @@ document.addEventListener('DOMContentLoaded', async function() {
     document.body.classList.add('login-view');
     $('card-login').className = 'card';
   }
+
+  setInterval(function() {
+    const ahora = new Date();
+    const cardCalendario = document.getElementById('card-calendario');
+    const cardHistorial = document.getElementById('card-historial');
+
+    if (calFecha.getMonth() !== ahora.getMonth() || calFecha.getFullYear() !== ahora.getFullYear()) {
+      calFecha = new Date();
+      if (cardCalendario && !cardCalendario.classList.contains('hidden')) {
+        renderizarCalendario();
+      }
+    }
+
+    if (histFecha.getMonth() !== ahora.getMonth() || histFecha.getFullYear() !== ahora.getFullYear()) {
+      histFecha = new Date();
+      if (cardHistorial && !cardHistorial.classList.contains('hidden')) {
+        renderizarHistorial();
+      }
+    }
+  }, 60000);
 });
 </script>
 
