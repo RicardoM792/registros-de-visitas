@@ -1928,6 +1928,8 @@ let fechaConfirmada = null;
 let temaActual = 'light';
 let bannerInterval = null;
 let intentoConn = 0;
+let cargaOverlayTimer = null;
+let cargaOverlayVisible = false;
 let connMsgInterval = null;
 const MAX_INTENTOS_CONN = 3;
 
@@ -3783,6 +3785,17 @@ function hideConnOverlay() {
   overlay.classList.remove('show');
 }
 
+function programarOverlayCarga() {
+  cargaOverlayTimer = setTimeout(() => {
+    cargaOverlayVisible = true;
+    mostrarConnCargando();
+  }, 350);
+}
+
+function cancelarOverlayCarga() {
+  if (cargaOverlayTimer) { clearTimeout(cargaOverlayTimer); cargaOverlayTimer = null; }
+}
+
 function mostrarConnCargando(titulo, mensajesCustom) {
   const overlay = document.getElementById('conn-overlay');
   overlay.querySelector('.conn-card').classList.add('modo-carga');
@@ -4111,16 +4124,19 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
   });
 
-  mostrarConnCargando();
+  programarOverlayCarga();
 
   const oficinasOk = await cargarOficinasInicial();
+  cancelarOverlayCarga();
 
   if (!oficinasOk) {
+    if (!cargaOverlayVisible) { showConnOverlay(); cargaOverlayVisible = true; }
     intentoConn = 0;
     return;
   }
 
-  hideConnOverlay();
+  if (cargaOverlayVisible) hideConnOverlay();
+  cargaOverlayVisible = false;
   procesarColaPendiente();
   actualizarIndicadorCola();
 
