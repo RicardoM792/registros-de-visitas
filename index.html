@@ -124,34 +124,6 @@ body.login-view .wrap { padding-top: 16px; padding-bottom: 16px; }
   box-shadow: 0 6px 16px rgba(24,95,165,.35);
 }
 
-.user-banner {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  background: transparent;
-  border-bottom: 1px solid var(--bd);
-  padding: 0 0 16px;
-  margin-bottom: 20px;
-}
-
-.user-avatar {
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--brand), var(--brand-d));
-  color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 21px;
-  flex-shrink: 0;
-  box-shadow: 0 3px 8px rgba(24,95,165,.35);
-}
-
-.user-info { flex: 1; min-width: 0; }
-.saludo-hola { font-size: 15px; font-weight: 700; color: var(--t1); }
-.saludo-hola .wave { display: inline-block; animation: wave 2s ease-in-out infinite; transform-origin: 70% 70%; }
-
 @keyframes wave {
   0%, 100% { transform: rotate(0); }
   15% { transform: rotate(14deg); }
@@ -159,92 +131,6 @@ body.login-view .wrap { padding-top: 16px; padding-bottom: 16px; }
   45% { transform: rotate(14deg); }
   60% { transform: rotate(-4deg); }
   75% { transform: rotate(10deg); }
-}
-
-.saludo-mensaje { font-size: 12px; color: var(--t2); margin-top: 1px; }
-.user-actions { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
-
-.change-user, .theme-toggle {
-  background: var(--glass-bg);
-  border: 1px solid var(--bd);
-  border-radius: 50%;
-  width: 34px;
-  height: 34px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--brand);
-  cursor: pointer;
-  flex-shrink: 0;
-  font-size: 14px;
-  transition: var(--transition);
-}
-
-.change-user { color: var(--err); border-color: var(--err); }
-.change-user:hover { background: var(--err); color: #fff; transform: none; }
-.theme-toggle:hover { background: var(--brand); color: #fff; transform: scale(1.1); }
-
-.dashboard-metrics { 
-  display: grid; 
-  grid-template-columns: repeat(3, 1fr); 
-  gap: 8px; 
-  margin-bottom: 16px; 
-}
-
-.metric-card {
-  background: var(--glass-bg);
-  backdrop-filter: blur(10px);
-  border: 1px solid var(--glass-border);
-  border-radius: var(--r-lg);
-  padding: 8px 6px;
-  text-align: center;
-  position: relative;
-  overflow: hidden;
-  transition: var(--transition);
-  cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
-
-.metric-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, var(--brand), var(--brand-d));
-  opacity: 0;
-  transition: var(--transition);
-}
-
-.metric-card:hover::before { opacity: 1; }
-.metric-card:hover { transform: translateY(-2px); box-shadow: var(--sh-lg); }
-
-.metric-icon { 
-  font-size: 16px; 
-  color: var(--brand); 
-  margin-bottom: 2px; 
-}
-
-.metric-value { 
-  font-size: 16px; 
-  font-weight: 800; 
-  color: var(--t1); 
-  line-height: 1.1;
-  display: block; 
-}
-
-.metric-label { 
-  font-size: 9px; 
-  color: var(--t2); 
-  font-weight: 600; 
-  text-transform: uppercase; 
-  letter-spacing: .2px; 
-  line-height: 1.1;
-  margin-top: 2px;
 }
 
 .metric-trend { 
@@ -329,39 +215,6 @@ body.login-view .wrap { padding-top: 16px; padding-bottom: 16px; }
 .racha-fill { height: 100%; background: linear-gradient(90deg, var(--brand), var(--brand-d)); border-radius: 10px; transition: width .4s ease; }
 .racha-card.completa .racha-fill { background: linear-gradient(90deg, var(--ok), #15803d); }
 .racha-card.completa .racha-titulo { color: var(--ok); }
-
-.logros-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin: 0 0 14px;
-  padding: 10px 12px;
-  background: var(--glass-bg);
-  backdrop-filter: blur(10px);
-  border-radius: var(--r-lg);
-  border: 1px solid var(--glass-border);
-}
-
-.logro-item {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  padding: 4px 10px;
-  border-radius: 20px;
-  background: var(--bg3);
-  font-size: 10px;
-  font-weight: 600;
-  color: var(--t3);
-  border: 1px solid var(--bd);
-}
-
-.logro-item.locked { opacity: 0.5; }
-.logro-item i { font-size: 13px; }
-.logro-item.unlocked-primera { background: #f0fdf4; color: #15803d; border-color: #86efac; }
-.logro-item.unlocked-5 { background: var(--brand-l); color: var(--brand); border-color: var(--brand); }
-.logro-item.unlocked-10 { background: #f5f3ff; color: #7c3aed; border-color: #c4b5fd; }
-.logro-item.unlocked-25 { background: #fff7ed; color: #c2410c; border-color: #fdba74; }
-.logro-item.unlocked-50 { background: #fffbeb; color: #b45309; border-color: #fcd34d; }
 
 label { display: block; font-size: 12.5px; font-weight: 600; color: var(--t2); margin-bottom: 6px; }
 .req { color: var(--err); }
@@ -654,24 +507,80 @@ select:disabled, input:disabled { background: var(--bg3); color: var(--t3); curs
 
 .success-overlay.show { opacity: 1; }
 
-.success-check {
-  width: 86px;
-  height: 86px;
+.success-card {
   background: var(--glass-bg);
-  backdrop-filter: blur(20px);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--r-xl);
+  padding: 32px 30px 26px;
+  max-width: 320px;
+  width: 90%;
+  text-align: center;
+  box-shadow: var(--sh-xl);
+  transform: scale(.85) translateY(16px);
+  transition: transform .4s cubic-bezier(.34,1.56,.64,1);
+}
+
+.success-overlay.show .success-card { transform: scale(1) translateY(0); }
+
+.success-icon-wrap {
+  position: relative;
+  width: 76px;
+  height: 76px;
+  margin: 0 auto 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.success-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid var(--ok);
+  opacity: 0;
+}
+
+.success-overlay.show .success-ring {
+  animation: successRingPulse .9s ease-out .15s;
+}
+
+@keyframes successRingPulse {
+  0% { transform: scale(.7); opacity: .9; }
+  100% { transform: scale(1.5); opacity: 0; }
+}
+
+.success-check {
+  width: 76px;
+  height: 76px;
+  background: linear-gradient(135deg, #16a34a, #15803d);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: var(--sh-xl);
-  transform: scale(.6);
-  transition: transform .35s cubic-bezier(.34,1.56,.64,1);
+  box-shadow: 0 8px 24px rgba(22,163,74,.35);
+  transform: scale(.4) rotate(-20deg);
+  transition: transform .45s cubic-bezier(.34,1.56,.64,1);
+  position: relative;
+  z-index: 1;
 }
 
-.success-overlay.show .success-check { transform: scale(1); }
-.success-check i { font-size: 42px; color: var(--ok); }
-.btn-calendario { margin-top: 10px; background: var(--glass-bg); color: var(--brand); border: 2px solid var(--brand); backdrop-filter: blur(5px); }
-.btn-calendario:hover { background: var(--brand); color: #fff; }
+.success-overlay.show .success-check { transform: scale(1) rotate(0); }
+.success-check i { font-size: 34px; color: #fff; }
+
+.success-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--t1);
+  margin-bottom: 4px;
+}
+
+.success-sub {
+  font-size: 12.5px;
+  color: var(--t2);
+  line-height: 1.4;
+}
 
 .cal-dia {
   padding: 8px 2px;
@@ -1102,14 +1011,6 @@ select:disabled, input:disabled { background: var(--bg3); color: var(--t3); curs
 .btn-qr-download { background: var(--glass-bg); color: var(--brand); border: 2px solid var(--brand); backdrop-filter: blur(5px); }
 .btn-qr-download:hover { background: var(--brand); color: #fff; }
 .btn-qr-open { background: var(--brand); color: #fff; }
-
-.confetti-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 999; overflow: hidden; }
-.confetti-piece { position: absolute; width: 10px; height: 10px; animation: confettiFall linear forwards; }
-
-@keyframes confettiFall {
-  0% { transform: translateY(-20px) rotate(0deg) scale(0); opacity: 1; }
-  100% { transform: translateY(110vh) rotate(720deg) scale(1); opacity: 0; }
-}
 
 .historial-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 8px; }
 .historial-filtros { display: flex; gap: 6px; flex-wrap: wrap; }
@@ -1689,9 +1590,15 @@ select:disabled, input:disabled { background: var(--bg3); color: var(--t3); curs
 
 <div class="toast" id="toast"></div>
 <div class="success-overlay" id="success-overlay">
-  <div class="success-check"><i class="ti ti-check"></i></div>
+  <div class="success-card">
+    <div class="success-icon-wrap">
+      <div class="success-ring"></div>
+      <div class="success-check"><i class="ti ti-check"></i></div>
+    </div>
+    <div class="success-title">Visita registrada</div>
+    <div class="success-sub" id="success-sub"></div>
+  </div>
 </div>
-<div id="confetti-container" class="confetti-container" style="display:none"></div>
 
 <div class="wrap">
   <div class="card hidden" id="card-login">
@@ -2052,10 +1959,16 @@ function showToast(msg, isError) {
   t._timer = setTimeout(() => { t.className = 'toast'; }, 3500);
 }
 
-function mostrarExito() {
+function mostrarExito(oficina, fecha) {
   const o = $('success-overlay');
+  const sub = $('success-sub');
+  if (sub) {
+    const fechaObj = new Date(fecha + 'T00:00:00');
+    const fechaTexto = fechaObj.toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
+    sub.textContent = oficina ? `${oficina} · ${fechaTexto}` : fechaTexto;
+  }
   o.classList.add('show');
-  setTimeout(() => o.classList.remove('show'), 1100);
+  setTimeout(() => o.classList.remove('show'), 1600);
 }
 
 function normTxt(s) {
@@ -2149,8 +2062,6 @@ function cambiarUsuario() {
   SESSION = null;
   localStorage.removeItem('rv_session');
   asegSel = null;
-  logrosDesbloqueados = new Set();
-  logrosInicializados = false;
   $('pill-m').className = 'aseg-pill';
   $('pill-c').className = 'aseg-pill';
   $('l-func').innerHTML = '<option value="">Selecciona aseguradora primero...</option>';
@@ -2941,19 +2852,6 @@ async function enviarYConfirmar(payload) {
   }
 }
 
-function obtenerMensajeExito(fecha) {
-  const hoy = new Date(); hoy.setHours(0, 0, 0, 0);
-  const fechaVisita = new Date(fecha + 'T00:00:00'); fechaVisita.setHours(0, 0, 0, 0);
-  const diffDias = Math.round((fechaVisita - hoy) / (1000 * 60 * 60 * 24));
-
-  if (diffDias === 0) return '✓ ¡Éxito! Tu visita de hoy ha sido registrada correctamente.';
-  if (diffDias === 1) return '✓ ¡Éxito! Tu visita programada para mañana ha sido registrada.';
-  if (diffDias === -1) return '✓ ¡Éxito! Tu visita de ayer ha sido registrada correctamente.';
-  if (diffDias > 1) return `✓ ¡Éxito! Tu visita programada para el ${fechaVisita.toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })} ha sido registrada.`;
-
-  return `✓ ¡Éxito! Tu visita del ${fechaVisita.toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })} ha sido registrada.`;
-}
-
 function confirmarDuplicado(cantidad, oficina) {
   return new Promise(resolve => {
     const overlay = $('confirm-duplicado-overlay');
@@ -3058,14 +2956,9 @@ async function registrarVisita() {
     const resultado = await enviarYConfirmar(payload);
 
     if (resultado && resultado.ok) {
-      mostrarExito();
-      showToast(obtenerMensajeExito(fechaSeleccionada));
+      mostrarExito(oficinaSel.oficina, fechaSeleccionada);
       limpiarFormulario();
       await cargarVisitasCalendario();
-
-      if (visitasCache.length >= 10) {
-        lanzarConfeti();
-      }
     } else if (resultado && resultado.redError) {
       guardarEnCola(payload);
       mostrarExito();
@@ -3375,31 +3268,6 @@ function renderizarGraficos() {
       Virtual ${Math.round(virtual / total * 100)}%
     </div>
   `;
-}
-
-function lanzarConfeti() {
-  const container = document.getElementById('confetti-container');
-  container.style.display = 'block';
-  const colores = ['#ff6b6b', '#ffd93d', '#6bcb77', '#4d96ff', '#ff6bff', '#ff9f43'];
-
-  for (let i = 0; i < 100; i++) {
-    const pieza = document.createElement('div');
-    pieza.className = 'confetti-piece';
-    pieza.style.left = Math.random() * 100 + '%';
-    pieza.style.background = colores[Math.floor(Math.random() * colores.length)];
-    pieza.style.width = Math.random() * 8 + 4 + 'px';
-    pieza.style.height = Math.random() * 8 + 4 + 'px';
-    pieza.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
-    pieza.style.animationDuration = Math.random() * 2 + 1.5 + 's';
-    pieza.style.animationDelay = Math.random() * 1 + 's';
-    pieza.style.transform = 'rotate(' + Math.random() * 360 + 'deg)';
-    container.appendChild(pieza);
-  }
-
-  setTimeout(() => {
-    container.innerHTML = '';
-    container.style.display = 'none';
-  }, 4000);
 }
 
 function abrirModalQR(url, nombre) {
