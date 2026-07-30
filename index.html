@@ -1196,9 +1196,6 @@ select:disabled, input:disabled { background: var(--bg3); color: var(--t3); curs
   .cal-titulo-mes { font-size: 14px; }
   .card { padding: 16px; }
   .wrap { padding: 16px 8px 60px; }
-  .dashboard-metrics { grid-template-columns: 1fr 1fr; gap: 6px; }
-  .metric-card { padding: 10px 8px; }
-  .metric-value { font-size: 16px; }
   .cal-filtro { font-size: 10px; padding: 4px 10px; }
   .cal-dia { min-height: 44px; padding: 4px 0; }
   .cal-dia .dia-num { font-size: 11px; }
@@ -1559,13 +1556,179 @@ select:disabled, input:disabled { background: var(--bg3); color: var(--t3); curs
   animation: none;
 }
 
-.conn-card.modo-carga .conn-title,
-.conn-card.modo-carga .conn-subtitle {
+.conn-overlay.carga-suave {
+  background-color: rgba(15, 23, 42, 0.35);
+}
+
+.conn-card.modo-carga .conn-icon {
+  background: rgba(255,255,255,0.08);
+  color: #ffffff;
+  box-shadow: 0 0 30px rgba(255,255,255,0.15), inset 0 0 15px rgba(255,255,255,0.08);
+}
+
+.conn-card.modo-carga .conn-icon::before {
+  border-top-color: #ffffff;
+  border-right-color: rgba(255,255,255,0.35);
+}
+
+.conn-card.modo-carga .conn-title {
   display: none;
+}
+
+.conn-card.modo-carga .conn-subtitle {
+  display: block;
+  font-size: 13px;
+  color: rgba(255,255,255,0.75);
+  min-height: 0;
+  margin-bottom: 0;
+  margin-top: 14px;
+  line-height: 1.4;
 }
 
 .conn-card.modo-carga .conn-icon-wrapper {
   margin-bottom: 0;
+}
+
+.autosave-indicator {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--glass-bg, rgba(255, 255, 255, 0.85));
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-border, rgba(0, 0, 0, 0.08));
+  border-radius: 30px;
+  padding: 8px 16px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--t2, #666);
+  box-shadow: var(--sh-lg, 0 10px 25px -5px rgba(0, 0, 0, 0.1));
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+}
+
+.autosave-indicator.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.autosave-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--ok, #10b981);
+  flex-shrink: 0;
+  transition: background 0.3s;
+}
+
+.autosave-dot.saving {
+  background: var(--brand, #4f46e5);
+  animation: connPulseDot 0.8s ease-in-out infinite;
+}
+
+.borrador-banda {
+  background: var(--glass-bg);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--r-lg);
+  padding: 12px 16px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  animation: cardIn 0.35s ease;
+  box-shadow: var(--sh-md);
+}
+
+.borrador-banda-content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 0;
+}
+
+.borrador-banda-content i {
+  font-size: 16px;
+  color: var(--brand);
+  flex-shrink: 0;
+  background: var(--brand-l);
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.borrador-banda-texto {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.borrador-banda-titulo {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--t1);
+}
+
+.borrador-banda-sub {
+  font-size: 10.5px;
+  color: var(--t3);
+}
+
+.borrador-banda-sub span {
+  color: var(--brand);
+  font-weight: 600;
+}
+
+.borrador-banda-botones {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.borrador-banda-botones button {
+  border: none;
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: var(--transition);
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.borrador-banda-botones button i {
+  font-size: 13px;
+}
+
+.btn-banda-si {
+  background: var(--brand);
+  color: #fff;
+}
+
+.btn-banda-si:hover {
+  background: var(--brand-d);
+}
+
+.btn-banda-no {
+  background: transparent;
+  color: var(--t2);
+  border: 1px solid var(--bd);
+}
+
+.btn-banda-no:hover {
+  background: var(--bg3);
 }
 </style>
 </head>
@@ -1607,13 +1770,17 @@ select:disabled, input:disabled { background: var(--bg3); color: var(--t3); curs
 </div>
 
 <div class="toast" id="toast"></div>
+<div class="autosave-indicator" id="autosave-indicator">
+  <span class="autosave-dot" id="autosave-dot"></span>
+  <span id="autosave-text">Guardado</span>
+</div>
 <div class="success-overlay" id="success-overlay">
   <div class="success-card">
     <div class="success-icon-wrap">
       <div class="success-ring"></div>
-      <div class="success-check"><i class="ti ti-check"></i></div>
+      <div class="success-check"><i class="ti ti-check" id="success-icon"></i></div>
     </div>
-    <div class="success-title">Visita registrada</div>
+    <div class="success-title" id="success-title">Visita registrada</div>
     <div class="success-sub" id="success-sub"></div>
   </div>
 </div>
@@ -1699,6 +1866,8 @@ select:disabled, input:disabled { background: var(--bg3); color: var(--t3); curs
         </button>
       </div>
     </div>
+
+    <div id="borrador-banner-container"></div>
 
     <div class="racha-grid">
 <div class="racha-card" id="visitas-mes-widget">
@@ -1948,7 +2117,8 @@ let bannerInterval = null;
 let intentoConn = 0;
 let cargaOverlayTimer = null;
 let cargaOverlayVisible = false;
-let connMsgInterval = null;
+let cargaMsgTimer1 = null;
+let cargaMsgTimer2 = null;
 const MAX_INTENTOS_CONN = 3;
 
 function obtenerFechaHoyStr() {
@@ -1979,16 +2149,28 @@ function showToast(msg, isError) {
   t._timer = setTimeout(() => { t.className = 'toast'; }, 3500);
 }
 
-function mostrarExito(oficina, fecha) {
+function mostrarNotificacionExito(opciones) {
   const o = $('success-overlay');
+  const icono = $('success-icon');
+  const titulo = $('success-title');
   const sub = $('success-sub');
-  if (sub) {
+
+  if (icono) icono.className = 'ti ' + (opciones.icono || 'ti-check');
+  if (titulo) titulo.textContent = opciones.titulo || 'Listo';
+  if (sub) sub.textContent = opciones.subtitulo || '';
+
+  o.classList.add('show');
+  setTimeout(() => o.classList.remove('show'), opciones.duracion || 1600);
+}
+
+function mostrarExito(oficina, fecha) {
+  let subtitulo = '';
+  if (fecha) {
     const fechaObj = new Date(fecha + 'T00:00:00');
     const fechaTexto = fechaObj.toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
-    sub.textContent = oficina ? `${oficina} · ${fechaTexto}` : fechaTexto;
+    subtitulo = oficina ? `${oficina} · ${fechaTexto}` : fechaTexto;
   }
-  o.classList.add('show');
-  setTimeout(() => o.classList.remove('show'), 1600);
+  mostrarNotificacionExito({ icono: 'ti-check', titulo: 'Visita registrada', subtitulo });
 }
 
 function normTxt(s) {
@@ -2056,6 +2238,7 @@ function doLogin() {
   SESSION = { aseg: asegSel, func: $('l-func').value };
   localStorage.setItem('rv_session', JSON.stringify(SESSION));
   mostrarFormulario();
+  revisarBorradorGuardado();
   actualizarProgreso();
   cargarVisitasCalendario();
 }
@@ -2071,6 +2254,7 @@ function mostrarFormulario() {
   $('saludo-mensaje').textContent = obtenerSaludo() + ', listo para registrar tu visita';
   iniciarBannerDinamico();
   actualizarProgreso();
+  revisarBorradorGuardado();
 }
 
 function cambiarUsuario() {
@@ -2394,6 +2578,7 @@ function selOficina(idx) {
   $('btn-cambiar-oficina').className = 'btn-mini-red';
   clearError('of-search');
   actualizarProgreso();
+  programarAutoguardado();
 }
 
 function cambiarOficina(e) {
@@ -2407,6 +2592,7 @@ function cambiarOficina(e) {
   $('of-search').focus();
   buscarOficina(true);
   actualizarProgreso();
+  programarAutoguardado();
 }
 
 function mostrarTarjetaOficina(o) {
@@ -2727,16 +2913,6 @@ function mostrarTarjetaOficina(o) {
   sc.className = 'sel-card show';
 }
 
-function limpiarYExtraerHorario(horarioStr) {
-  const texto = (horarioStr || '').toUpperCase();
-  if (!texto) return '';
-  const matchInicio = texto.search(/(LUNES|MARTES|MI[EÉ]RCOLES|JUEVES|VIERNES|S[AÁ]BADO|DOMINGO)/);
-  if (matchInicio === -1) return texto;
-  let recortado = texto.substring(matchInicio);
-  recortado = recortado.replace(/(SBAN:?|\d{7,}|INTERURBANO|URBANO|CABECERA.*|AÉREO).*/gi, '').trim();
-  return recortado;
-}
-
 function validar() {
   let ok = true;
 
@@ -2978,12 +3154,14 @@ async function registrarVisita() {
     if (resultado && resultado.ok) {
       mostrarExito(oficinaSel.oficina, fechaSeleccionada);
       limpiarFormulario();
+      limpiarBorrador();
       await cargarVisitasCalendario();
     } else if (resultado && resultado.redError) {
       guardarEnCola(payload);
       mostrarExito();
       showToast('Sin conexión: tu visita quedó guardada y se enviará automáticamente al recuperar señal.');
       limpiarFormulario();
+      limpiarBorrador();
     } else if (resultado && !resultado.ok) {
       showToast('El servidor reportó un error: ' + resultado.error, true);
     }
@@ -3531,19 +3709,6 @@ function ocultarFormularios(sinRetorno) {
   if (!sinRetorno && SESSION) mostrarFormularioSolo();
 }
 
-function obtenerRangoSemanaActual() {
-  const hoy = new Date();
-  const dia = hoy.getDay();
-  const offsetLunes = dia === 0 ? -6 : 1 - dia;
-  const lunes = new Date(hoy);
-  lunes.setDate(hoy.getDate() + offsetLunes);
-  lunes.setHours(0, 0, 0, 0);
-  const domingo = new Date(lunes);
-  domingo.setDate(lunes.getDate() + 6);
-  domingo.setHours(23, 59, 59, 999);
-  return { lunes, domingo };
-}
-
 function actualizarVisitasMesWidget() {
   const widget = document.getElementById('visitas-mes-widget');
   if (!widget) return;
@@ -3798,9 +3963,11 @@ function showConnOverlay() {
 }
 
 function hideConnOverlay() {
-  if (connMsgInterval) clearInterval(connMsgInterval);
+  if (cargaMsgTimer1) { clearTimeout(cargaMsgTimer1); cargaMsgTimer1 = null; }
+  if (cargaMsgTimer2) { clearTimeout(cargaMsgTimer2); cargaMsgTimer2 = null; }
   const overlay = document.getElementById('conn-overlay');
   overlay.classList.remove('show');
+  overlay.classList.remove('carga-suave');
 }
 
 function programarOverlayCarga() {
@@ -3814,44 +3981,33 @@ function cancelarOverlayCarga() {
   if (cargaOverlayTimer) { clearTimeout(cargaOverlayTimer); cargaOverlayTimer = null; }
 }
 
-function mostrarConnCargando(titulo, mensajesCustom) {
+function mostrarConnCargando() {
   const overlay = document.getElementById('conn-overlay');
+  overlay.classList.add('carga-suave');
   overlay.querySelector('.conn-card').classList.add('modo-carga');
   crearParticulasConn();
-  
+
   const iconContainer = document.getElementById('conn-icon-container');
   iconContainer.className = 'conn-icon pulse spinning';
   document.getElementById('conn-icon').className = 'ti ti-loader-2';
-  
-  document.getElementById('conn-title').textContent = titulo || 'Sincronizando datos...';
-  const listaMensajes = mensajesCustom || [
-    'Verificando conexión con el servidor...',
-    'Obteniendo información de las oficinas...',
-    'Sincronizando registros del sistema...',
-    'Casi listo, finalizando detalles...'
-  ];
 
-  let indexMsg = 0;
   const msgElement = document.getElementById('conn-message');
-  msgElement.innerHTML = listaMensajes[0];
-  if (connMsgInterval) clearInterval(connMsgInterval);
-  connMsgInterval = setInterval(() => {
-    indexMsg = (indexMsg + 1) % listaMensajes.length;
-    msgElement.style.opacity = '0';
-    
-    setTimeout(() => {
-      msgElement.innerHTML = listaMensajes[indexMsg];
-      msgElement.style.opacity = '1';
-    }, 200);
-  }, 2500);
+  msgElement.innerHTML = '';
+
+  cargaMsgTimer1 = setTimeout(() => {
+    msgElement.innerHTML = 'Sincronizando información...';
+  }, 1150);
 
   overlay.classList.add('show');
 }
 
 function updateConnUI(index, tipo) {
-  if (connMsgInterval) {clearInterval(connMsgInterval);connMsgInterval = null;
-  }
-  
+  if (cargaMsgTimer1) { clearTimeout(cargaMsgTimer1); cargaMsgTimer1 = null; }
+  if (cargaMsgTimer2) { clearTimeout(cargaMsgTimer2); cargaMsgTimer2 = null; }
+
+  const overlayEl = document.getElementById('conn-overlay');
+  if (overlayEl) overlayEl.classList.remove('carga-suave');
+
   const card = document.querySelector('#conn-overlay .conn-card');
   if (card) card.classList.remove('modo-carga');
   
@@ -4054,6 +4210,198 @@ async function handleConnRetry() {
   }, 1800 + Math.random() * 800);
 }
 
+const BORRADOR_HORAS_EXPIRA = 48;
+let borradorTimer = null;
+let borradorActivo = false;
+
+function claveBorrador() {
+  if (!SESSION) return null;
+  return `rv_borrador_${normTxt(SESSION.aseg)}_${normTxt(SESSION.func)}`;
+}
+
+function capturarEstadoFormulario() {
+  return {
+    ts: Date.now(),
+    regional: $('f-regional2') ? $('f-regional2').value : '',
+    zonal: $('f-zonal2') ? $('f-zonal2').value : '',
+    oficinaCod: oficinaSel ? oficinaSel.codOficina : '',
+    oficinaNombre: oficinaSel ? oficinaSel.oficina : '',
+    fecha: $('f-fecha') ? $('f-fecha').value : '',
+    modalidad: $('f-modal') ? $('f-modal').value : '',
+    objetivo: $('f-obj') ? $('f-obj').value : '',
+    comerciales: $('f-com') ? $('f-com').value : '',
+    operativos: $('f-ope') ? $('f-ope').value : ''
+  };
+}
+
+function formularioTieneContenido(estado) {
+  return !!(
+    estado.regional ||
+    estado.oficinaCod ||
+    estado.modalidad ||
+    (estado.objetivo && estado.objetivo !== 'Visita Comercial') ||
+    estado.comerciales ||
+    estado.operativos
+  );
+}
+
+function programarAutoguardado() {
+  clearTimeout(borradorTimer);
+  const dot = $('autosave-dot');
+  const txt = $('autosave-text');
+  const ind = $('autosave-indicator');
+  
+  if (dot) dot.classList.add('saving');
+  if (txt) txt.textContent = 'Guardando...';
+  if (ind) ind.classList.add('show');
+
+  borradorTimer = setTimeout(() => {
+    const key = claveBorrador();
+    if (!key) return;
+    const estado = capturarEstadoFormulario();
+    
+    if (formularioTieneContenido(estado)) {
+      localStorage.setItem(key, JSON.stringify(estado));
+      borradorActivo = true;
+    } else {
+      localStorage.removeItem(key);
+      borradorActivo = false;
+    }
+
+    if (dot) dot.classList.remove('saving');
+    if (txt) txt.textContent = '✔ Guardado';
+    
+    if (ind) {
+      setTimeout(() => {
+        ind.classList.remove('show');
+      }, 1000);
+    }
+  }, 1200);
+}
+
+function limpiarBorrador() {
+  const key = claveBorrador();
+  if (key) localStorage.removeItem(key);
+  borradorActivo = false;
+  clearInterval(borradorTiempoInterval);
+  const c = $('borrador-banner-container');
+  if (c) c.innerHTML = '';
+}
+
+function tiempoRelativo(ts) {
+  const min = Math.round((Date.now() - ts) / 60000);
+  if (min < 1) return 'hace un momento';
+  if (min < 60) return `hace ${min} min`;
+  const horas = Math.round(min / 60);
+  if (horas < 24) return `hace ${horas} h`;
+  const dias = Math.round(horas / 24);
+  return `hace ${dias} día${dias === 1 ? '' : 's'}`;
+}
+
+function revisarBorradorGuardado() {
+  const key = claveBorrador();
+  if (!key) return;
+  const raw = localStorage.getItem(key);
+  if (!raw) return;
+
+  let estado;
+  try {
+    estado = JSON.parse(raw);
+  } catch (e) {
+    localStorage.removeItem(key);
+    return;
+  }
+
+  const horas = (Date.now() - estado.ts) / 3600000;
+  if (horas > BORRADOR_HORAS_EXPIRA || !formularioTieneContenido(estado)) {
+    localStorage.removeItem(key);
+    return;
+  }
+
+  mostrarBandaBorrador(estado);
+}
+
+let borradorTiempoInterval = null;
+
+function mostrarBandaBorrador(estado) {
+  const container = $('borrador-banner-container');
+  if (!container) return;
+  window._borradorPendiente = estado;
+
+  container.innerHTML = `
+    <div class="borrador-banda">
+      <div class="borrador-banda-content">
+        <i class="ti ti-file-pencil"></i>
+        <div class="borrador-banda-texto">
+          <span class="borrador-banda-titulo">Tienes una visita sin terminar</span>
+          <span class="borrador-banda-sub">Última edición <span id="borrador-banda-tiempo">${tiempoRelativo(estado.ts)}</span></span>
+        </div>
+      </div>
+      <div class="borrador-banda-botones">
+        <button class="btn-banda-no" onclick="limpiarBorrador()">
+          <i class="ti ti-x"></i> Descartar
+        </button>
+        <button class="btn-banda-si" onclick="retomarBorrador()">
+          <i class="ti ti-arrow-right"></i> Retomar
+        </button>
+      </div>
+    </div>
+  `;
+
+  clearInterval(borradorTiempoInterval);
+  borradorTiempoInterval = setInterval(() => {
+    const el = $('borrador-banda-tiempo');
+    if (!el) { clearInterval(borradorTiempoInterval); return; }
+    el.textContent = tiempoRelativo(estado.ts);
+  }, 30000);
+}
+
+function limpiarBorrador() {
+  const key = claveBorrador();
+  if (key) localStorage.removeItem(key);
+  borradorActivo = false;
+  clearInterval(borradorTiempoInterval);
+  const c = $('borrador-banner-container');
+  if (c) c.innerHTML = '';
+}
+
+function retomarBorrador() {
+  clearInterval(borradorTiempoInterval);
+  const estado = window._borradorPendiente;
+  if (!estado) return;
+
+  if (estado.regional) {
+    $('f-regional2').value = estado.regional;
+    onRegionalChange(estado.zonal);
+  }
+
+  setTimeout(() => {
+    if (estado.oficinaCod) {
+      const idx = OFICINAS.findIndex(o => o.codOficina === estado.oficinaCod);
+      if (idx >= 0) selOficina(idx);
+    }
+    if (estado.fecha && fpFecha) {
+      fpFecha.setDate(estado.fecha, true);
+      fechaConfirmada = estado.fecha;
+    }
+    if (estado.modalidad) $('f-modal').value = estado.modalidad;
+    if (estado.objetivo) $('f-obj').value = estado.objetivo;
+    if (estado.comerciales) $('f-com').value = estado.comerciales;
+    if (estado.operativos) $('f-ope').value = estado.operativos;
+
+    actualizarProgreso();
+    borradorActivo = true;
+    $('borrador-banner-container').innerHTML = '';
+    
+    mostrarNotificacionExito({
+      icono: 'ti-file-check',
+      titulo: 'Visita retomada',
+      subtitulo: estado.oficinaNombre || 'Continúa donde lo dejaste',
+      duracion: 1400
+    });
+  }, 150);
+}
+
 document.addEventListener('DOMContentLoaded', async function() {
   fechaConfirmada = obtenerFechaHoyStr();
 
@@ -4085,6 +4433,12 @@ document.addEventListener('DOMContentLoaded', async function() {
   });
 
   document.getElementById('f-modal').addEventListener('change', function() {
+    ['f-regional2','f-zonal2','f-fecha','f-modal','f-obj'].forEach(id => {
+      const el = $(id);
+      if (el) el.addEventListener('change', programarAutoguardado);
+    });
+    $('f-com').addEventListener('input', programarAutoguardado);
+    $('f-ope').addEventListener('input', programarAutoguardado);
     validarNumEntrada('f-com');
     validarNumEntrada('f-ope');
 
