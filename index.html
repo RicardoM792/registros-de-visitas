@@ -1900,8 +1900,8 @@ select:disabled, input:disabled { background: var(--bg3); color: var(--t3); curs
     <div class="grid2">
       <div class="fg">
         <label>Regional <span class="req">*</span></label>
-        <select id="f-regional2" onchange="onRegionalChange()">
-          <option value="">Seleccionar...</option>
+        <select id="f-regional2" onchange="onRegionalChange()" disabled>
+          <option value="">Cargando oficinas...</option>
         </select>
         <div class="err-msg" id="err-regional">Selecciona la regional</div>
       </div>
@@ -2309,9 +2309,6 @@ function cargarOficinasCache() {
       const UN_DIA = 86400000;
       if (Date.now() - parsed.timestamp < UN_DIA) {
         OFICINAS = parsed.data;
-        $('status-line').innerHTML = `<i class="ti ti-database-check"></i> ${OFICINAS.length} oficinas procesadas`;
-        poblarRegionales();
-        poblarComercialesOperativos();
         return true;
       }
     }
@@ -2351,9 +2348,6 @@ function cargarOficinasRed() {
         })).filter(o => o.oficina);
 
         if (OFICINAS.length > 0) {
-          $('status-line').innerHTML = `<i class="ti ti-database-check"></i> ${OFICINAS.length} oficinas cargadas`;
-          poblarRegionales();
-          poblarComercialesOperativos();
           cachearOficinas(OFICINAS);
           resolve(true);
         } else {
@@ -2367,25 +2361,14 @@ function cargarOficinasRed() {
   });
 }
 
-async function cargarOficinasInicial() {
+async function cargarFuncionariosInicial() {
   try {
     const supabaseUrlOk = typeof SUPABASE_URL !== 'undefined' && SUPABASE_URL;
     const supabaseKeyOk = typeof SUPABASE_ANON_KEY !== 'undefined' && SUPABASE_ANON_KEY;
-    const csvUrlOk = typeof URL_MAESTRO_OFICINAS_CSV !== 'undefined' && URL_MAESTRO_OFICINAS_CSV;
 
-    if (!supabaseUrlOk || !supabaseKeyOk || !csvUrlOk) {
-      console.error("Error crítico: Faltan llaves de Supabase o la URL del CSV.");
+    if (!supabaseUrlOk || !supabaseKeyOk) {
+      console.error("Error crítico: faltan llaves de Supabase.");
       updateConnUI(0, 'critico');
-      return false;
-    }
-
-    let oficinasCargadas = cargarOficinasCache();
-    if (!oficinasCargadas) {
-      oficinasCargadas = await cargarOficinasRed();
-    }
-
-    if (!oficinasCargadas) {
-      updateConnUI(0, 'oficinas');
       return false;
     }
 
@@ -2398,10 +2381,62 @@ async function cargarOficinasInicial() {
     return true;
 
   } catch (error) {
-    console.error("Error en cargarOficinasInicial:", error);
+    console.error("Error en cargarFuncionariosInicial:", error);
     updateConnUI(0, 'credenciales');
     return false;
   }
+}
+
+let oficinasListo = false;
+let oficinasCargandoBg = false;
+
+function actualizarEstadoOficinas(estado) {
+  const selReg = $('f-regional2');
+  const statusLine = $('status-line');
+  if (!selReg || !statusLine) return;
+
+  if (estado === 'cargando') {
+    selReg.disabled = true;
+    statusLine.style.opacity = '';
+    statusLine.style.color = '';
+    statusLine.innerHTML = '<i class="ti ti-loader-2"></i> Cargando base de oficinas...';
+  } else if (estado === 'listo') {
+    selReg.disabled = false;
+    poblarRegionales();
+    poblarComercialesOperativos();
+    statusLine.style.opacity = '';
+    statusLine.style.color = '';
+    statusLine.innerHTML = `<i class="ti ti-database-check"></i> ${OFICINAS.length} oficinas cargadas`;
+  } else {
+    selReg.disabled = true;
+    statusLine.style.opacity = '1';
+    statusLine.style.color = 'var(--err)';
+    statusLine.innerHTML = 'No se logró conexión con el servidor · <a href="javascript:void(0)" onclick="cargarOficinasBackground()" style="color:inherit;text-decoration:underline">Reintentar</a>';
+  }
+}
+
+async function cargarOficinasBackground() {
+  if (oficinasCargandoBg) return;
+  oficinasCargandoBg = true;
+  actualizarEstadoOficinas('cargando');
+
+  const csvUrlOk = typeof URL_MAESTRO_OFICINAS_CSV !== 'undefined' && URL_MAESTRO_OFICINAS_CSV;
+  if (!csvUrlOk) {
+    console.error("Error crítico: falta la URL del CSV de oficinas.");
+    oficinasCargandoBg = false;
+    oficinasListo = false;
+    actualizarEstadoOficinas('error');
+    return;
+  }
+
+  let oficinasCargadas = cargarOficinasCache();
+  if (!oficinasCargadas) {
+    oficinasCargadas = await cargarOficinasRed();
+  }
+
+  oficinasCargandoBg = false;
+  oficinasListo = oficinasCargadas;
+  actualizarEstadoOficinas(oficinasCargadas ? 'listo' : 'error');
 }
 
 function poblarRegionales(regionalSel, zonalSel) {
@@ -3900,32 +3935,6 @@ critico: [
     statusClass: "danger"
   }
 ],
-  oficinas: [
-    {
-      icon: "ti-wifi-off",
-      title: "Sin acceso a oficinas",
-      msg: 'No fue posible consultar el catálogo de oficinas.<br><span class="hl-warn">Revisa tu conexión a internet</span> e inténtalo de nuevo.',
-      button: "Reintentar conexión",
-      status: "Intento 1/3",
-      statusClass: "warning"
-    },
-    {
-      icon: "ti-refresh-alert",
-      title: "Respuesta lenta del servidor",
-      msg: 'El servidor está tardando en responder más de lo esperado.<br><span class="hl-warn">Reintentando la carga de oficinas automáticamente...</span>',
-      button: "Forzar reintento",
-      status: "Intento 2/3",
-      statusClass: "warning"
-    },
-    {
-      icon: "ti-building-hospital-off",
-      title: "Módulo de oficinas fuera de línea",
-      msg: 'No fue posible conectar tras varios intentos.<br><br><span class="hl-err">Contacta al administrador del sistema</span> o intenta más tarde.',
-      button: "Reintentar todo",
-      status: "Servicio caído",
-      statusClass: "danger"
-    }
-  ],
   servidor: [
     {
       icon: "ti-database-off",
@@ -3954,7 +3963,7 @@ critico: [
   ]
 };
 
-let tipoErrorActual = 'oficinas';
+let tipoErrorActual = 'credenciales';
 
 function showConnOverlay() {
   const overlay = document.getElementById('conn-overlay');
@@ -4013,7 +4022,7 @@ function updateConnUI(index, tipo) {
   
   if (tipo) tipoErrorActual = tipo;
   
-  const categoria = connEstados[tipoErrorActual] || connEstados.oficinas || [];
+  const categoria = connEstados[tipoErrorActual] || connEstados.credenciales || [];
   const s = categoria[index] || categoria[0];
   if (!s) return;
 
@@ -4152,8 +4161,8 @@ async function handleConnRetry() {
       try {
         let exito = false;
 
-        if (tipoErrorActual === 'oficinas' || tipoErrorActual === 'credenciales' || tipoErrorActual === 'critico') {
-          exito = await cargarOficinasInicial();
+        if (tipoErrorActual === 'credenciales' || tipoErrorActual === 'critico') {
+          exito = await cargarFuncionariosInicial();
         } else {
           const resp = await fetch(SUPABASE_URL + '/rest/v1/rpc/obtener_visitas_funcionario', {
             method: 'POST',
@@ -4497,11 +4506,12 @@ document.addEventListener('DOMContentLoaded', async function() {
   });
 
   programarOverlayCarga();
+  cargarOficinasBackground();
 
-  const oficinasOk = await cargarOficinasInicial();
+  const funcionariosOk = await cargarFuncionariosInicial();
   cancelarOverlayCarga();
 
-  if (!oficinasOk) {
+  if (!funcionariosOk) {
     if (!cargaOverlayVisible) { showConnOverlay(); cargaOverlayVisible = true; }
     intentoConn = 0;
     return;
