@@ -2335,7 +2335,7 @@ function cargarOficinasCache() {
     const cached = localStorage.getItem('rv_oficinas_cache');
     if (cached) {
       const parsed = JSON.parse(cached);
-      const UN_DIA = 1000;
+      const UN_DIA = 86400000;
       if (Date.now() - parsed.timestamp < UN_DIA) {
         OFICINAS = parsed.data;
         return true;
