@@ -220,7 +220,7 @@ label { display: block; font-size: 12.5px; font-weight: 600; color: var(--t2); m
 .req { color: var(--err); }
 .fg { margin-bottom: 16px; position: relative; }
 
-input[type=text], input[type=search], select {
+input[type=text], input[type=search], select, textarea {
   width: 100%;
   padding: 12px 14px;
   border: 1.5px solid var(--bd);
@@ -233,6 +233,8 @@ input[type=text], input[type=search], select {
   font-family: inherit;
   box-shadow: var(--sh-md);
 }
+
+textarea { resize: vertical; min-height: 70px; }
 
 input:focus, select:focus { outline: none; border-color: var(--brand); box-shadow: 0 0 0 3px rgba(24,95,165,.15); }
 input.err-field, select.err-field { border-color: var(--err); }
@@ -694,7 +696,7 @@ select:disabled, input:disabled { background: var(--bg3); color: var(--t3); curs
 
 .detalle-item {
   padding: 14px 16px;
-  border-bottom: 1px solid var(--bg3);
+  border-bottom: 2px solid var(--bd);
   transition: var(--transition);
 }
 
@@ -713,7 +715,7 @@ select:disabled, input:disabled { background: var(--bg3); color: var(--t3); curs
   gap: 6px;
 }
 
-.detalle-item .ofi i { color: var(--brand); font-size: 15px; }
+.detalle-item .ofi i { color: var(--brand); font-size: 15px; width: 16px; text-align: center; flex-shrink: 0; }
 
 .detalle-item .hora {
   font-size: 12px;
@@ -731,9 +733,9 @@ select:disabled, input:disabled { background: var(--bg3); color: var(--t3); curs
 .detalle-item .aseg-badge { font-size: 10px; font-weight: 700; padding: 3px 9px; border-radius: 10px; background: var(--brand-l); color: var(--brand-d); }
 .detalle-item-details { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 12px; font-size: 11.5px; color: var(--t2); }
 .detalle-item-details .detail-row { display: flex; align-items: center; gap: 5px; }
-.detalle-item-details .detail-row i { font-size: 12px; color: var(--brand); flex-shrink: 0; }
+.detalle-item-details .detail-row i { font-size: 12px; color: var(--brand); flex-shrink: 0; width: 14px; text-align: center; }
 .detalle-item-details .detail-row strong { color: var(--t1); font-weight: 600; }
-.detalle-item-stats { display: flex; gap: 10px; margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--bg3); }
+.detalle-item-stats { display: flex; align-items: center; gap: 10px; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--bd); }
 
 .stat-chip {
   font-size: 11px;
@@ -748,6 +750,14 @@ select:disabled, input:disabled { background: var(--bg3); color: var(--t3); curs
 }
 
 .stat-chip i { font-size: 12px; color: var(--brand); }
+.chip-realizada { background: var(--ok-bg); color: var(--ok); }
+.chip-realizada i { color: var(--ok); }
+.chip-cancelada { background: var(--err-bg); color: var(--err); }
+.chip-cancelada i { color: var(--err); }
+.obs-cancelacion { font-size: 11.5px; color: var(--err); background: var(--err-bg); border-radius: var(--r-md); padding: 8px 10px; margin-top: 8px; display: flex; align-items: flex-start; gap: 6px; }
+.detalle-item-acciones { margin-top: 10px; }
+.btn-cancelar-visita { background: none; border: 1.5px solid var(--err); color: var(--err); font-size: 11.5px; font-weight: 600; padding: 6px 12px; border-radius: var(--r-md); cursor: pointer; display: inline-flex; align-items: center; gap: 5px; transition: var(--transition); }
+.btn-cancelar-visita:hover { background: var(--err-bg); }
 .dia-sin-visitas { padding: 30px 20px; text-align: center; color: var(--t3); font-size: 13px; }
 .dia-sin-visitas i { font-size: 32px; display: block; margin-bottom: 8px; opacity: .5; }
 .cal-leyenda { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--bd); font-size: 10.5px; color: var(--t3); }
@@ -847,6 +857,8 @@ select:disabled, input:disabled { background: var(--bg3); color: var(--t3); curs
   animation: cardIn .25s ease;
   border: 1px solid var(--glass-border);
 }
+
+#confirm-cancelacion-overlay .confirm-box { background: #ffffff; backdrop-filter: none; }
 
 .confirm-icon {
   width: 52px;
@@ -1838,6 +1850,22 @@ select:disabled, input:disabled { background: var(--bg3); color: var(--t3); curs
     </div>
   </div>
 
+  <div class="confirm-overlay" id="confirm-cancelacion-overlay">
+    <div class="confirm-box">
+      <div class="confirm-icon" style="color:var(--err)"><i class="ti ti-calendar-x"></i></div>
+      <h3>Cancelar visita</h3>
+      <p>La visita será registrada como <strong style="color:var(--err);background:var(--err-bg);padding:2px 8px;border-radius:4px">Cancelada</strong></p>
+      <div class="fg" style="text-align:left">
+        <textarea id="cancelacion-observacion" rows="3" maxlength="300" placeholder="Describe el motivo de la cancelación..." spellcheck="true" lang="es" autocapitalize="sentences"></textarea>
+        <div class="err-msg" id="err-cancelacion-observacion">La observación es obligatoria</div>
+      </div>
+      <div class="confirm-botones">
+        <button class="btn confirm-btn-no" id="confirm-cancelacion-no"><i class="ti ti-x"></i> Volver</button>
+        <button class="btn confirm-btn-si" id="confirm-cancelacion-si" disabled><i class="ti ti-check"></i> Confirmar</button>
+      </div>
+    </div>
+  </div>
+
   <div class="card hidden" id="card-form">
     <div class="registro-header-pro">
       <div class="avatar-pro" id="user-avatar" aria-hidden="true">
@@ -1943,7 +1971,7 @@ select:disabled, input:disabled { background: var(--bg3); color: var(--t3); curs
       </div>
     </div>
 
-    <div class="grid2">
+    <div class="grid2" id="bloque-com-ope">
       <div class="fg">
         <label>Comerciales</label>
         <div class="stepper">
@@ -2107,6 +2135,7 @@ let ofActiveIdx = -1;
 let calFecha = new Date();
 let histFecha = new Date();
 let visitasCache = [];
+const MOSTRAR_COMERCIALES_OPERATIVOS = false;
 let filtroActivo = 'todos';
 let filtroHistorial = 'todos';
 let diaSeleccionado = null;
@@ -3106,6 +3135,91 @@ function confirmarDuplicado(cantidad, oficina) {
   });
 }
 
+let visitaIdParaCancelar = null;
+
+function abrirModalCancelacion(id) {
+  visitaIdParaCancelar = id;
+  $('cancelacion-observacion').value = '';
+  $('cancelacion-observacion').classList.remove('err-field');
+  $('err-cancelacion-observacion').classList.remove('show');
+  $('confirm-cancelacion-si').disabled = true;
+  $('confirm-cancelacion-overlay').classList.add('show');
+}
+
+function cerrarModalCancelacion() {
+  $('confirm-cancelacion-overlay').classList.remove('show');
+  visitaIdParaCancelar = null;
+}
+
+async function cancelarVisitaRPC(id, observacion) {
+  try {
+    const resp = await fetch(SUPABASE_URL + '/rest/v1/rpc/cancelar_visita', {
+      method: 'POST',
+      headers: {
+        'apikey': SUPABASE_ANON_KEY,
+        'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        p_id: id,
+        p_funcionario: SESSION.func,
+        p_observacion: observacion
+      })
+    });
+
+    if (!resp.ok) {
+      const texto = await resp.text();
+      let mensaje = texto;
+      try { const json = JSON.parse(texto); if (json.message) mensaje = json.message; } catch (e) {}
+      console.error('cancelar_visita RPC error', resp.status, texto);
+      return { ok: false, error: mensaje };
+    }
+    return { ok: true };
+  } catch (err) {
+    console.error('cancelar_visita fetch error', err);
+    return { ok: false, error: err.message || String(err) };
+  }
+}
+
+async function confirmarCancelacionVisita() {
+  const observacion = $('cancelacion-observacion').value.trim();
+  if (!observacion) {
+    $('cancelacion-observacion').classList.add('err-field');
+    $('err-cancelacion-observacion').classList.add('show');
+    return;
+  }
+
+  if (!visitaIdParaCancelar) {
+    showToast('No se identificó la visita a cancelar. Cierra el detalle e inténtalo de nuevo.', true);
+    console.error('visitaIdParaCancelar vacío al confirmar cancelación');
+    return;
+  }
+
+  const btn = $('confirm-cancelacion-si');
+  const textoOriginal = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Cancelando...';
+
+  try {
+    const resultado = await cancelarVisitaRPC(visitaIdParaCancelar, observacion);
+
+    if (resultado.ok) {
+      cerrarModalCancelacion();
+      showToast('La visita quedó marcada como cancelada');
+      await cargarVisitasCalendario();
+      if (diaSeleccionado) {
+        const [a, m, d] = diaSeleccionado.split('-').map(Number);
+        verDetalleDia(a, m - 1, d);
+      }
+    } else {
+      showToast('No se pudo cancelar la visita: ' + resultado.error, true);
+    }
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = textoOriginal;
+  }
+}
+
 async function contarVisitasMismoDiaOficina(fecha, oficina) {
   try {
     const resp = await fetch(SUPABASE_URL + '/rest/v1/rpc/obtener_visitas_funcionario', {
@@ -3284,6 +3398,13 @@ function obtenerVisitasFiltradas() {
   return visitasCache.filter(v => v.modalidad === filtroActivo);
 }
 
+function renderEstadoChip(v) {
+  if (v.estado === 'Cancelada') {
+    return `<span class="stat-chip chip-cancelada"><i class="ti ti-calendar-x"></i> Cancelada</span>`;
+  }
+  return `<span class="stat-chip chip-realizada"><i class="ti ti-check"></i> ${v.estado || 'Realizada'}</span>`;
+}
+
 function renderizarCalendario() {
   const año = calFecha.getFullYear();
   const mes = calFecha.getMonth();
@@ -3427,7 +3548,8 @@ function verDetalleDia(año, mes, dia) {
       </div>
     `;
   } else {
-    const visitasHTML = visitas.map(v => `
+    const visitasOrdenadas = [...visitas].sort((a, b) => (b.id || 0) - (a.id || 0));
+    const visitasHTML = visitasOrdenadas.map(v => `
       <div class="detalle-item">
         <div class="detalle-item-top">
           <span class="aseg-badge">${v.aseguradora || 'N/A'}</span>
@@ -3441,10 +3563,13 @@ function verDetalleDia(año, mes, dia) {
           <div class="detail-row"><i class="ti ti-layers"></i><span>${v.gerencia_zonal || 'N/A'}</span></div>
         </div>
         <div class="detalle-item-stats">
+          ${MOSTRAR_COMERCIALES_OPERATIVOS ? `
           <span class="stat-chip"><i class="ti ti-users"></i> ${v.comerciales || 0} Comerciales</span>
-          <span class="stat-chip"><i class="ti ti-user"></i> ${v.operativos || 0} Operativos</span>
-          ${v.estado ? `<span class="stat-chip"><i class="ti ti-check"></i> ${v.estado}</span>` : ''}
+          <span class="stat-chip"><i class="ti ti-user"></i> ${v.operativos || 0} Operativos</span>` : ''}
+          ${renderEstadoChip(v)}
         </div>
+        ${v.estado === 'Cancelada' && v.observacion_cancelacion ? `<div class="obs-cancelacion"><i class="ti ti-message-report"></i> ${v.observacion_cancelacion}</div>` : ''}
+        ${v.estado !== 'Cancelada' ? `<div class="detalle-item-acciones"><button class="btn-cancelar-visita" onclick="abrirModalCancelacion('${v.id}')"><i class="ti ti-calendar-x"></i> Cancelar visita</button></div>` : ''}
       </div>
     `).join('');
 
@@ -3631,7 +3756,9 @@ function renderizarHistorial() {
         <span class="h-fecha">${v.fecha || '--'}</span>
         <span class="h-oficina">${v.oficina || 'Sin oficina'}</span>
         <span class="h-modalidad ${(v.modalidad || '').toLowerCase()}">${v.modalidad || 'N/A'}</span>
+        ${renderEstadoChip(v)}
       </div>
+      ${v.estado === 'Cancelada' && v.observacion_cancelacion ? `<div class="obs-cancelacion"><i class="ti ti-message-report"></i> ${v.observacion_cancelacion}</div>` : ''}
     `).join('');
   }
 }
@@ -3639,18 +3766,17 @@ function renderizarHistorial() {
 function exportarReporte() {
   const nombresMeses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
   const visitas = obtenerVisitasDelMesHistorial();
-  const encabezados = ['Fecha', 'Oficina', 'Modalidad', 'Objetivo', 'Comerciales', 'Operativos', 'Regional', 'Zonal'];
+  const encabezadosBase = ['Fecha', 'Oficina', 'Modalidad', 'Objetivo'];
+  const encabezadosComOpe = MOSTRAR_COMERCIALES_OPERATIVOS ? ['Comerciales', 'Operativos'] : [];
+  const encabezados = [...encabezadosBase, ...encabezadosComOpe, 'Regional', 'Zonal', 'Estado', 'Observación'];
 
-  const filas = visitas.map(v => [
-    v.fecha || '',
-    v.oficina || '',
-    v.modalidad || '',
-    v.objetivo || '',
-    Number(v.comerciales) || 0,
-    Number(v.operativos) || 0,
-    v.gerencia_regional || '',
-    v.gerencia_zonal || ''
-  ]);
+  const filas = visitas.map(v => {
+    const base = [v.fecha || '', v.oficina || '', v.modalidad || '', v.objetivo || ''];
+    const comOpe = MOSTRAR_COMERCIALES_OPERATIVOS ? [Number(v.comerciales) || 0, Number(v.operativos) || 0] : [];
+    const estado = v.estado === 'Cancelada' ? 'Cancelada' : 'Realizada';
+    const observacion = v.estado === 'Cancelada' ? (v.observacion_cancelacion || '') : '';
+    return [...base, ...comOpe, v.gerencia_regional || '', v.gerencia_zonal || '', estado, observacion];
+  });
 
   const hoja = XLSX.utils.aoa_to_sheet([encabezados, ...filas]);
   const estiloEncabezado = {
@@ -3663,25 +3789,37 @@ function exportarReporte() {
     const ref = XLSX.utils.encode_cell({ r: 0, c: i });
     if (hoja[ref]) hoja[ref].s = estiloEncabezado;
   });
+  const colEstado = encabezados.length - 2;
   filas.forEach((fila, i) => {
     const modalidad = fila[2];
-    if (modalidad !== 'Presencial' && modalidad !== 'Virtual') return;
-    const colorTexto = modalidad === 'Presencial' ? '16A34A' : '185FA5';
-    const ref = XLSX.utils.encode_cell({ r: i + 1, c: 2 });
-    hoja[ref].s = {
-      font: { bold: true, color: { rgb: colorTexto } },
-      alignment: { horizontal: 'center' }
-    };
+    if (modalidad === 'Presencial' || modalidad === 'Virtual') {
+      const colorTexto = modalidad === 'Presencial' ? '16A34A' : '185FA5';
+      const ref = XLSX.utils.encode_cell({ r: i + 1, c: 2 });
+      hoja[ref].s = {
+        font: { bold: true, color: { rgb: colorTexto } },
+        alignment: { horizontal: 'center' }
+      };
+    }
+
+    const estado = fila[colEstado];
+    const refEstado = XLSX.utils.encode_cell({ r: i + 1, c: colEstado });
+    if (hoja[refEstado]) {
+      hoja[refEstado].s = {
+        font: { bold: true, color: { rgb: estado === 'Cancelada' ? 'DC2626' : '16A34A' } },
+        alignment: { horizontal: 'center' }
+      };
+    }
   });
 
-  hoja['!cols'] = [
-    { wch: 12 }, { wch: 32 }, { wch: 12 }, { wch: 18 },
-    { wch: 12 }, { wch: 12 }, { wch: 20 }, { wch: 20 }
-  ];
+  const colsBase = [{ wch: 12 }, { wch: 32 }, { wch: 12 }, { wch: 18 }];
+  const colsComOpe = MOSTRAR_COMERCIALES_OPERATIVOS ? [{ wch: 12 }, { wch: 12 }] : [];
+  hoja['!cols'] = [...colsBase, ...colsComOpe, { wch: 20 }, { wch: 20 }, { wch: 14 }, { wch: 40 }];
 
   const libro = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(libro, hoja, 'Historial');
-  const nombreArchivo = `Reporte_de_visitas_${obtenerFechaHoyStr()}.xlsx`;
+  const ahoraExport = new Date();
+  const horaArchivo = String(ahoraExport.getHours()).padStart(2, '0') + '-' + String(ahoraExport.getMinutes()).padStart(2, '0');
+  const nombreArchivo = `Reporte_de_visitas_${obtenerFechaHoyStr()}_${horaArchivo}.xlsx`;
   XLSX.writeFile(libro, nombreArchivo);
   showToast('Reporte exportado correctamente');
 }
@@ -4413,6 +4551,17 @@ function retomarBorrador() {
 
 document.addEventListener('DOMContentLoaded', async function() {
   fechaConfirmada = obtenerFechaHoyStr();
+  if (!MOSTRAR_COMERCIALES_OPERATIVOS) $('bloque-com-ope').style.display = 'none';
+
+  $('cancelacion-observacion').addEventListener('input', function() {
+    $('confirm-cancelacion-si').disabled = this.value.trim().length === 0;
+    if (this.value.trim().length > 0) {
+      this.classList.remove('err-field');
+      $('err-cancelacion-observacion').classList.remove('show');
+    }
+  });
+  $('confirm-cancelacion-no').addEventListener('click', cerrarModalCancelacion);
+  $('confirm-cancelacion-si').addEventListener('click', confirmarCancelacionVisita);
 
   const savedTheme = localStorage.getItem('rv_theme') === 'dark' ? 'dark' : 'light';
   temaActual = savedTheme;
