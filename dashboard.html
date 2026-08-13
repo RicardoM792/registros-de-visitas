@@ -160,6 +160,7 @@ input:focus,select:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0
 .btn.ghost{background:var(--bg);color:var(--brand);border:1.5px solid var(--bd);box-shadow:none}
 .btn.ghost:hover{background:var(--brand-l);border-color:var(--brand);transform:translateY(-1px)}
 .btn.green{background:var(--grad-ok)}
+.btn.red{background:var(--err)}
 .btn.green:hover{box-shadow:0 6px 14px rgba(22,163,74,.25)}
 .btn.small{padding:6px 11px;font-size:11.5px}
 .btn:disabled{opacity:.5;cursor:not-allowed;transform:none!important}
@@ -211,6 +212,8 @@ input:focus,select:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0
 .aseg-card-head i{font-size:17px}
 .aseg-card-head .total{font-size:18px;font-weight:900}
 .aseg-pct{font-size:10px;font-weight:700;opacity:.85}
+.total-cancel{font-size:18px;font-weight:900;color:var(--err)}
+.total-cancel.hidden{display:none}
 .aseg-card-body{padding:14px 16px;display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .aseg-mod{background:var(--bg2);border-radius:var(--r-md);padding:10px;display:flex;align-items:center;gap:10px;border:1px solid var(--bd);transition:all .2s}
 .aseg-mod:hover{border-color:var(--brand);transform:translateY(-1px)}
@@ -273,6 +276,13 @@ input:focus,select:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0
 
 .tabla-card{background:var(--bg);border:1px solid var(--bd);border-radius:var(--r-lg);padding:16px;overflow:hidden;box-shadow:var(--sh-sm);transition:var(--transition-theme);margin-bottom:16px}
 .tabla-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px;flex-wrap:wrap}
+.tabla-bulk-bar{display:flex;align-items:center;gap:10px;font-size:12.5px;font-weight:700;color:var(--t1);background:var(--err-bg);border:1px solid var(--err);border-radius:var(--r-md);padding:6px 12px;animation:bulkBarIn .18s ease}
+.tabla-bulk-bar.hidden{display:none}
+.tabla-bulk-bar #bulk-count{color:var(--err);display:flex;align-items:center;gap:6px}
+.tabla-bulk-bar #bulk-count::before{content:'';width:7px;height:7px;border-radius:50%;background:var(--err);animation:bulkDotPulse 1.4s ease-in-out infinite}
+@keyframes bulkBarIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+@keyframes bulkDotPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(1.3)}}
+.dot-cancelada{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--err);margin-right:6px;vertical-align:middle}
 .tabla-top h3{font-size:13px;font-weight:800;display:flex;align-items:center;gap:8px}
 .tabla-top h3 .count{background:var(--brand-l);color:var(--brand-d);padding:2px 9px;border-radius:12px;font-size:10.5px;font-weight:700}
 .tabla-search-wrap{position:relative;max-width:300px;flex:1}
@@ -386,7 +396,10 @@ tbody tr:hover td{background:var(--brand-l)}
 .modal-header h4{font-size:14px;font-weight:700;display:flex;align-items:center;gap:8px}
 .modal-close{width:28px;height:28px;border-radius:50%;border:none;background:rgba(255,255,255,.2);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:15px;transition:background .15s}
 .modal-close:hover{background:rgba(255,255,255,.35)}
-.modal-body{padding:18px;overflow-y:auto}
+.modal-body{padding:18px;overflow-y:auto;flex:1;min-height:0}
+.modal-footer{padding:0 18px 18px;flex-shrink:0;display:flex;justify-content:flex-end}
+.btn.ghost.red{background:var(--err-bg);color:var(--err);border:1.5px solid var(--err-bg)}
+.btn.ghost.red:hover{background:var(--err);color:#fff;border-color:var(--err)}
 .modal-row{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid var(--bg3)}
 .modal-row:last-child{border-bottom:none}
 .modal-row i{color:var(--brand);font-size:15px;margin-top:1px;flex-shrink:0;width:18px;text-align:center}
@@ -687,6 +700,9 @@ body[data-theme="dark"] .alerta-row.oficina i{color:#fb923c}
       <button class="modal-close" onclick="cerrarModal()"><i class="ti ti-x"></i></button>
     </div>
     <div class="modal-body" id="modal-body"></div>
+    <div class="modal-footer solo-admin">
+      <button class="btn small ghost red" onclick="eliminarVisitaDesdeModal()"><i class="ti ti-trash"></i> Eliminar visita</button>
+    </div>
   </div>
 </div>
 
@@ -920,6 +936,9 @@ body[data-theme="dark"] .alerta-row.oficina i{color:#fb923c}
     <div class="sidebar-item solo-admin" data-tooltip="Auditoría" onclick="abrirAuditoria()">
       <i class="ti ti-history"></i><span class="label">Auditoría</span>
     </div>
+    <div class="sidebar-item solo-admin" data-tooltip="Papelera" onclick="abrirPapelera()">
+      <i class="ti ti-trash"></i><span class="label">Papelera</span>
+    </div>
     <div class="sidebar-item solo-admin" data-tooltip="Configuración" onclick="abrirConfig()">
       <i class="ti ti-settings"></i><span class="label">Configuración</span>
     </div>
@@ -963,7 +982,7 @@ body[data-theme="dark"] .alerta-row.oficina i{color:#fb923c}
         </div>
       </div>
       <div class="err-msg" id="err-gate"><i class="ti ti-alert-circle"></i> Usuario no reconocido</div>
-      <button class="btn full" id="btn-entrar" onclick="verificarClave()"><i class="ti ti-arrow-right"></i> Continuar</button>
+      <button class="btn full" id="btn-entrar" onclick="verificarClave()" disabled><i class="ti ti-arrow-right"></i> Continuar</button>
     </div>
   </div>
 
@@ -1019,7 +1038,7 @@ body[data-theme="dark"] .alerta-row.oficina i{color:#fb923c}
             <i class="ti ti-shield"></i>
             <h3>MAPFRE</h3>
             <div style="margin-left:auto;text-align:right;line-height:1.1">
-              <span class="total" id="tasa-mapfre-total">0</span>
+              <span class="total" id="tasa-mapfre-total">0</span><span class="total-cancel hidden" id="tasa-mapfre-cancel"></span>
               <div class="aseg-pct" id="tasa-mapfre-pct">0%</div>
             </div>
           </div>
@@ -1049,7 +1068,7 @@ body[data-theme="dark"] .alerta-row.oficina i{color:#fb923c}
             <i class="ti ti-shield-check"></i>
             <h3>COLMENA</h3>
             <div style="margin-left:auto;text-align:right;line-height:1.1">
-              <span class="total" id="tasa-colmena-total">0</span>
+              <span class="total" id="tasa-colmena-total">0</span><span class="total-cancel hidden" id="tasa-colmena-cancel"></span>
               <div class="aseg-pct" id="tasa-colmena-pct">0%</div>
             </div>
           </div>
@@ -1221,6 +1240,11 @@ body[data-theme="dark"] .alerta-row.oficina i{color:#fb923c}
       <div class="tabla-card" id="vista-tabla">
         <div class="tabla-top">
           <h3><i class="ti ti-table"></i> Detalle de visitas <span class="count" id="tabla-count">0</span></h3>
+          <div class="tabla-bulk-bar solo-admin hidden" id="tabla-bulk-bar">
+            <span id="bulk-count">0 seleccionadas</span>
+            <button class="btn small ghost" onclick="limpiarSeleccionVisitas()">Cancelar</button>
+            <button class="btn small ghost red" onclick="eliminarVisitasSeleccionadas()"><i class="ti ti-trash"></i> Eliminar seleccionadas</button>
+          </div>
           <div class="tabla-search-wrap">
             <i class="ti ti-search tabla-search-icon"></i>
             <input type="search" class="tabla-search" id="tabla-buscar" placeholder="Buscar funcionario, oficina, regional, aseguradora..." autocomplete="off">
@@ -1231,6 +1255,7 @@ body[data-theme="dark"] .alerta-row.oficina i{color:#fb923c}
           <table>
             <thead>
               <tr id="tabla-head">
+                <th class="no-sort solo-admin"><input type="checkbox" id="chk-todas" onchange="toggleSeleccionarTodas(this.checked)"></th>
                 <th data-campo="fecha">Fecha <span class="sort-icon">▼</span></th>
                 <th data-campo="hora_registro">Hora <span class="sort-icon">▼</span></th>
                 <th data-campo="funcionario">Funcionario <span class="sort-icon">▼</span></th>
@@ -1361,6 +1386,35 @@ body[data-theme="dark"] .alerta-row.oficina i{color:#fb923c}
   </div>
 </div>
 
+<div class="modal-overlay" id="modal-papelera-overlay" onclick="if(event.target===this) cerrarPapelera()">
+  <div class="modal-box" style="max-width:720px">
+    <div class="modal-header">
+      <h4><i class="ti ti-trash"></i> Papelera de visitas</h4>
+      <button class="modal-close" onclick="cerrarPapelera()"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="modal-body" style="padding:14px 18px">
+      <div class="gestion-toolbar">
+        <div class="gestion-search-wrap">
+          <i class="ti ti-search"></i>
+          <input type="search" id="pap-buscar" placeholder="Buscar funcionario, aseguradora, oficina, regional..." oninput="renderPapelera()">
+        </div>
+        <button class="btn ghost small" onclick="cargarPapelera()" title="Refrescar" style="flex-shrink:0"><i class="ti ti-refresh"></i></button>
+      </div>
+      <div class="tabla-scroll" style="max-height:420px">
+        <table>
+          <thead><tr><th class="no-sort">Fecha visita</th><th class="no-sort">Hora</th><th class="no-sort">Funcionario</th><th class="no-sort">Aseguradora</th><th class="no-sort">Oficina</th><th class="no-sort">Eliminada</th><th class="no-sort"></th></tr></thead>
+          <tbody id="papelera-body"></tbody>
+        </table>
+      </div>
+      <div id="papelera-empty" class="empty-state hidden">
+        <i class="ti ti-trash-off"></i>
+        <h4>La papelera está vacía</h4>
+        <p>Las visitas que elimines aparecerán aquí y podrás restaurarlas</p>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
 const SUPABASE_URL = "https://lzsluzquoksiheyxcior.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_frToEsE65PivRXN83cIckw_S0snLVgv";
@@ -1378,6 +1432,7 @@ let VISITAS = [];
 let VISITAS_ANTERIOR = [];
 let VISITAS_FILTRADAS = [];
 let FILAS_ACTUALES = [];
+let VISITAS_SELECCIONADAS = new Set();
 let paginaActual = 1;
 let sortCampo = 'fecha';
 let sortDir = 'desc';
@@ -1399,12 +1454,13 @@ let vistaActual = config.vistaDetallePorDefecto || 'tabla';
 let calMes = new Date().getMonth();
 let calAnio = new Date().getFullYear();
 let acHighlighted = -1;
+let campoBusquedaExacta = null;
 let funcionTabActivo = '';
 let gestionTabActivo = 'usuarios';
 let usuarioRolFiltro = '';
 
 let AUDITORIA = [];
-const ICONOS_ACCION = { crear:'ti-plus', editar:'ti-edit', eliminar:'ti-trash', activar:'ti-eye', desactivar:'ti-eye-off', cambiar_clave:'ti-key' };
+const ICONOS_ACCION = { crear:'ti-plus', editar:'ti-edit', eliminar:'ti-trash', restaurar:'ti-rotate', activar:'ti-eye', desactivar:'ti-eye-off', cambiar_clave:'ti-key' };
 
 function formatAdminUser(a){
   let u = a.admin_username || a.admin_email || '—';
@@ -1422,6 +1478,7 @@ function parseAseguradoraDeDetalle(detalle){
 }
 let vistaAuditoria = 'tabla', audCalMes = new Date().getMonth(), audCalAnio = new Date().getFullYear(), audFiltroFecha = null;
 let auditoriaVisibles = 50;
+let PAPELERA = [];
 
 async function abrirAuditoria(){
   if (ROL !== 'admin') return;
@@ -1478,15 +1535,21 @@ function renderAuditoria(){
       entidadCol = aseg ? `<span class="badge-aseg ${aseg==='Mapfre'?'mapfre':'colmena'}">${aseg}</span>` : '<span class="badge-obj">Funcionario</span>';
     } else if (a.entidad === 'usuario') {
       entidadCol = '<span class="role-badge gestor">Usuario</span>';
+    } else if (a.entidad === 'visita') {
+      const esRestaurar = a.accion === 'restaurar';
+      entidadCol = `<span class="badge-estado ${esRestaurar?'realizada':'cancelada'}"><i class="ti ti-${esRestaurar?'rotate':'trash'}"></i> VISITA ${esRestaurar?'RESTAURADA':'ELIMINADA'}</span>`;
     }
     const detalleTxt = (a.detalle || '').replace(/Aseguradora:\s*\w+\s*/i,'').trim();
+    const detalleHtml = detalleTxt.includes('\n')
+      ? `<div style="max-height:110px;overflow-y:auto;line-height:1.6">${detalleTxt.split('\n').map(l => `<div>${l}</div>`).join('')}</div>`
+      : (detalleTxt || '—');
     return `<tr>
       <td style="white-space:nowrap;font-size:11px;color:var(--t2)">${fecha}</td>
       <td><strong>${formatAdminUser(a)}</strong></td>
       <td><i class="ti ${icon}" style="color:var(--brand);margin-right:5px"></i>${a.accion}</td>
       <td>${entidadCol}</td>
       <td>${a.entidad_nombre || '—'}</td>
-      <td style="color:var(--t2);font-size:11.5px">${detalleTxt || '—'}</td>
+      <td style="color:var(--t2);font-size:11.5px">${detalleHtml}</td>
     </tr>`;
   }).join('') || '';
 
@@ -1552,6 +1615,77 @@ function renderAuditoriaCalendar(){
   $('auditoria-calendar-grid').innerHTML = html;
 }
 
+async function abrirPapelera(){
+  if (ROL !== 'admin') return;
+  $('modal-papelera-overlay').classList.add('show');
+  document.body.style.overflow = 'hidden';
+  await cargarPapelera();
+}
+
+function cerrarPapelera(){
+  $('modal-papelera-overlay').classList.remove('show');
+  document.body.style.overflow = '';
+}
+
+async function cargarPapelera(){
+  $('papelera-body').innerHTML = '<tr><td colspan="7" style="text-align:center;padding:20px;color:var(--t3)">Cargando...</td></tr>';
+  try {
+    const resp = await fetchAdminConReintento(SUPABASE_URL + '/rest/v1/rpc/admin_listar_visitas_eliminadas', {
+      method:'POST', body: JSON.stringify({})
+    });
+    if (!resp.ok) {
+      const detalle = await resp.text().catch(() => '');
+      throw new Error('HTTP ' + resp.status + (detalle ? ' — ' + detalle : ''));
+    }
+    PAPELERA = await resp.json();
+    renderPapelera();
+  } catch(e) {
+    console.error('cargarPapelera error:', e);
+    $('papelera-body').innerHTML = `<tr><td colspan="7" style="text-align:center;padding:20px;color:var(--t3)">
+      <div style="margin-bottom:8px">Error al cargar la papelera</div>
+      <div style="font-size:11px;color:var(--t3);margin-bottom:10px">${(e.message || 'Error desconocido').slice(0,200)}</div>
+      <button class="btn ghost small" onclick="cargarPapelera()"><i class="ti ti-refresh"></i> Reintentar</button>
+    </td></tr>`;
+  }
+}
+
+function renderPapelera(){
+  const q = normTxt($('pap-buscar') ? $('pap-buscar').value : '');
+  let filas = PAPELERA;
+  if (q) filas = filas.filter(r => normTxt(r.funcionario).includes(q) || normTxt(r.oficina).includes(q) || normTxt(r.aseguradora).includes(q) || normTxt(r.gerencia_regional).includes(q) || normTxt(r.gerencia_zonal).includes(q));
+  $('papelera-empty').classList.toggle('hidden', filas.length > 0);
+  $('papelera-body').innerHTML = filas.map(r => {
+    const eliminada = r.eliminado_en ? new Date(r.eliminado_en).toLocaleString('es-CO', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' }) : '—';
+    return `<tr>
+      <td style="white-space:nowrap">${formatFecha(r.fecha)}</td>
+      <td>${r.hora_registro||''}</td>
+      <td><strong>${r.funcionario||''}</strong></td>
+      <td><span class="badge-aseg ${r.aseguradora==='Mapfre'?'mapfre':'colmena'}">${r.aseguradora||''}</span></td>
+      <td>${r.oficina||''}</td>
+      <td style="font-size:11px;color:var(--t2)">${eliminada}</td>
+      <td style="text-align:right"><button class="btn ghost small" onclick="restaurarVisita('${r.id}')"><i class="ti ti-rotate"></i> Restaurar</button></td>
+    </tr>`;
+  }).join('') || '';
+}
+
+async function restaurarVisita(id){
+  const r = PAPELERA.find(v => String(v.id) === String(id));
+  const resp = await fetchAdminConReintento(SUPABASE_URL + '/rest/v1/rpc/admin_restaurar_visita', {
+    method:'POST', body: JSON.stringify({ p_id: id })
+  });
+  if (!resp.ok) {
+    const detalle = await resp.text().catch(() => '');
+    showToast('No se pudo restaurar la visita' + (detalle ? ': ' + detalle : ''), 'error');
+    return;
+  }
+  const nombreVisita = r ? `${r.funcionario||'—'} · ${r.oficina||'—'} · ${formatFecha(r.fecha)} ${r.hora_registro||''}`.trim() : `ID: ${id}`;
+  registrarAuditoria('restaurar', 'visita', nombreVisita, r ? `Aseguradora: ${r.aseguradora||'—'}` : null);
+  showToast('Visita restaurada', 'success');
+  PAPELERA = PAPELERA.filter(r => String(r.id) !== String(id));
+  renderPapelera();
+  cargarTodo(true);
+}
+
 const CMDK_ACCIONES = [
   { label:'Ir a Resumen Ejecutivo', icon:'ti-dashboard', hint:'Página', run:()=>cambiarPagina('resumen') },
   { label:'Ir a Análisis de Visitas', icon:'ti-chart-line', hint:'Página', run:()=>cambiarPagina('analisis') },
@@ -1569,6 +1703,7 @@ const CMDK_ACCIONES = [
   { label:'Exportar a Excel', icon:'ti-file-spreadsheet', hint:'Acción', run:()=>exportarExcel() },
   { label:'Gestionar usuarios', icon:'ti-users-group', hint:'Panel', run:()=>abrirUsuarios() },
   { label:'Ver auditoría de administración', icon:'ti-history', hint:'Panel', run:()=>abrirAuditoria(), soloAdmin:true },
+  { label:'Ver papelera de visitas', icon:'ti-trash', hint:'Panel', run:()=>abrirPapelera(), soloAdmin:true },
   { label:'Configuración', icon:'ti-settings', hint:'Panel', run:()=>abrirConfig(), soloAdmin:true },
   { label:'Tema claro', icon:'ti-sun', hint:'Apariencia', run:()=>setTheme('light') },
   { label:'Tema oscuro', icon:'ti-moon', hint:'Apariencia', run:()=>setTheme('dark') },
@@ -1798,6 +1933,14 @@ function togglePassword(){
 let gateModo = null;
 let gateEmailAdmin = null;
 
+const FORMATO_USUARIO_REGEX = /^[A-Z]-\d{4}$/;
+
+function actualizarEstadoBotonGate(){
+  const btn = $('btn-entrar');
+  if (gateModo === 'admin') { btn.disabled = false; return; }
+  btn.disabled = !FORMATO_USUARIO_REGEX.test($('gate-user').value.trim());
+}
+
 async function verificarClave(){
   const usuario = $('gate-user').value.trim();
   if (!usuario) { $('err-gate').classList.add('show'); return; }
@@ -1854,6 +1997,7 @@ async function verificarClave(){
       $('gate-pass-wrap').classList.remove('hidden');
       $('err-gate').classList.remove('show');
       btn.innerHTML = '<i class="ti ti-key"></i> Entrar al panel';
+      actualizarEstadoBotonGate();
       setTimeout(() => $('gate-pass').focus(), 100);
       return;
     }
@@ -1884,7 +2028,8 @@ async function verificarClave(){
 }
 
 $('gate-pass').addEventListener('keydown', e => { if(e.key === 'Enter') verificarClave(); });
-$('gate-user').addEventListener('keydown', e => { if(e.key === 'Enter') verificarClave(); });
+$('gate-user').addEventListener('keydown', e => { if(e.key === 'Enter' && !$('btn-entrar').disabled) verificarClave(); });
+$('gate-user').addEventListener('input', actualizarEstadoBotonGate);
 
 function mostrarDashboard(){
   document.body.classList.remove('login-active');
@@ -1919,6 +2064,7 @@ function cerrarSesion(){
       gateModo = null;
       gateEmailAdmin = null;
       $('btn-entrar').innerHTML = '<i class="ti ti-arrow-right"></i> Continuar';
+      actualizarEstadoBotonGate();
       showToast('Sesión cerrada','info');
     }
   });
@@ -2463,7 +2609,7 @@ async function fetchTodasVisitas(){
   let offset = 0;
   let todas = [];
   while (true) {
-    const url = `${SUPABASE_URL}/rest/v1/visitas?select=*&order=fecha.desc,hora_registro.desc&limit=${LIMIT}&offset=${offset}`;
+    const url = `${SUPABASE_URL}/rest/v1/visitas?select=*&eliminado_en=is.null&order=fecha.desc,hora_registro.desc&limit=${LIMIT}&offset=${offset}`;
     const resp = await fetch(url, { headers: { apikey: SUPABASE_ANON_KEY, Authorization: 'Bearer ' + SUPABASE_ANON_KEY } });
     if (!resp.ok) throw new Error('Error ' + resp.status);
     const rows = await resp.json();
@@ -2829,7 +2975,7 @@ function renderActiveFilters(){
     {id:'fl-zonal', label:'Zonal'},
     {id:'fl-modal', label:'Modal'},
   ];
-  const limpiarBusquedaExtra = () => { $('tabla-buscar').value=''; $('autocomplete-list').classList.remove('show'); };
+  const limpiarBusquedaExtra = () => { $('tabla-buscar').value=''; campoBusquedaExacta = null; $('autocomplete-list').classList.remove('show'); };
   mapeo.forEach(m => {
     const val = $(m.id).value;
     if (val) chips.push({label:`${m.label}: ${val}`, clear:()=>{$(m.id).value='';if(m.id==='fl-regional')actualizarZonales();limpiarBusquedaExtra();aplicarFiltros()}});
@@ -2855,6 +3001,7 @@ function limpiarFiltros(){
   $('fl-desde').value = ''; $('fl-hasta').value = '';
   if (fpDesde) fpDesde.clear(); if (fpHasta) fpHasta.clear();
   $('tabla-buscar').value = '';
+  campoBusquedaExacta = null;
   $('autocomplete-list').classList.remove('show');
   actualizarZonales();
   quickFilter('todos');
@@ -3053,6 +3200,7 @@ function renderTasasCompactas(){
 function renderTasaCompacta(key, arr){
   const total = arr.length;
   const realizadas = arr.filter(r => r.estado !== 'Cancelada');
+  const canceladas = total - realizadas.length;
   const pres = realizadas.filter(r => r.modalidad === 'Presencial').length;
   const virt = realizadas.filter(r => r.modalidad === 'Virtual').length;
   const pctPres = total ? (pres / total) * 100 : 0;
@@ -3066,6 +3214,9 @@ function renderTasaCompacta(key, arr){
   $(`tasa-${key}-virt-pct`).textContent = `${pctVirt.toFixed(1)}%`;
   const bar = $(`tasa-${key}-bar`);
   bar.innerHTML = `<div class="seg-pres" style="width:${pctPres}%"></div><div class="seg-virt" style="width:${pctVirt}%"></div>`;
+  const cancelNote = $(`tasa-${key}-cancel`);
+  cancelNote.classList.toggle('hidden', canceladas === 0);
+  if (canceladas > 0) cancelNote.textContent = ` / ${canceladas}`;
 }
 
 let rankingAsegActivo = '';
@@ -3405,10 +3556,11 @@ function renderTabla(){
   const q = normTxt($('tabla-buscar').value);
   let filas = [...VISITAS_FILTRADAS];
   if (q) {
-    filas = filas.filter(r =>
-      normTxt(r.funcionario).includes(q) || normTxt(r.oficina).includes(q) ||
-      normTxt(r.gerencia_regional).includes(q) || normTxt(r.gerencia_zonal).includes(q) ||
-      normTxt(r.objetivo).includes(q) || normTxt(r.aseguradora).includes(q)
+    filas = filas.filter(r => campoBusquedaExacta
+      ? normTxt(r[campoBusquedaExacta]).includes(q)
+      : (normTxt(r.funcionario).includes(q) || normTxt(r.oficina).includes(q) ||
+         normTxt(r.gerencia_regional).includes(q) || normTxt(r.gerencia_zonal).includes(q) ||
+         normTxt(r.objetivo).includes(q) || normTxt(r.aseguradora).includes(q))
     );
   }
   filas.sort((a, b) => {
@@ -3430,7 +3582,8 @@ function renderTabla(){
   pagina.forEach((r, idx) => {
     const globalIdx = inicio + idx;
     html += `<tr>
-      <td><strong>${formatFecha(r.fecha)}</strong></td>
+      <td class="solo-admin"><input type="checkbox" class="chk-visita" data-id="${r.id}" ${VISITAS_SELECCIONADAS.has(String(r.id))?'checked':''} onchange="toggleSeleccionVisita('${r.id}', this.checked)"></td>
+      <td>${r.estado==='Cancelada'?'<span class="dot-cancelada"></span>':''}<strong>${formatFecha(r.fecha)}</strong></td>
       <td>${r.hora_registro||''}</td>
       <td>${r.funcionario||''}</td>
       <td><span class="badge-aseg ${r.aseguradora==='Mapfre'?'mapfre':'colmena'}">${r.aseguradora||''}</span></td>
@@ -3446,6 +3599,8 @@ function renderTabla(){
     </tr>`;
   });
   $('tabla-body').innerHTML = html;
+  const master = $('chk-todas');
+  if (master) master.checked = pagina.length > 0 && pagina.every(r => VISITAS_SELECCIONADAS.has(String(r.id)));
   renderPaginacion(totalPaginas);
 }
 
@@ -3637,12 +3792,12 @@ function getSuggestions(query){
   const pool = VISITAS_FILTRADAS.length > 0 ? VISITAS_FILTRADAS : VISITAS;
 
   const fields = [
-    { key: 'funcionario', type: 'Funcionario', icon: 'ti-user', filterId: 'fl-func' },
-    { key: 'oficina', type: 'Oficina', icon: 'ti-building', filterId: 'fl-aseg' },
-    { key: 'gerencia_regional', type: 'Regional', icon: 'ti-map-pin', filterId: 'fl-regional' },
-    { key: 'gerencia_zonal', type: 'Zonal', icon: 'ti-map-2', filterId: 'fl-zonal' },
-    { key: 'aseguradora', type: 'Aseguradora', icon: 'ti-shield', filterId: 'fl-aseg' },
-    { key: 'modalidad', type: 'Modalidad', icon: 'ti-video', filterId: 'fl-modal' },
+    { key: 'funcionario', type: 'Funcionario', icon: 'ti-user' },
+    { key: 'oficina', type: 'Oficina', icon: 'ti-building' },
+    { key: 'gerencia_regional', type: 'Regional', icon: 'ti-map-pin' },
+    { key: 'gerencia_zonal', type: 'Zonal', icon: 'ti-map-2' },
+    { key: 'aseguradora', type: 'Aseguradora', icon: 'ti-shield' },
+    { key: 'modalidad', type: 'Modalidad', icon: 'ti-video' },
   ];
 
   fields.forEach(f => {
@@ -3651,7 +3806,7 @@ function getSuggestions(query){
       if (normTxt(v).includes(q)) {
         const k = `${f.key}::${v}`;
         if (!suggestions.has(k)) {
-          suggestions.set(k, { value: v, type: f.type, icon: f.icon, key: f.key, filterId: f.filterId });
+          suggestions.set(k, { value: v, type: f.type, icon: f.icon, key: f.key });
         }
       }
     });
@@ -3712,6 +3867,8 @@ function applySuggestion(key, value, type){
   input.value = value;
   $('autocomplete-list').classList.remove('show');
 
+  campoBusquedaExacta = null;
+
   if (key === 'fecha') {
     $('fl-desde').value = value;
     $('fl-hasta').value = value;
@@ -3735,6 +3892,9 @@ function applySuggestion(key, value, type){
   } else if (key === 'modalidad') {
     $('fl-modal').value = value;
     aplicarFiltros();
+  } else if (key === 'oficina') {
+    campoBusquedaExacta = 'oficina';
+    renderTabla();
   } else {
     renderTabla();
   }
@@ -3778,6 +3938,7 @@ function aplicarFiltroFechaDesdeBusqueda(patron){
   if (fpDesde) fpDesde.setDate(desde);
   if (fpHasta) fpHasta.setDate(hasta);
   $('tabla-buscar').value = '';
+  campoBusquedaExacta = null;
   $('autocomplete-list').classList.remove('show');
   aplicarFiltros();
   showToast(`Filtro de fecha detectado: ${desde}${hasta!==desde?' → '+hasta:''}`, 'success');
@@ -3785,6 +3946,7 @@ function aplicarFiltroFechaDesdeBusqueda(patron){
 
 let searchDateTimeout = null;
 $('tabla-buscar').addEventListener('input', (e) => {
+  campoBusquedaExacta = null;
   const q = e.target.value.trim();
   clearTimeout(searchDateTimeout);
   const patron = detectarPatronFecha(q);
@@ -3840,14 +4002,18 @@ document.addEventListener('click', (e) => {
     aplicarFiltros();
   } else if (campo === 'oficina') {
     $('tabla-buscar').value = valor;
+    campoBusquedaExacta = 'oficina';
     renderTabla();
   }
   showToast(`Filtrado por ${valor}`, 'info');
 });
 
+let VISITA_MODAL_ACTUAL = null;
+
 function abrirModal(idx){
   const r = FILAS_ACTUALES[idx];
   if (!r) return;
+  VISITA_MODAL_ACTUAL = r;
   const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
   let fechaTexto = r.fecha || '';
   try {
@@ -3875,9 +4041,88 @@ function abrirModal(idx){
 function cerrarModal(){
   $('modal-overlay').classList.remove('show');
   document.body.style.overflow = '';
+  VISITA_MODAL_ACTUAL = null;
+}
+
+async function eliminarVisitaDesdeModal(){
+  const r = VISITA_MODAL_ACTUAL;
+  if (!r || !r.id) { showToast('No se pudo identificar la visita a eliminar', 'error'); return; }
+  mostrarConfirmacion({
+    titulo: 'Eliminar visita',
+    mensaje: `¿Eliminar la visita de ${r.funcionario || 'este funcionario'} del ${r.fecha || '—'}? Esta acción no se puede deshacer.`,
+    textoConfirmacion: config.confirmacionReforzada ? 'ELIMINAR' : null,
+    onConfirm: async () => {
+      const resp = await fetchAdminConReintento(SUPABASE_URL + '/rest/v1/rpc/admin_eliminar_visita', {
+        method: 'POST', body: JSON.stringify({ p_id: r.id })
+      });
+      if (!resp.ok) {
+        const detalle = await resp.text().catch(() => '');
+        showToast('No se pudo eliminar la visita' + (detalle ? ': ' + detalle : ''), 'error');
+        return;
+      }
+      registrarAuditoria('eliminar', 'visita', `${r.funcionario || '—'} · ${r.fecha || '—'} ${r.hora_registro || ''}`, `Aseguradora: ${r.aseguradora || '—'}`);
+      showToast('Visita eliminada', 'success');
+      cerrarModal();
+      cargarTodo(true);
+    }
+  });
 }
 
 function renderCharts(){ renderPageCharts(currentPage); }
+
+function toggleSeleccionVisita(id, marcado){
+  if (marcado) VISITAS_SELECCIONADAS.add(String(id)); else VISITAS_SELECCIONADAS.delete(String(id));
+  actualizarBarraSeleccion();
+}
+
+function toggleSeleccionarTodas(marcado){
+  document.querySelectorAll('.chk-visita').forEach(chk => {
+    chk.checked = marcado;
+    if (marcado) VISITAS_SELECCIONADAS.add(chk.dataset.id); else VISITAS_SELECCIONADAS.delete(chk.dataset.id);
+  });
+  actualizarBarraSeleccion();
+}
+
+function actualizarBarraSeleccion(){
+  const n = VISITAS_SELECCIONADAS.size;
+  $('tabla-bulk-bar').classList.toggle('hidden', n === 0);
+  $('bulk-count').textContent = `${n} seleccionada${n === 1 ? '' : 's'}`;
+}
+
+function limpiarSeleccionVisitas(){
+  VISITAS_SELECCIONADAS.clear();
+  document.querySelectorAll('.chk-visita').forEach(chk => chk.checked = false);
+  const master = $('chk-todas');
+  if (master) master.checked = false;
+  actualizarBarraSeleccion();
+}
+
+async function eliminarVisitasSeleccionadas(){
+  const ids = [...VISITAS_SELECCIONADAS];
+  if (!ids.length) return;
+  mostrarConfirmacion({
+    titulo: 'Eliminar visitas seleccionadas',
+    mensaje: `¿Eliminar ${ids.length} visita${ids.length === 1 ? '' : 's'} seleccionada${ids.length === 1 ? '' : 's'}? Esta acción no se puede deshacer.`,
+    textoConfirmacion: config.confirmacionReforzada ? 'ELIMINAR' : null,
+    onConfirm: async () => {
+      const resp = await fetchAdminConReintento(SUPABASE_URL + '/rest/v1/rpc/admin_eliminar_visitas', {
+        method: 'POST', body: JSON.stringify({ p_ids: ids })
+      });
+      if (!resp.ok) {
+        const detalle = await resp.text().catch(() => '');
+        showToast('No se pudieron eliminar las visitas' + (detalle ? ': ' + detalle : ''), 'error');
+        return;
+      }
+      const filasEliminadas = ids.map(id => VISITAS.find(v => String(v.id) === String(id))).filter(Boolean);
+      const resumen = filasEliminadas.map(r => `${r.funcionario||'—'} · ${r.oficina||'—'} · ${formatFecha(r.fecha)} ${r.hora_registro||''}`.trim()).join('\n');
+      registrarAuditoria('eliminar', 'visita', `${ids.length} visitas eliminadas en lote`, resumen || `IDs: ${ids.join(', ')}`);
+      showToast(`${ids.length} visita${ids.length === 1 ? '' : 's'} eliminada${ids.length === 1 ? '' : 's'}`, 'success');
+      limpiarSeleccionVisitas();
+      cargarTodo(true);
+    }
+  });
+}
+
 function calcularAlertas(){
   const alertas = [];
   const hoy = new Date();
